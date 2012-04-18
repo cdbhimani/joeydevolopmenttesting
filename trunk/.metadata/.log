@@ -1,0 +1,23 @@
+!SESSION 2012-04-18 09:32:59.073 -----------------------------------------------
+eclipse.buildId=M20120208-0800
+java.version=1.6.0_30
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=en_IE
+Framework arguments:  -product org.eclipse.epp.package.jee.product -product org.eclipse.epp.package.jee.product
+Command-line arguments:  -os win32 -ws win32 -arch x86 -product org.eclipse.epp.package.jee.product -data C:\projects\internal\Test -product org.eclipse.epp.package.jee.product
+
+!ENTRY com.android.ide.eclipse.ddms 4 0 2012-04-18 09:33:25.514
+!MESSAGE DDMS files not found: C:\Devoloper\eclipse-jee-indigo-SR2-win32\eclipse\platform-tools\adb.exe C:\Devoloper\eclipse-jee-indigo-SR2-win32\eclipse\tools\hprof-conv.exe C:\Devoloper\eclipse-jee-indigo-SR2-win32\eclipse\tools\traceview.bat 
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2012-04-18 10:07:24.680
+!MESSAGE 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/testing-android/res' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:320)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:194)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:266)
+	at org.eclipse.core.internal.resources.Container.members(Container.java:249)
+	at com.android.ide.eclipse.adt.internal.sdk.Sdk$6.run(Sdk.java:1196)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2012-04-18 10:07:24.680
+!MESSAGE Resource '/testing-android/res' does not exist.
