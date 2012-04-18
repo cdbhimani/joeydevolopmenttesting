@@ -1,17 +1,29 @@
 package com.joey.testing.spatialPartitioning;
 
 public class Point2D {
-	int x;
-	int y;
+	float x;
+	float y;
+	float vx;
+	float vy;
 
-	public Point2D(int x, int y) {
+	public Point2D(float x, float y) {
 		this.x = x;
 		this.y = y;
 	}
 
-	public int distanceSq(Point2D p){
-		int dx = p.x-x;
-		int dy = p.y-y;
+	public Point2D() {
+		this.x = 0;
+		this.y = 0;
+	}
+
+	public Point2D(Point2D p) {
+		this.x = p.x;
+		this.y = p.y;
+	}
+
+	public float distanceSq(Point2D p){
+		float dx = p.x-x;
+		float dy = p.y-y;
 		return dx*dx+dy*dy;
 	}
 }
