@@ -1,8 +1,8 @@
 package com.me.mygdxgame.spatialPartitioning;
 
 public class Point2D {
-	float x;
-	float y;
+	public float x;
+	public float y;
 	float vx;
 	float vy;
 
