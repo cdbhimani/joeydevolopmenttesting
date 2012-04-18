@@ -12,23 +12,17 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
 
-public class QuadTreeViewer implements GestureListener{
+public class QuadTreeViewer{
 	QuadTree tree;
 	
 	ShapeRenderer gridRender;
 	ShapeRenderer particleRender;
 	
-	Rectangle2D region;
-	Point2D worldPos = new Point2D();
-	Point2D mousePos = new Point2D();
-	Point2D dragOffset = new Point2D();
 	
-	float zoom = 1;
-	long lastUpdate = 0;
+	long lastUpdate = System.currentTimeMillis();
 	float border = 100;
 	
 	public QuadTreeViewer(Rectangle2D region){
-		this.region = region;
 		tree = new QuadTree(region, 3);
 		gridRender = new ShapeRenderer();
 		particleRender = new ShapeRenderer();
@@ -39,11 +33,10 @@ public class QuadTreeViewer implements GestureListener{
 		for (float i = 0; i < number; i++) {
 			float maxVel = 100;
 			Point2D p = new Point2D();
-			p.x = (float) (region.x1+Math.random() * (region.x2-region.x1));
-			p.y = (float) (region.y1+Math.random() * (region.y2-region.y1));
-			p.vx = (float) (maxVel-Math.random() *2* maxVel);
-			p.vy = (float) (maxVel-Math.random() * 2*maxVel);
-			
+			p.x = (float) (tree.root.region.x1+Math.random() * (tree.root.region.x2-tree.root.region.x1));
+			p.y = (float) (tree.root.region.y1+Math.random() * (tree.root.region.y2-tree.root.region.y1));
+			p.vx = (float) (maxVel-Math.random()*2*maxVel);
+			p.vy = (float) (maxVel-Math.random()*2*maxVel);
 			points.add(p);
 			tree.addPoint(p);
 		}
@@ -70,11 +63,10 @@ public class QuadTreeViewer implements GestureListener{
 			}
 			
 			//Validate position
-			if(p.x <= region.x1)p.x = region.x2;
-			if(p.x >= region.x2)p.x = region.x1;
-			
-			if(p.y <= region.y1)p.y = region.y2;
-			if(p.y >= region.y2)p.y = region.y1;
+			if(p.x < tree.root.region.x1)p.x = tree.root.region.x2;
+			if(p.x > tree.root.region.x2)p.x = tree.root.region.x1;
+			if(p.y < tree.root.region.y1)p.y = tree.root.region.y2;
+			if(p.y > tree.root.region.y2)p.y = tree.root.region.y1;
 		}
 	}
 	
@@ -82,15 +74,12 @@ public class QuadTreeViewer implements GestureListener{
 		tree.rebuild();
 	}
 	public void render(GLCommon gl, Camera camera){
-		camera.position.x = worldPos.x;
-		camera.position.y = worldPos.y;
-		camera.update();
 		gridRender.setProjectionMatrix(camera.combined);
 		particleRender.setProjectionMatrix(camera.combined);
 		
 		gridRender.setColor(Color.WHITE);
 		gridRender.begin(ShapeType.FilledRectangle);
-		gridRender.filledRect(region.x1, region.y1,region.x2-region.x1, region.y2-region.y1);
+		gridRender.filledRect(tree.root.region.x1, tree.root.region.y1,tree.root.region.x2-tree.root.region.x1, tree.root.region.y2-tree.root.region.y1);
 		gridRender.end();
 		
 		
@@ -105,41 +94,6 @@ public class QuadTreeViewer implements GestureListener{
 		
 		
 	}
-	@Override
-	public boolean touchDown(int x, int y, int pointer) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	public boolean tap(int x, int y, int count) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	public boolean longPress(int x, int y) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	public boolean fling(float velocityX, float velocityY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	public boolean pan(int x, int y, int deltaX, int deltaY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	public boolean zoom(float originalDistance, float currentDistance) {
-		zoom = originalDistance/currentDistance;
-		return true;
-	}
-	@Override
-	public boolean pinch(Vector2 initialFirstPointer,
-			Vector2 initialSecondPointer, Vector2 firstPointer,
-			Vector2 secondPointer) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	
+
 }
