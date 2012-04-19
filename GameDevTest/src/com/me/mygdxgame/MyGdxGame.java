@@ -15,7 +15,7 @@ import com.me.mygdxgame.spatialPartitioning.QuadTree;
 import com.me.mygdxgame.spatialPartitioning.QuadTreeViewer;
 import com.me.mygdxgame.spatialPartitioning.Rectangle2D;
 
-public class MyGdxGame implements ApplicationListener, InputProcessor, GestureListener {
+public class MyGdxGame implements ApplicationListener, InputProcessor{
 	int sizeX = 400;
 	int sizeY = 400;
 	

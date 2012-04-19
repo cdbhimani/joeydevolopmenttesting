@@ -6,13 +6,18 @@ public class Rectangle2D {
 	public float x2;
 	public float y2;
 
+	
+	public Rectangle2D() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	public Rectangle2D(float x1, float y1, float x2, float y2){
 		this.x1 = x1;
 		this.y1 = y1;
 		this.x2 = x2;
 		this.y2 = y2;
 	}
-	
+
 	public void ensureOrder(){
 		float tmp;
 		if(x1<x2){
@@ -68,5 +73,15 @@ public class Rectangle2D {
 	
 	public String toString(){
 		return super.toString()+"["+x1+","+y1+"]"+"["+x2+","+y2+"]";
+	}
+
+	public float getWidth() {
+		// TODO Auto-generated method stub
+		return x2-x1;
+	}
+	
+	public float getHeight() {
+		// TODO Auto-generated method stub
+		return y2-y1;
 	}
 }
