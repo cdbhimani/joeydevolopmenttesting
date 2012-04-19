@@ -6,12 +6,12 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 public class Main {
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
-		cfg.title = "GameDevTest";
+		cfg.title = "Test";
 		cfg.useGL20 = false;
 		cfg.width = 400;
 		cfg.height = 400;
 		
 		
-		new LwjglApplication(new MyGdxGame(), cfg);
+		new LwjglApplication(ApplicationCentral.getApplication(), cfg);
 	}
 }
