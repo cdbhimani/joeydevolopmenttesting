@@ -5,46 +5,62 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GLCommon;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.me.mygdxgame.graphics.Panel;
 import com.me.mygdxgame.spatialPartitioning.Point2D;
 import com.me.mygdxgame.spatialPartitioning.Rectangle2D;
 
 public class TestPanel implements ApplicationListener {
-	OrthographicCamera cam;
-	Rectangle2D bounds = new Rectangle2D(0, 0, 1, 1);
-	Point2D worldPos = new Point2D();
-	Panel panel;
+    Skin skin;
+    Stage stage;
+    SpriteBatch batch;
+    Actor root;
 	
-	public void updateCamera(GL10 gl){
-		cam.position.set(Gdx.graphics.getWidth()/2+worldPos.x, Gdx.graphics.getHeight()/2+worldPos.y, 0);
-		cam.update();
-		cam.apply(gl);
+	public void test(){
+	
 	}
-	
+
 	@Override
 	public void create() {
-		// TODO Auto-generated method stub
-		panel = new Panel(100,100,100,100);
+		stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+        Gdx.input.setInputProcessor(stage);
+        skin = new Skin(Gdx.files.internal("data/uiskin.json"), Gdx.files.internal("data/uiskin.png"));
+		
+        final Button button = new TextButton("Single", skin.getStyle(TextButtonStyle.class), "button-sl");
+        
+        Window window = new Window("Window", skin.getStyle(WindowStyle.class), "window");
+        window.x = 100;
+        window.y = 100;
+        window.defaults().spaceBottom(10);
+        window.row().fill().expandX();
+        window.add(button).fill(false, true);
+        window.pack();
+        stage.addActor(window);
 	}
 
-	@Override
-	public void resize(int width, int height) {
-		cam = new OrthographicCamera(width, height);
-		bounds.x2 = width;
-		bounds.y2 = height;
-	}
+    @Override
+    public void render () {
+            Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
+            Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
-	@Override
-	public void render() {
-		GL10 gl = Gdx.gl10;
-		updateCamera(gl);	
-		
-		gl.glClearColor(1, 1, 1, 1);
-		gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		
-		gl.glScissor((int)bounds.x1, (int)bounds.y1, (int)bounds.getWidth(), (int)bounds.getHeight());
-		panel.paint(gl, cam, bounds);
-	}
+
+            stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+            stage.draw();
+    }
+
+    @Override
+    public void resize (int width, int height) {
+            stage.setViewport(width, height, false);
+    }
 
 	@Override
 	public void pause() {
@@ -63,5 +79,4 @@ public class TestPanel implements ApplicationListener {
 		// TODO Auto-generated method stub
 		
 	}
-
 }
