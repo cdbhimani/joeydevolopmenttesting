@@ -7,17 +7,27 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GLCommon;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.me.mygdxgame.spatialPartitioning.Point2D;
 import com.me.mygdxgame.spatialPartitioning.QuadTree;
 import com.me.mygdxgame.spatialPartitioning.QuadTreeViewer;
 import com.me.mygdxgame.spatialPartitioning.Rectangle2D;
 
 public class MyGdxGame implements ApplicationListener, InputProcessor{
-	int sizeX = 400;
-	int sizeY = 400;
+	int sizeX = 4000;
+	int sizeY = 4000;
 	
 	Point2D worldPos = new Point2D();
 	Point2D mousePos = new Point2D();
@@ -31,13 +41,52 @@ public class MyGdxGame implements ApplicationListener, InputProcessor{
 	float zoomIncrement = 0.1f;
 	boolean zoomChanged = false;
 	
-	
+    Skin skin;
+    Stage stage;
+    SpriteBatch batch;
+    Actor root;
+    
 	OrthographicCamera cam;
 	QuadTreeViewer view;
 	
 	@Override
 	public void create() {
-		Gdx.input.setInputProcessor(this);
+		stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+        Gdx.input.setInputProcessor(stage);
+        skin = new Skin(Gdx.files.internal("data/uiskin.json"), Gdx.files.internal("data/uiskin.png"));
+		
+        final Button windowButton = new TextButton("Single", skin.getStyle(TextButtonStyle.class), "button-sl");
+        final Button button = new TextButton("Single", skin.getStyle(TextButtonStyle.class), "button-sl");
+        final Window window = new Window("Window", skin.getStyle(WindowStyle.class), "window");
+        
+        button.x = 10;
+        button.y = 10;
+        button.width =30;
+        button.height =30;
+        
+        window.x = 0;
+        window.y = 0;
+        window.defaults().spaceBottom(10);
+        window.row().fill().expandX();
+        window.add(windowButton).fill(false, true);
+        window.pack();
+        stage.addActor(window);
+		stage.addActor(button);
+        windowButton.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				view.addPoints(1000);
+			}
+		});
+        
+        button.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				window.visible = !window.visible;
+			}
+		});
 		
 		view = new QuadTreeViewer(new Rectangle2D(0, 0, sizeX, sizeY));
 		view.addPoints(10);
@@ -74,11 +123,15 @@ public class MyGdxGame implements ApplicationListener, InputProcessor{
 		
 		
 		view.render(gl, cam);
+		
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        stage.draw();
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		cam = new OrthographicCamera(width, height);
+        stage.setViewport(width, height, false);
 	}
 
 	public void setPosition(float x, float y){

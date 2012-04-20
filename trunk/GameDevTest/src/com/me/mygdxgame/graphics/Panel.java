@@ -18,6 +18,7 @@ public class Panel extends Actor {
 	
 	@Override
 	public void draw(SpriteBatch batch, float parentAlpha) {
+		ShapeRenderer s = new ShapeRenderer;
 		
 	}
 
