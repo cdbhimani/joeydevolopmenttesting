@@ -23,11 +23,11 @@ public class QuadTreeViewerOLD extends JPanel implements MouseListener,
 		MouseMotionListener, MouseWheelListener {
 
 	QuadTree tree;
-	Point2D worldPos = new Point2D();
-	Point2D mousePos = new Point2D();
-	Point2D dragOffset = new Point2D();
+	Entity2D worldPos = new Entity2D();
+	Entity2D mousePos = new Entity2D();
+	Entity2D dragOffset = new Entity2D();
 
-	Point2D p = new Point2D();
+	Entity2D p = new Entity2D();
 	boolean drag = false;
 
 	float zoom = 1;
@@ -67,14 +67,14 @@ public class QuadTreeViewerOLD extends JPanel implements MouseListener,
 			AffineTransform old = g.getTransform();
 
 			if (zoomChanged) {
-				Point2D imageP = new Point2D(
+				Entity2D imageP = new Entity2D(
 						(float) ((mousePos.x - worldPos.x) / zoom),
 						(float) ((mousePos.y - worldPos.y) / zoom));
 
 				zoom *= zoomChange;
 				zoomChange = 1;
 
-				Point2D panelP = new Point2D(
+				Entity2D panelP = new Entity2D(
 						(float) ((imageP.x * zoom + worldPos.x)),
 						(float) ((imageP.y * zoom + worldPos.y)));
 
@@ -125,7 +125,7 @@ public class QuadTreeViewerOLD extends JPanel implements MouseListener,
 			}
 			if(drawPoints){
 			synchronized (tree.points) {
-					for (Point2D p : tree.points) {
+					for (Entity2D p : tree.points) {
 						g.setColor(Color.blue);
 						g.fillOval((int)(p.x-pointSize), (int)(p.y-pointSize), 2*pointSize, 2*pointSize);
 					}
@@ -213,10 +213,10 @@ public class QuadTreeViewerOLD extends JPanel implements MouseListener,
 		viewer.drawGird = true;
 		viewer.setQuadTree(tree);
 
-		ArrayList<Point2D> points = new ArrayList<Point2D>(number);
+		ArrayList<Entity2D> points = new ArrayList<Entity2D>(number);
 		for (float i = 0; i < number; i++) {
 			float maxVel = 100;
-			Point2D p = new Point2D();
+			Entity2D p = new Entity2D();
 			p.x = (float) (Math.random() * sizeX);
 			p.y = (float) (Math.random() * sizeY);
 			p.vx = (float) (maxVel-Math.random() *2* maxVel);
@@ -247,17 +247,17 @@ public class QuadTreeViewerOLD extends JPanel implements MouseListener,
 				
 				begin = System.nanoTime();
 				for(int i = 0; i < points.size(); i++){
-					Point2D p = points.get(i);
+					Entity2D p = points.get(i);
 					p.x += p.vx*diff;
 					p.y += p.vy*diff;
 					
 					//Setup data
-					ArrayList<Point2D> rst =tree.getPointsInRegion(
+					ArrayList<Entity2D> rst =tree.getPointsInRegion(
 							new Rectangle2D(p.x-border, p.y-border, p.x+border, p.y+border));
 					float vx = 0;
 					float vy = 0;
 					int count = 0;
-					for(Point2D data : rst){
+					for(Entity2D data : rst){
 						vx+=data.vx;
 						vy+=data.vy;
 						count++;

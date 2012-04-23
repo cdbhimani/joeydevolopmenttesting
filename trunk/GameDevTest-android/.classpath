@@ -7,5 +7,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/GameDevTest"/>
 	<classpathentry exported="true" kind="lib" path="/GameDevTest/libs/gdx.jar" sourcepath="/GameDevTest/libs/gdx-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gdx-backend-android.jar" sourcepath="libs/gdx-backend-android-sources.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/testing"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

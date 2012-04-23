@@ -3,9 +3,7 @@ package com.me.mygdxgame.spatialPartitioning;
 public class Point2D {
 	public float x;
 	public float y;
-	float vx;
-	float vy;
-
+	
 	public Point2D(float x, float y) {
 		this.x = x;
 		this.y = y;
@@ -25,5 +23,23 @@ public class Point2D {
 		float dx = p.x-x;
 		float dy = p.y-y;
 		return dx*dx+dy*dy;
+	}
+	
+	public String toString(){
+		return super.toString()+"["+x+","+y+"]";
+	}
+
+	public float lengthSq() {
+		// TODO Auto-generated method stub
+		return x*x+y*y;
+	}
+	public float length() {
+		// TODO Auto-generated method stub
+		return (float)Math.sqrt(x*x+y*y);
+	}
+
+	public Point2D DotProduct(Point2D ncoll) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

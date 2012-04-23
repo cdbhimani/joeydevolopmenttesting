@@ -7,7 +7,7 @@ public class QuadTreeNode {
 	boolean isLeaf;
 	int divisionLimit;
 
-	ArrayList<Point2D> points;
+	ArrayList<Entity2D> points;
 
 	QuadTreeNode NW;
 	QuadTreeNode SW;
@@ -18,10 +18,10 @@ public class QuadTreeNode {
 		this.region = Location;
 		this.divisionLimit = divisionLimit;
 		this.isLeaf = true;
-		points = new ArrayList<Point2D>(divisionLimit);
+		points = new ArrayList<Entity2D>(divisionLimit);
 	}
 
-	public void addPoint(Point2D p) {
+	public void addPoint(Entity2D p) {
 		// If leaf add to current points
 		if (isLeaf) {
 				points.add(p);	
@@ -55,7 +55,7 @@ public class QuadTreeNode {
 		if(SE == null)SE = new QuadTreeNode(new Rectangle2D(midX, midY,region.x2,region.y2), divisionLimit);
 
 		//Add Points to region
-		for(Point2D p : points){
+		for(Entity2D p : points){
 			addPoint(p);
 		}
 		//Clear points from here
@@ -65,7 +65,7 @@ public class QuadTreeNode {
 	public boolean reachedMaxSubdivision(){
 		return !(Math.abs(region.x1-region.x2) > 1 || Math.abs(region.y1-region.y2) >1);
 	}
-	public boolean contains(Point2D p) {
+	public boolean contains(Entity2D p) {
 		return region.contains(p);
 	}
 
@@ -78,7 +78,7 @@ public class QuadTreeNode {
 		if(SE != null)SE.reset();		
 	}
 
-	public void getAllPoints(ArrayList<Point2D> rst){
+	public void getAllPoints(ArrayList<Entity2D> rst){
 		if(isLeaf){
 			rst.addAll(points);
 		} else{
@@ -89,7 +89,7 @@ public class QuadTreeNode {
 		}
 	}
 	
-	public void getPointsInRegion(Rectangle2D searchArea, ArrayList<Point2D> rst) {
+	public void getPointsInRegion(Rectangle2D searchArea, ArrayList<Entity2D> rst) {
 		if(searchArea.intersects(region)){
 			if(isLeaf || searchArea.contains(region)){
 				getAllPoints(rst);

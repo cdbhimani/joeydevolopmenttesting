@@ -16,13 +16,13 @@ import javax.swing.JPanel;
 
 public class QuadTree{
 	public QuadTreeNode root;
-	ArrayList<Point2D> points = new ArrayList<Point2D>();
+	public ArrayList<Entity2D> points = new ArrayList<Entity2D>();
 	
 	public QuadTree(Rectangle2D r, int maxCount){
 		root = new QuadTreeNode(r, 2);
 	}
 
-	public void addPoint(Point2D p){
+	public void addPoint(Entity2D p){
 		synchronized (points) {
 			points.add(p);
 			root.addPoint(p);	
@@ -31,13 +31,13 @@ public class QuadTree{
 	
 	public void rebuild(){
 		root.reset();
-		for(Point2D p : points){
+		for(Entity2D p : points){
 			root.addPoint(p);
 		}
 	}
 
-	public ArrayList<Point2D> getPointsInRegion(Rectangle2D region){
-		ArrayList<Point2D> ents = new ArrayList<Point2D>();	
+	public ArrayList<Entity2D> getPointsInRegion(Rectangle2D region){
+		ArrayList<Entity2D> ents = new ArrayList<Entity2D>();	
 		root.getPointsInRegion(region, ents);
 		return ents;
 	}
