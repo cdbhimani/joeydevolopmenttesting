@@ -41,11 +41,11 @@ public class Rectangle2D {
 		return x>=x1&&y>=y1&&x<=x2&&y<=y2;
 	}
 	
-	public boolean contains(Point2D p) {
+	public boolean contains(Entity2D p) {
 		return p.x>x1&&p.y>y1&&p.x<x2&&p.y<y2;
 	}
 
-	public boolean intersects(Point2D p) {
+	public boolean intersects(Entity2D p) {
 		return p.x>=x1&&p.y>=y1&&p.x<=x2&&p.y<=y2;
 	}
 

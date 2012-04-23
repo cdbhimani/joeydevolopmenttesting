@@ -16,7 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.me.mygdxgame.graphics.Panel;
-import com.me.mygdxgame.spatialPartitioning.Point2D;
+import com.me.mygdxgame.spatialPartitioning.Entity2D;
 import com.me.mygdxgame.spatialPartitioning.Rectangle2D;
 
 public class TestPanel implements ApplicationListener {
