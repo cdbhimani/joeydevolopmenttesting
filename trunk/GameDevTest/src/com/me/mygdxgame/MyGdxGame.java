@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GLCommon;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -22,8 +23,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Align;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -33,90 +38,157 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.TableLayout;
+import com.joey.testing.game.graphics.ConsoleLogger;
+import com.joey.testing.game.graphics.ConsoleViewer;
+import com.me.mygdxgame.Gestures.OrthoCamController;
 import com.me.mygdxgame.spatialPartitioning.Entity2D;
 import com.me.mygdxgame.spatialPartitioning.QuadTree;
 import com.me.mygdxgame.spatialPartitioning.QuadTreeViewer;
 import com.me.mygdxgame.spatialPartitioning.Rectangle2D;
 
-public class MyGdxGame implements ApplicationListener, InputProcessor{
-	int sizeX = 6000;
-	int sizeY = 6000;
+public class MyGdxGame implements ApplicationListener{
+	int sizeX = 600;
+	int sizeY = 600;
 	
-	Entity2D worldPos = new Entity2D();
-	Entity2D startMouse = new Entity2D();
-	Entity2D dragOffset = new Entity2D();
-
-	boolean drag = false;
-
-	float zoom =1;
-	float zoomChange = 1;
-	float zoomIncrement = 0.1f;
-	boolean zoomChanged = false;
-	
+	FPSLogger fps;
     Skin skin;
     Stage stage;
     SpriteBatch batch;
     Actor root;
     
-	OrthographicCamera cam;
-	QuadTreeViewer view;
-
 	
-	TextField field;
+	QuadTreeViewer quadViewer;
+	OrthoCamController quadViewCamController;
+	OrthographicCamera quadViewCam;
+	
+	ConsoleViewer consoleViewer;
+	ConsoleLogger console;
+	OrthographicCamera consoleCamera;
+	
+	Label worldEntityCount;
+	TextField toAddEntityCount;
+	
 	@Override
 	public void create() {
+		fps = new FPSLogger();
 		stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
         batch = new SpriteBatch();
         
+        quadViewCam = new OrthographicCamera();
+        quadViewCamController = new OrthoCamController(quadViewCam);
+
+        quadViewer = new QuadTreeViewer(new Rectangle2D(-sizeX, -sizeY, sizeX, sizeY));
+		quadViewer.addPoints(100);
+		
+		console = new ConsoleLogger();
+		consoleViewer = new ConsoleViewer(console);
+		consoleCamera = new OrthographicCamera();
+		
+        createStage();
+        
         InputMultiplexer multi = new InputMultiplexer();
         multi.addProcessor(stage);
-        multi.addProcessor(this);
-        
+        multi.addProcessor(quadViewCamController);
+//      multi.addProcessor(this);
         Gdx.input.setInputProcessor(multi);
         
-        
+	}
+	
+	public void createStage(){
         skin = new Skin(Gdx.files.internal("data/uiskin.json"), Gdx.files.internal("data/uiskin.png"));
 		
-        final Button windowButton = new TextButton("Single", skin.getStyle(TextButtonStyle.class), "button-sl");
-        final Button button = new TextButton("Single", skin.getStyle(TextButtonStyle.class), "button-sl");
-        field= new TextField("Count", "asdf", skin.getStyle(TextFieldStyle.class), "styles2");
+        final Button addButton = new TextButton("Add", skin.getStyle(TextButtonStyle.class), "button-sl");
+        final Button removeButton = new TextButton("Remove", skin.getStyle(TextButtonStyle.class), "button-s2");
+        final Button button = new TextButton("Menu", skin.getStyle(TextButtonStyle.class), "button-s3");
+        final CheckBox drawGrid = new CheckBox(skin);
+        final CheckBox drawParticles = new CheckBox(skin);
+        
+        drawGrid.setChecked(quadViewer.drawQuadTree);
+        drawParticles.setChecked(quadViewer.drawEntities);
+        
+        worldEntityCount= new Label("", skin.getStyle(LabelStyle.class));
+        toAddEntityCount= new TextField("10", "", skin.getStyle(TextFieldStyle.class), "styles2");
         final Window window = new Window("Window", skin.getStyle(WindowStyle.class), "window");
         
-        button.x = 10;
-        button.y = 10;
-        button.width =30;
-        button.height =30;
+        button.x = 0;
+        button.y = 0;
+        button.width =50;
+        button.height =50;
         
-        window.x = 50;
-        window.y = 50;
+        window.x = 55;
+        window.y = 0;
+       
+        worldEntityCount.setAlignment(Align.CENTER);
         
-        window.width=200;
-        window.height=200;
+        
         window.defaults().spaceBottom(10);
         window.row().fill().expandX();
-        window.add(windowButton).fill(true, false);
+        window.add(new Label("Grid: ", skin));
+        window.add(drawGrid).fill(true, false);
         window.row().fill().expandX();
-        window.add(field).fill(true, false);
+        window.add(new Label("Entity: ", skin));
+        window.add(drawParticles).fill(true, false);
+        window.row().fill().expandX();
+        window.add(addButton).fill(true, false);
+        window.add(removeButton).fill(true, false);        
+        window.row().fill().expandX();
+        window.add(new Label("Num: ", skin));
+        window.add(toAddEntityCount).fill(true,false);
+        window.row().fill().expandX();
+        window.add(new Label("Total: ", skin));
+        window.add(worldEntityCount).fill(true, false);
         
+        window.pack();
         
-        Table t = new Table(skin);
-        t.row().fill().expandX();
-        t.add("hello");
-        
-        t.x = 0;
-        t.y = 0;
-        t.width = 100;
-        t.height = 100;
-        
-        stage.addActor(t);
         stage.addActor(window);
 		stage.addActor(button);
-        windowButton.setClickListener(new ClickListener() {
+		
+		drawParticles.setClickListener(new ClickListener() {
+				
+				@Override
+				public void click(Actor actor, float x, float y) {
+					quadViewer.drawEntities = !quadViewer.drawEntities;
+					drawParticles.setChecked(quadViewer.drawEntities);
+				}
+			});
+		 
+		drawGrid.setClickListener(new ClickListener() {
 			
 			@Override
 			public void click(Actor actor, float x, float y) {
-				view.addPoints(1000);
+				quadViewer.drawQuadTree = !quadViewer.drawQuadTree;
+				drawGrid.setChecked(quadViewer.drawQuadTree);
 			}
+		});
+		
+		
+		 
+        addButton.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				
+				try{
+					quadViewer.addPoints(Integer.parseInt(toAddEntityCount.getText()));	
+				}
+				catch(Exception e){
+					
+				}
+				
+			}
+		});
+        
+        removeButton.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				try{
+					quadViewer.removePoints(Integer.parseInt(toAddEntityCount.getText()));	
+				}
+				catch(Exception e){
+				}
+			}
+				
 		});
         
         button.setClickListener(new ClickListener() {
@@ -126,9 +198,6 @@ public class MyGdxGame implements ApplicationListener, InputProcessor{
 				window.visible = !window.visible;
 			}
 		});
-		
-		view = new QuadTreeViewer(new Rectangle2D(-sizeX, -sizeY, sizeX, sizeY));
-		view.addPoints(100);
 	}
 
 	@Override
@@ -137,25 +206,26 @@ public class MyGdxGame implements ApplicationListener, InputProcessor{
 
 	@Override
 	public void render() {
+		fps.log();
 		updateWorld();
+		updateFields();
 		drawWorld();
 	}
 	
 	
 	public void updateWorld(){
-		view.updatePoints();
-		view.rebuildTree();
+		quadViewer.updatePoints();
+		quadViewer.rebuildTree();
 	}
-	
-	public void updateCamera(GL10 gl){
-		cam.position.set(worldPos.x+dragOffset.x, worldPos.y+dragOffset.y, 0);
-		cam.zoom = zoom;
-		cam.update();
-		cam.apply(gl);
+		
+	public void updateFields(){
+		worldEntityCount.setText(""+quadViewer.tree.points.size());
 	}
 	public void drawWorld(){
-		GLCommon gl = Gdx.gl;
-		updateCamera(Gdx.gl10);	
+		GL10 gl = Gdx.gl10;
+		
+		quadViewCam.update();
+		quadViewCam.apply(gl);	
 		
 		gl.glClearColor(1, 1, 1, 1);
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
@@ -163,33 +233,31 @@ public class MyGdxGame implements ApplicationListener, InputProcessor{
 		Vector3 p1 = new Vector3(0,0,0);
 		Vector3 p2 = new Vector3(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),0);
 		
-		cam.unproject(p1);
-		cam.unproject(p2);
+		quadViewCam.unproject(p1);
+		quadViewCam.unproject(p2);
 		
 		Rectangle2D drawRegion = new Rectangle2D(p1.x, p2.y, p2.x, p1.y);
-		view.render(gl, cam, drawRegion);
+		quadViewer.render(gl, quadViewCam, drawRegion);
 		
-		
-		field.setText(""+view.tree.points.size());
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
 
+        consoleCamera.update();
+		consoleCamera.apply(gl);
+		consoleViewer.draw(consoleCamera);
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		cam = new OrthographicCamera(width, height);
+		quadViewCam.viewportWidth = width;
+		quadViewCam.viewportHeight = height;
+		
+		consoleCamera.viewportWidth = width;
+		consoleCamera.viewportHeight = height;
+		consoleCamera.position.x = width/2;
+		consoleCamera.position.y = height/2;
+		
         stage.setViewport(width, height, false);
-	}
-
-	public void setPosition(float x, float y){
-		worldPos.x = x;
-		worldPos.y = y;
-	}
-	
-	public void translate(float x, float y){
-		worldPos.x += x;
-		worldPos.y += y;
 	}
 	
 	@Override
@@ -199,74 +267,4 @@ public class MyGdxGame implements ApplicationListener, InputProcessor{
 	@Override
 	public void resume() {
 	}
-
-	@Override
-	public boolean keyDown(int keycode) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean keyUp(int keycode) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchDown(int x, int y, int pointer, int button) {
-		drag = true;
-		startMouse.x = x;
-		startMouse.y = y;
-		return true;
-	}
-
-	@Override
-	public boolean touchUp(int x, int y, int pointer, int button) {
-		drag = false;
-		worldPos.x += dragOffset.x;
-		worldPos.y += dragOffset.y;
-		dragOffset.x = 0;
-		dragOffset.y = 0;
-		
-		return true;
-	}
-
-	public static void MouseToCamera(float x, float y, Camera cam, Entity2D p){
-		Vector3 v = new Vector3(x, y, 0);
-		cam.unproject(v);
-		p.x = v.x;
-		p.y = v.y;	
-	}
-	@Override
-	public boolean touchDragged(int x, int y, int pointer) {
-		Entity2D currentMouseTransformed = new Entity2D();
-		Entity2D orignalMouseTransformed = new Entity2D();
-		MouseToCamera(startMouse.x, startMouse.y, cam, orignalMouseTransformed);
-		MouseToCamera(x, y, cam, currentMouseTransformed);
-		if (drag) {
-			dragOffset.x = orignalMouseTransformed.x-currentMouseTransformed.x ;
-			dragOffset.y = orignalMouseTransformed.y-currentMouseTransformed.y ;
-		}
-		return true;
-	}
-
-	@Override
-	public boolean touchMoved(int x, int y) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean scrolled(int amount) {
-		zoom=zoom*(amount>0?1+zoomIncrement:1-zoomIncrement);
-	return true;
-	}
-	
-	
 }
