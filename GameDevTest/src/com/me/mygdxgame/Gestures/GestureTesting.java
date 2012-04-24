@@ -29,31 +29,33 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.joey.testing.game.graphics.ConsoleLogger;
 import com.joey.testing.game.graphics.ConsoleViewer;
 
-public class GestureTesting implements ApplicationListener, GestureListener{
+public class GestureTesting implements ApplicationListener{
 
 	GestureDetector gesture;
 	ConsoleViewer view;
 	ConsoleLogger log;
 	OrthographicCamera camera;
+	OrthographicCamera textCamera;
 	ShapeRenderer render;
 	OrthoCamController cam;
+	
 	@Override
 	public void create() {
 		
 		log = new ConsoleLogger();
 		view = new ConsoleViewer(log);
 		camera = new OrthographicCamera();
+		textCamera = new OrthographicCamera();
 		render = new ShapeRenderer();
 		 
 		gesture = new GestureDetector(log);
 		cam = new OrthoCamController(camera);
 		
-		GestureDetector g = new GestureDetector(log);
-		
+
 		InputMultiplexer mp = new InputMultiplexer();
-//		mp.addProcessor(g);
-	//	mp.addProcessor(gesture);
 		mp.addProcessor(cam);
+		mp.addProcessor(gesture);
+		mp.addProcessor(log);
 		Gdx.input.setInputProcessor(mp);
 	}
 
@@ -61,7 +63,10 @@ public class GestureTesting implements ApplicationListener, GestureListener{
 	public void resize(int width, int height) {
 		camera.viewportHeight = height;
 		camera.viewportWidth = width;
-		//camera.translate(width/2, height/2, 0);
+		textCamera.viewportHeight = height;
+		textCamera.viewportWidth = width;
+		textCamera.position.x = width/2;
+		textCamera.position.y = height/2;
 	}
 
 	@Override
@@ -73,14 +78,14 @@ public class GestureTesting implements ApplicationListener, GestureListener{
 		camera.update();
 		camera.apply(gl);
 		
-		render.setProjectionMatrix(camera.combined);
-		
+		render.setProjectionMatrix(camera.combined);	
 		render.begin(ShapeType.Rectangle);
 		render.rect(50, 50, 100, 100);
 		render.end();
-		
-		
-		view.draw(camera);
+
+		textCamera.update();
+		textCamera.apply(gl);
+		view.draw(textCamera);
 	}
 
 	@Override
@@ -100,49 +105,4 @@ public class GestureTesting implements ApplicationListener, GestureListener{
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public boolean touchDown(int x, int y, int pointer) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean tap(int x, int y, int count) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean longPress(int x, int y) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean fling(float velocityX, float velocityY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean pan(int x, int y, int deltaX, int deltaY) {
-		camera.translate(-deltaX, deltaY, 0);
-		return false;
-	}
-
-	@Override
-	public boolean zoom(float originalDistance, float currentDistance) {
-		camera.zoom = camera.zoom+(1-currentDistance/originalDistance);
-		return false;
-	}
-
-	@Override
-	public boolean pinch(Vector2 initialFirstPointer,
-			Vector2 initialSecondPointer, Vector2 firstPointer,
-			Vector2 secondPointer) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

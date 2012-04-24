@@ -22,9 +22,9 @@ public class QuadTreeViewer {
 	float border = 500;
 	float entitySize = 10;
 
-	boolean drawBorders = false;
-	boolean drawEntities = true;
-	boolean drawQuadTree = false;
+	public boolean drawBorders = false;
+	public boolean drawEntities = true;
+	public boolean drawQuadTree = false;
 	
 	public QuadTreeViewer(Rectangle2D region) {
 		tree = new QuadTree(region, 2);
@@ -33,20 +33,31 @@ public class QuadTreeViewer {
 	}
 
 	public void addPoints(int number) {
-		for (float i = 0; i < number; i++) {
-			float maxVel = 100;
-			Entity2D p = new Entity2D();
-			p.x = (float) (tree.root.region.x1 + Math.random()
-					* (tree.root.region.x2 - tree.root.region.x1));
-			p.y = (float) (tree.root.region.y1 + Math.random()
-					* (tree.root.region.y2 - tree.root.region.y1));
-			p.vx = (float) (maxVel - Math.random() * 2 * maxVel);
-			p.vy = (float) (maxVel - Math.random() * 2 * maxVel);
-			p.rad = entitySize;
-			tree.addPoint(p);
+		synchronized (tree) {
+			for (float i = 0; i < number; i++) {
+				float maxVel = 100;
+				Entity2D p = new Entity2D();
+				p.x = (float) (tree.root.region.x1 + Math.random()
+						* (tree.root.region.x2 - tree.root.region.x1));
+				p.y = (float) (tree.root.region.y1 + Math.random()
+						* (tree.root.region.y2 - tree.root.region.y1));
+				p.vx = (float) (maxVel - Math.random() * 2 * maxVel);
+				p.vy = (float) (maxVel - Math.random() * 2 * maxVel);
+				p.rad = entitySize;
+				tree.addPoint(p);
+			}
 		}
 	}
 
+	public void removePoints(int number) {
+		synchronized (tree) {
+			for(int i = 0; i < number; i++){
+				if(tree.points.size() > 0){
+					tree.points.remove((int)(Math.random()*tree.points.size()));
+				}
+			}
+		}
+	}
 	public void updatePoints() {
 		float diff = (System.currentTimeMillis() - lastUpdate) / 1000f;
 		lastUpdate = System.currentTimeMillis();
