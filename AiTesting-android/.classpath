@@ -4,8 +4,8 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/GameDevTest"/>
-	<classpathentry exported="true" kind="lib" path="/GameDevTest/libs/gdx.jar" sourcepath="/GameDevTest/libs/gdx-sources.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/AiTesting"/>
+	<classpathentry exported="true" kind="lib" path="/AiTesting/libs/gdx.jar" sourcepath="/AiTesting/libs/gdx-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gdx-backend-android.jar" sourcepath="libs/gdx-backend-android-sources.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
