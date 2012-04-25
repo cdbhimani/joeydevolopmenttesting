@@ -88,16 +88,19 @@ public class QuadTreeViewer<T extends BaseGameEntity> {
 					
 					for (BaseGameEntity e : node.points) {
 						Vehicle entity = (Vehicle)e;
-						if(!entity.steering.useRepel){
+						if(entity.steering.useArrive){
+							Vector2D rst = new Vector2D();
+							SteeringBehaviors.moveToClosest(entity.pos, entity.steering.arrivePos, rst, entity.world.worldBounds);
 							gridRender.setColor(Color.RED);
 							gridRender.begin(ShapeType.FilledCircle);
-							gridRender.filledCircle(entity.pos.x, entity.pos.y, sizeX);
+							gridRender.filledCircle(rst.x, rst.y, entitySize);
 							gridRender.end();
 						}
+						
 						spriteBatch.begin();
 						spriteBatch.draw(spriteRegion, entity.pos.x-sizeX/2, entity.pos.y-sizeY/2, sizeX / 2,
 								sizeY / 2, sizeX, sizeY, 1, 1,
-								(float) (180+Math.toDegrees(entity.angle)));
+								(float) (Math.toDegrees(entity.angle)));
 						spriteBatch.end();
 					}
 				}

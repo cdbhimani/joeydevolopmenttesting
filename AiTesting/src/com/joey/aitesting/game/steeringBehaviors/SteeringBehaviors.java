@@ -8,17 +8,17 @@ import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.shapes.Rectangle2D;
 
 public class SteeringBehaviors {
-	public static final float DecelerationTweaker = 0.3f;
+	public static final float DecelerationTweaker = .3f;
 	Vehicle vehicle;
 
-	boolean useSeek = false;
-	Vector2D seekPos;
-
-	public boolean useAttract = false;
-	public Vector2D attract;
-
-	public boolean useRepel = false;
-	public Vector2D repel;
+	public boolean useFlee = false;
+	public boolean useSeek = false;
+	public boolean useArrive = false;
+	
+	public Vector2D seekPos;
+	public Vector2D arrivePos;
+	public Vector2D fleePos;
+	
 
 	public SteeringBehaviors(Vehicle vehicle) {
 		this.vehicle = vehicle;
@@ -60,16 +60,21 @@ public class SteeringBehaviors {
 		Vector2D rst = new Vector2D();
 		Vector2D point = new Vector2D();
 
-		if (useAttract) {
-			moveToClosest(vehicle.pos, attract, point,	vehicle.world.worldBounds);
+		if (useSeek) {
+			moveToClosest(vehicle.pos, seekPos, point,vehicle.world.worldBounds);
 			seek(point, vehicle, rst);
 		}
 
-		if (useRepel) {
-			moveToClosest(vehicle.pos, repel, point, vehicle.world.worldBounds);
+		if (useFlee) {
+			moveToClosest(vehicle.pos, fleePos, point, vehicle.world.worldBounds);
 			flee(point, vehicle, rst);
 		}
 
+		if (useArrive) {
+			moveToClosest(vehicle.pos, arrivePos, point, vehicle.world.worldBounds);
+			arrive(point, vehicle,1, rst);
+		}
+		
 		if (rst.lengthSq() > vehicle.maxSpeed * vehicle.maxSpeed) {
 			rst.normalise();
 			rst.scale(vehicle.maxSpeed);

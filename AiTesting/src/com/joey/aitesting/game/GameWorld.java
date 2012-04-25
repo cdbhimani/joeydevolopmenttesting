@@ -84,10 +84,15 @@ public class GameWorld {
 				if (vehicles.size() > 0) {
 					Vehicle v = vehicles.get(0);
 					if (v != entity) {
-						entity.steering.repel =v.pos;
-						entity.steering.useRepel = true;
+						entity.steering.fleePos =v.pos;
+						entity.steering.useFlee= true;
 					}
 				}
+//				
+//				entity.steering.arrivePos = new Vector2D(0,0);
+//				entity.steering.useArrive = true; 
+//				entity.steering.useFlee = false;
+//				entity.steering.useSeek = false;
 				addVehicle(entity);
 			}
 
