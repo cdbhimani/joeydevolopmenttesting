@@ -163,8 +163,8 @@ public class TestingClass extends Game implements ApplicationListener,
 
 		if (world.getVehicles().size() > 2) {
 			Vehicle v1 = world.getVehicles().get(0);
-			entity.steering.useRepel = true;
-			entity.steering.repel = v1.pos;
+			entity.steering.useFlee = true;
+			entity.steering.fleePos = v1.pos;
 		}
 
 	}

@@ -33,9 +33,9 @@ public class Vehicle extends MovingEntity {
 		this.smoothedHeading = new Vector2D(0, 0);
 		this.smoothingOn = false;
 		this.timeElapsed = 0;
-
-		setupShape();
 		this.steering = new SteeringBehaviors(this);
+		
+		setupShape();
 	}
 
 	public void setupShape() {
@@ -73,6 +73,7 @@ public class Vehicle extends MovingEntity {
 		// update the position
 		pos.x += vel.x * time_elapsed;
 		pos.y += vel.y * time_elapsed;
+		
 		// update the heading if the vehicle has a non zero velocity
 		if (vel.lengthSq() > 0.00000001) {
 			velHead.setLocation(vel);

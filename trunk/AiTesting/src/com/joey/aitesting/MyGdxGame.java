@@ -46,10 +46,8 @@ import com.joey.aitesting.game.shapes.Rectangle2D;
 import com.me.mygdxgame.Gestures.OrthoCamController;
 
 public class MyGdxGame implements ApplicationListener {
-	float MAX_VEL = 100;
-	float MAX_FORCE = 10000;
-	int sizeX = 3000;
-	int sizeY = 3000;
+	float MAX_VEL = 200;
+	float MAX_FORCE = 100;
 
 	Skin skin;
 	Stage stage;
@@ -66,6 +64,7 @@ public class MyGdxGame implements ApplicationListener {
 	OrthographicCamera consoleCamera;
 
 	Label worldEntityCount;
+	
 	TextField toAddEntityCount;
 
 	long lastUpdate = -1;
@@ -75,8 +74,8 @@ public class MyGdxGame implements ApplicationListener {
 				false);
 		batch = new SpriteBatch();
 
-		sizeX = Gdx.graphics.getWidth()/2;
-		sizeY = Gdx.graphics.getHeight()/2;
+		float sizeX = Gdx.graphics.getWidth()/2;
+		float sizeY = Gdx.graphics.getHeight()/2;
 		Rectangle2D bounds = new Rectangle2D(-sizeX, -sizeY, sizeX, sizeY);
 		world = new GameWorld(bounds);
 
@@ -222,7 +221,7 @@ public class MyGdxGame implements ApplicationListener {
 		if(lastUpdate < 0){
 			lastUpdate = System.currentTimeMillis();
 		}
-		float diff = (lastUpdate-System.currentTimeMillis())/1000f;
+		float diff = (System.currentTimeMillis()-lastUpdate)/1000f;
 		lastUpdate = System.currentTimeMillis();
 		world.update(diff);
 		
