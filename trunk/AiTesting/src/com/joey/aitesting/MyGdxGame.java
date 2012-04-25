@@ -45,154 +45,161 @@ import com.joey.aitesting.game.graphics.QuadTreeViewer;
 import com.joey.aitesting.game.shapes.Rectangle2D;
 import com.me.mygdxgame.Gestures.OrthoCamController;
 
-public class MyGdxGame implements ApplicationListener{
-	int sizeX = 600;
-	int sizeY = 600;
-	
-	FPSLogger fps;
-    Skin skin;
-    Stage stage;
-    SpriteBatch batch;
-    Actor root;
-    GameWorld world;
-    
-	
+public class MyGdxGame implements ApplicationListener {
+	float MAX_VEL = 100;
+	float MAX_FORCE = 10000;
+	int sizeX = 3000;
+	int sizeY = 3000;
+
+	Skin skin;
+	Stage stage;
+	SpriteBatch batch;
+	Actor root;
+	GameWorld world;
+
 	QuadTreeViewer quadViewer;
 	OrthoCamController quadViewCamController;
 	OrthographicCamera quadViewCam;
-	
+
 	ConsoleViewer consoleViewer;
 	ConsoleLogger console;
 	OrthographicCamera consoleCamera;
-	
+
 	Label worldEntityCount;
 	TextField toAddEntityCount;
-	
+
+	long lastUpdate = -1;
 	@Override
 	public void create() {
-		fps = new FPSLogger();
-		stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
-        batch = new SpriteBatch();
-        
-        quadViewCam = new OrthographicCamera();
-        quadViewCamController = new OrthoCamController(quadViewCam);
+		stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
+				false);
+		batch = new SpriteBatch();
 
-        quadViewer = new QuadTreeViewer(new Rectangle2D(-sizeX, -sizeY, sizeX, sizeY));
-		
-		
+		sizeX = Gdx.graphics.getWidth()/2;
+		sizeY = Gdx.graphics.getHeight()/2;
+		Rectangle2D bounds = new Rectangle2D(-sizeX, -sizeY, sizeX, sizeY);
+		world = new GameWorld(bounds);
+
+		quadViewCam = new OrthographicCamera();
+		quadViewCamController = new OrthoCamController(quadViewCam);
+		quadViewer = new QuadTreeViewer(world.quadTree);
+
 		console = new ConsoleLogger();
 		consoleViewer = new ConsoleViewer(console);
 		consoleCamera = new OrthographicCamera();
-		
-        createStage();
-        
-        InputMultiplexer multi = new InputMultiplexer();
-        multi.addProcessor(stage);
-        multi.addProcessor(quadViewCamController);
-//      multi.addProcessor(this);
-        Gdx.input.setInputProcessor(multi);
-        
+
+		createStage();
+
+		InputMultiplexer multi = new InputMultiplexer();
+		multi.addProcessor(stage);
+		multi.addProcessor(quadViewCamController);
+		// multi.addProcessor(this);
+		Gdx.input.setInputProcessor(multi);
+
 	}
-	
-	public void createStage(){
-        skin = new Skin(Gdx.files.internal("data/uiskin.json"), Gdx.files.internal("data/uiskin.png"));
-		
-        final Button addButton = new TextButton("Add", skin.getStyle(TextButtonStyle.class), "button-sl");
-        final Button removeButton = new TextButton("Remove", skin.getStyle(TextButtonStyle.class), "button-s2");
-        final Button button = new TextButton("Menu", skin.getStyle(TextButtonStyle.class), "button-s3");
-        final CheckBox drawGrid = new CheckBox(skin);
-        final CheckBox drawParticles = new CheckBox(skin);
-        
-        drawGrid.setChecked(quadViewer.drawQuadTree);
-        drawParticles.setChecked(quadViewer.drawEntities);
-        
-        worldEntityCount= new Label("", skin.getStyle(LabelStyle.class));
-        toAddEntityCount= new TextField("10", "", skin.getStyle(TextFieldStyle.class), "styles2");
-        final Window window = new Window("Window", skin.getStyle(WindowStyle.class), "window");
-        
-        button.x = 0;
-        button.y = 0;
-        button.width =50;
-        button.height =50;
-        
-        window.x = 55;
-        window.y = 0;
-       
-        worldEntityCount.setAlignment(Align.CENTER);
-        
-        
-        window.defaults().spaceBottom(10);
-        window.row().fill().expandX();
-        window.add(new Label("Grid: ", skin));
-        window.add(drawGrid).fill(true, false);
-        window.row().fill().expandX();
-        window.add(new Label("Entity: ", skin));
-        window.add(drawParticles).fill(true, false);
-        window.row().fill().expandX();
-        window.add(addButton).fill(true, false);
-        window.add(removeButton).fill(true, false);        
-        window.row().fill().expandX();
-        window.add(new Label("Num: ", skin));
-        window.add(toAddEntityCount).fill(true,false);
-        window.row().fill().expandX();
-        window.add(new Label("Total: ", skin));
-        window.add(worldEntityCount).fill(true, false);
-        
-        window.pack();
-        
-        stage.addActor(window);
+
+	public void createStage() {
+		skin = new Skin(Gdx.files.internal("data/uiskin.json"),
+				Gdx.files.internal("data/uiskin.png"));
+
+		final Button addButton = new TextButton("Add",
+				skin.getStyle(TextButtonStyle.class), "button-sl");
+		final Button removeButton = new TextButton("Remove",
+				skin.getStyle(TextButtonStyle.class), "button-s2");
+		final Button button = new TextButton("Menu",
+				skin.getStyle(TextButtonStyle.class), "button-s3");
+		final CheckBox drawGrid = new CheckBox(skin);
+		final CheckBox drawParticles = new CheckBox(skin);
+
+		drawGrid.setChecked(quadViewer.drawQuadTree);
+		drawParticles.setChecked(quadViewer.drawEntities);
+
+		worldEntityCount = new Label("", skin.getStyle(LabelStyle.class));
+		toAddEntityCount = new TextField("1", "",
+				skin.getStyle(TextFieldStyle.class), "styles2");
+		final Window window = new Window("Window",
+				skin.getStyle(WindowStyle.class), "window");
+
+		button.x = 0;
+		button.y = 0;
+		button.width = 50;
+		button.height = 50;
+
+		window.x = 55;
+		window.y = 0;
+
+		worldEntityCount.setAlignment(Align.CENTER);
+
+		window.defaults().spaceBottom(10);
+		window.row().fill().expandX();
+		window.add(new Label("Grid: ", skin));
+		window.add(drawGrid).fill(true, false);
+		window.row().fill().expandX();
+		window.add(new Label("Entity: ", skin));
+		window.add(drawParticles).fill(true, false);
+		window.row().fill().expandX();
+		window.add(addButton).fill(true, false);
+		window.add(removeButton).fill(true, false);
+		window.row().fill().expandX();
+		window.add(new Label("Num: ", skin));
+		window.add(toAddEntityCount).fill(true, false);
+		window.row().fill().expandX();
+		window.add(new Label("Total: ", skin));
+		window.add(worldEntityCount).fill(true, false);
+
+		window.pack();
+
+		stage.addActor(window);
 		stage.addActor(button);
-		
+
 		drawParticles.setClickListener(new ClickListener() {
-				
-				@Override
-				public void click(Actor actor, float x, float y) {
-					quadViewer.drawEntities = !quadViewer.drawEntities;
-					drawParticles.setChecked(quadViewer.drawEntities);
-				}
-			});
-		 
+
+			@Override
+			public void click(Actor actor, float x, float y) {
+				quadViewer.drawEntities = !quadViewer.drawEntities;
+				drawParticles.setChecked(quadViewer.drawEntities);
+			}
+		});
+
 		drawGrid.setClickListener(new ClickListener() {
-			
+
 			@Override
 			public void click(Actor actor, float x, float y) {
 				quadViewer.drawQuadTree = !quadViewer.drawQuadTree;
 				drawGrid.setChecked(quadViewer.drawQuadTree);
 			}
 		});
-		
-		
-		 
-        addButton.setClickListener(new ClickListener() {
-			
+
+		addButton.setClickListener(new ClickListener() {
+
 			@Override
 			public void click(Actor actor, float x, float y) {
-				
-				try{
-					world.addVehicles(Integer.parseInt(toAddEntityCount.getText()));	
+				try {
+					world.addVehicles(
+							Integer.parseInt(toAddEntityCount.getText()), MAX_VEL, MAX_FORCE);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				catch(Exception e){
-					
-				}
-				
+
 			}
 		});
-        
-        removeButton.setClickListener(new ClickListener() {
-			
+
+		removeButton.setClickListener(new ClickListener() {
+
 			@Override
 			public void click(Actor actor, float x, float y) {
-				try{
-					world.removeVehicles(Integer.parseInt(toAddEntityCount.getText()));	
-				}
-				catch(Exception e){
+				try {
+					world.removeVehicles(Integer.parseInt(toAddEntityCount
+							.getText()));
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
-				
+
 		});
-        
-        button.setClickListener(new ClickListener() {
-			
+
+		button.setClickListener(new ClickListener() {
+
 			@Override
 			public void click(Actor actor, float x, float y) {
 				window.visible = !window.visible;
@@ -206,42 +213,48 @@ public class MyGdxGame implements ApplicationListener{
 
 	@Override
 	public void render() {
-		fps.log();
 		updateWorld();
 		updateFields();
 		drawWorld();
 	}
-	
-	
-	public void updateWorld(){
-		world.update(1);
-	}
+
+	public void updateWorld() {
+		if(lastUpdate < 0){
+			lastUpdate = System.currentTimeMillis();
+		}
+		float diff = (lastUpdate-System.currentTimeMillis())/1000f;
+		lastUpdate = System.currentTimeMillis();
+		world.update(diff);
 		
-	public void updateFields(){
-		worldEntityCount.setText(""+quadViewer.tree.points.size());
 	}
-	public void drawWorld(){
+
+	public void updateFields() {
+		worldEntityCount.setText("" +world.getVehicles().size());
+	}
+
+	public void drawWorld() {
 		GL10 gl = Gdx.gl10;
-		
+
 		quadViewCam.update();
-		quadViewCam.apply(gl);	
-		
+		quadViewCam.apply(gl);
+
 		gl.glClearColor(1, 1, 1, 1);
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		
-		Vector3 p1 = new Vector3(0,0,0);
-		Vector3 p2 = new Vector3(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),0);
-		
+
+		Vector3 p1 = new Vector3(0, 0, 0);
+		Vector3 p2 = new Vector3(Gdx.graphics.getWidth(),
+				Gdx.graphics.getHeight(), 0);
+
 		quadViewCam.unproject(p1);
 		quadViewCam.unproject(p2);
-		
+
 		Rectangle2D drawRegion = new Rectangle2D(p1.x, p2.y, p2.x, p1.y);
 		quadViewer.render(gl, quadViewCam, drawRegion);
-		
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        stage.draw();
 
-        consoleCamera.update();
+		stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+		stage.draw();
+
+		consoleCamera.update();
 		consoleCamera.apply(gl);
 		consoleViewer.draw(consoleCamera);
 	}
@@ -250,15 +263,15 @@ public class MyGdxGame implements ApplicationListener{
 	public void resize(int width, int height) {
 		quadViewCam.viewportWidth = width;
 		quadViewCam.viewportHeight = height;
-		
+
 		consoleCamera.viewportWidth = width;
 		consoleCamera.viewportHeight = height;
-		consoleCamera.position.x = width/2;
-		consoleCamera.position.y = height/2;
-		
-        stage.setViewport(width, height, false);
+		consoleCamera.position.x = width / 2;
+		consoleCamera.position.y = height / 2;
+
+		stage.setViewport(width, height, false);
 	}
-	
+
 	@Override
 	public void pause() {
 	}

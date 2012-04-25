@@ -8,8 +8,8 @@ public class Main {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "AiTesting";
 		cfg.useGL20 = false;
-		cfg.width = 100;
-		cfg.height = 100;
+		cfg.width = 600;
+		cfg.height = 600;
 		
 		new LwjglApplication(ApplicationCentral.getApplication(), cfg);
 	}

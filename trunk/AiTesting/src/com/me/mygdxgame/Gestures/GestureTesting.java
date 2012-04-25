@@ -26,8 +26,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.joey.testing.game.graphics.ConsoleLogger;
-import com.joey.testing.game.graphics.ConsoleViewer;
+import com.joey.aitesting.game.graphics.ConsoleLogger;
+import com.joey.aitesting.game.graphics.ConsoleViewer;
 
 public class GestureTesting implements ApplicationListener{
 

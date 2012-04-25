@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GLCommon;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
@@ -14,87 +17,49 @@ import com.badlogic.gdx.math.Vector2;
 import com.joey.aitesting.game.cellSpace.QuadTree;
 import com.joey.aitesting.game.cellSpace.QuadTreeNode;
 import com.joey.aitesting.game.entities.BaseGameEntity;
+import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.shapes.Rectangle2D;
+import com.joey.aitesting.game.shapes.Vector2D;
+import com.joey.aitesting.game.steeringBehaviors.SteeringBehaviors;
 
-public class QuadTreeViewer {
-	public QuadTree tree;
+public class QuadTreeViewer<T extends BaseGameEntity> {
+	public QuadTree<T> tree;
 
 	ShapeRenderer gridRender;
-	ShapeRenderer entityRender;
-
+	SpriteBatch spriteBatch;
+	
+	private Texture spriteTexture;
+	private TextureRegion spriteRegion;
+	float spriteScale = 6;
+	
 	long lastUpdate = System.currentTimeMillis();
-	float border = 500;
-	float entitySize = 10;
+	float entitySize = 5;
 
-	public boolean drawBorders = false;
+	public boolean drawBorders = true;
 	public boolean drawEntities = true;
-	public boolean drawQuadTree = false;
+	public boolean drawQuadTree = true;
 	
-	public QuadTreeViewer(Rectangle2D region) {
-		tree = new QuadTree(region, 2);
+	
+	
+	public QuadTreeViewer(QuadTree<T> tree) {
+		this.tree = tree;
 		gridRender = new ShapeRenderer();
-		entityRender = new ShapeRenderer();
-	}
-
-	public void addEntity(BaseGameEntity entity) {
-		synchronized (tree) {
-				tree.addPoint(entity);
-		}
-	}
-
-	public void removeEntity(BaseGameEntity entity) {
-		synchronized (tree) {
-				tree.points.remove(entity);
-		}
+		spriteBatch = new SpriteBatch();
+		loadTextures();
 	}
 	
-//	public void updateEntities() {
-//		float diff = (System.currentTimeMillis() - lastUpdate) / 1000f;
-//		lastUpdate = System.currentTimeMillis();
-//		for (int i = 0; i < tree.points.size(); i++) {
-//			// Update Positions
-//			Entity2D p = tree.points.get(i);
-//			p.x += p.vx * diff;
-//			p.y += p.vy * diff;
-//
-//			// Do Calculation
-////			ArrayList<Entity2D> rst = tree.getPointsInRegion(new Rectangle2D(p.x
-////					- border, p.y - border, p.x + border, p.y + border));
-////			float vx = 0;
-////			float vy = 0;
-////			int count = 0;
-////			for (Entity2D data : rst) {
-////				EntityCollider.collide(p, data);
-////			}
-//
-//			// Validate position
-//			if (p.x < tree.root.region.x1)
-//				p.x = tree.root.region.x2;
-//			if (p.x > tree.root.region.x2)
-//				p.x = tree.root.region.x1;
-//			if (p.y < tree.root.region.y1)
-//				p.y = tree.root.region.y2;
-//			if (p.y > tree.root.region.y2)
-//				p.y = tree.root.region.y1;
-//			
-//			
-//		}
-//		
-//		for(Entity2D e : tree.points){
-//			e.flip();
-//		}
-//	}
+	public void loadTextures() {
+		spriteTexture = new Texture(Gdx.files.internal("fish1.png"));
+		spriteRegion = new TextureRegion(spriteTexture);
+	}
 
 	public void rebuildTree() {
 		tree.rebuild();
 	}
 
-	private void renderCell(GLCommon gl, Camera camera, Rectangle2D drawRegion,
-			QuadTreeNode node) {
+	private void renderGridInCell(GLCommon gl, Camera camera, Rectangle2D drawRegion,QuadTreeNode<T> node) {
 		if (drawRegion.intersects(node.region)) {
-
 			if (node.isLeaf) {
-
 				if(drawQuadTree){
 					gridRender.setColor(Color.RED);
 					gridRender.begin(ShapeType.Rectangle);
@@ -103,28 +68,44 @@ public class QuadTreeViewer {
 							node.region.y2 - node.region.y1);
 					gridRender.end();
 				}
-				
-				if(drawEntities||drawBorders){
-					entityRender.setColor(Color.BLUE);
-					for (BaseGameEntity p : node.points) {
-						if(drawEntities){
-							entityRender.begin(ShapeType.FilledCircle);
-							entityRender.filledCircle(p.pos.x, p.pos.y, entitySize);
-							entityRender.end();
+			}else{
+				if(node.NW != null)renderGridInCell(gl, camera, drawRegion, node.NW);
+				if(node.NE != null)renderGridInCell(gl, camera, drawRegion, node.NE);
+				if(node.SW != null)renderGridInCell(gl, camera, drawRegion, node.SW);
+				if(node.SE != null)renderGridInCell(gl, camera, drawRegion, node.SE);
+			}
+
+		}
+
+	}
+	private void renderEntitiesInCell(GLCommon gl, Camera camera, Rectangle2D drawRegion,
+			QuadTreeNode<T> node) {
+		float sizeX = spriteTexture.getWidth() / spriteScale;
+		float sizeY = spriteTexture.getHeight() / spriteScale;
+		if (drawRegion.intersects(node.region)) {
+			if (node.isLeaf) {
+				if(drawEntities){
+					
+					for (BaseGameEntity e : node.points) {
+						Vehicle entity = (Vehicle)e;
+						if(!entity.steering.useRepel){
+							gridRender.setColor(Color.RED);
+							gridRender.begin(ShapeType.FilledCircle);
+							gridRender.filledCircle(entity.pos.x, entity.pos.y, sizeX);
+							gridRender.end();
 						}
-						
-						if(drawBorders){
-							entityRender.begin(ShapeType.Circle);
-							entityRender.circle(p.pos.x, p.pos.y, border);
-							entityRender.end();
-						}
+						spriteBatch.begin();
+						spriteBatch.draw(spriteRegion, entity.pos.x-sizeX/2, entity.pos.y-sizeY/2, sizeX / 2,
+								sizeY / 2, sizeX, sizeY, 1, 1,
+								(float) (180+Math.toDegrees(entity.angle)));
+						spriteBatch.end();
 					}
 				}
 			}else{
-				if(node.NW != null)renderCell(gl, camera, drawRegion, node.NW);
-				if(node.NE != null)renderCell(gl, camera, drawRegion, node.NE);
-				if(node.SW != null)renderCell(gl, camera, drawRegion, node.SW);
-				if(node.SE != null)renderCell(gl, camera, drawRegion, node.SE);
+				if(node.NW != null)renderEntitiesInCell(gl, camera, drawRegion, node.NW);
+				if(node.NE != null)renderEntitiesInCell(gl, camera, drawRegion, node.NE);
+				if(node.SW != null)renderEntitiesInCell(gl, camera, drawRegion, node.SW);
+				if(node.SE != null)renderEntitiesInCell(gl, camera, drawRegion, node.SE);
 			}
 
 		}
@@ -133,10 +114,15 @@ public class QuadTreeViewer {
 	public void render(GLCommon gl, Camera camera, Rectangle2D drawRegion) {
 		
 		gridRender.setProjectionMatrix(camera.combined);
-		entityRender.setProjectionMatrix(camera.combined);
-
-		synchronized (tree) {
-			renderCell(gl, camera, drawRegion, tree.root);
+		spriteBatch.setProjectionMatrix(camera.combined);
+		synchronized (tree) {			
+			if(drawQuadTree){
+				renderGridInCell(gl, camera, drawRegion, tree.getRootNode());
+			}
+			
+			if(drawEntities||drawBorders){
+				renderEntitiesInCell(gl, camera, drawRegion, tree.getRootNode());
+			}
 		}
 
 	}
