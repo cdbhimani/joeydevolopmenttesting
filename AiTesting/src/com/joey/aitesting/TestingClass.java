@@ -3,6 +3,7 @@ package com.joey.aitesting;
 import com.joey.aitesting.game.GameWorld;
 import com.joey.aitesting.game.VehicleControler;
 import com.joey.aitesting.game.entities.Vehicle;
+import com.joey.aitesting.game.shapes.Rectangle2D;
 import com.joey.aitesting.game.shapes.Vector2D;
 
 import java.awt.geom.AffineTransform;
@@ -42,7 +43,7 @@ public class TestingClass extends Game implements ApplicationListener,
 	private Texture leadTexture;
 	private TextureRegion leadRegion;
 
-	GameWorld world = new GameWorld();
+	GameWorld world = new GameWorld(new Rectangle2D());
 	long lastUpdate = System.currentTimeMillis();
 	float diffTime = 0;
 	float nanoScale = 1 / 1000000f;
@@ -206,7 +207,7 @@ public class TestingClass extends Game implements ApplicationListener,
 		updateWorldTime = (end - start) * nanoScale;
 		
 		start = System.nanoTime();
-		world.updateCellSpace();
+		world.updateQuadTree();
 		end = System.nanoTime();
 		updateCellTime = (end - start) * nanoScale;
 		
@@ -222,7 +223,6 @@ public class TestingClass extends Game implements ApplicationListener,
 			leadFish.setProjectionMatrix(cam.combined);
 			shapes.setProjectionMatrix(cam.combined);
 		} catch (Exception e) {
-			System.out.println("HERE");
 		}
 		updateWorld();
 		drawWorld();
@@ -301,8 +301,7 @@ public class TestingClass extends Game implements ApplicationListener,
 
 	@Override
 	public void resize(int width, int height) {
-		System.out.println("HERE");
-		world.setSize(width, height);
+		world.setWorldSize(new Rectangle2D(0,0,width, height));
 		cam = new OrthographicCamera(width, height);
 		cam.translate(width/2, height/2, 0);
 	}

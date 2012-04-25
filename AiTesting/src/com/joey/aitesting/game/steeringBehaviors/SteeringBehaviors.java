@@ -1,23 +1,11 @@
 package com.joey.aitesting.game.steeringBehaviors;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageProducer;
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
 import com.joey.aitesting.game.entities.BaseGameEntity;
 import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.shapes.Vector2D;
+import com.joey.aitesting.game.shapes.Rectangle2D;
 
 public class SteeringBehaviors {
 	public static final float DecelerationTweaker = 0.3f;
@@ -40,59 +28,49 @@ public class SteeringBehaviors {
 		return false;
 	}
 
-	public static void moveToClosest(Vehicle veh, Vector2D pos, Vector2D rst,
-			float sizeX, float sizeY) {
+	public static void moveToClosest(Vector2D p1, Vector2D p2, Vector2D rst,
+			Rectangle2D rec) {
 
 		// Prevents reallocation of memory
-		Vector2D.subtract(veh.pos, pos, rst);
+		Vector2D.subtract(p1, p2, rst);
 
-		if (Math.abs(rst.x) > sizeX / 2) {
+		if (Math.abs(rst.x) > rec.getWidth() / 2) {
 			if (rst.x > 0) {
-				rst.x = pos.x + sizeX;
+				rst.x = p2.x + rec.getWidth();
 			} else {
-				rst.x = pos.x - sizeX;
+				rst.x = p2.x - rec.getWidth();
 			}
 		} else {
-			rst.x = pos.x;
+			rst.x = p2.x;
 		}
 
-		if (Math.abs(rst.y) > sizeY / 2) {
+		if (Math.abs(rst.y) > rec.getHeight() / 2) {
 			if (rst.y > 0) {
-				rst.y = pos.y + sizeY;
+				rst.y = p2.y + rec.getHeight();
 			} else {
-				rst.y = pos.y - sizeY;
+				rst.y = p2.y - rec.getHeight();
 			}
 		} else {
-			rst.y = pos.y;
+			rst.y = p2.y;
 		}
 
 	}
 
 	public Vector2D calculate() {
 		Vector2D rst = new Vector2D();
-		Vector2D tmp = new Vector2D();
 		Vector2D point = new Vector2D();
-		
-		HashSet<Vehicle> enty = new HashSet<Vehicle>();
-		vehicle.world.getCellSpacePartition().getNearEntities(vehicle,30, enty);
 
 		if (useAttract) {
-			moveToClosest(vehicle, attract, point, vehicle.world.getWideX(),
-					vehicle.world.getWideY());
-			seek(point, vehicle, tmp);
+			moveToClosest(vehicle.pos, attract, point,	vehicle.world.worldBounds);
+			seek(point, vehicle, rst);
 		}
-		rst.add(tmp);
 
 		if (useRepel) {
-			
-				moveToClosest(vehicle, repel, point, vehicle.world.getWideX(),
-						vehicle.world.getWideY());
-				flee(point, vehicle, tmp);
-			
-			rst.add(tmp);
+			moveToClosest(vehicle.pos, repel, point, vehicle.world.worldBounds);
+			flee(point, vehicle, rst);
 		}
 
-		if(rst.lengthSq() > vehicle.maxSpeed*vehicle.maxSpeed){
+		if (rst.lengthSq() > vehicle.maxSpeed * vehicle.maxSpeed) {
 			rst.normalise();
 			rst.scale(vehicle.maxSpeed);
 		}

@@ -86,9 +86,10 @@ public abstract class BaseGameEntity {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof BaseGameEntity){
+		if(!(obj instanceof BaseGameEntity)){
 			return false;
 		}
 		return this.id == ((BaseGameEntity)obj).id;
 	}
+
 }

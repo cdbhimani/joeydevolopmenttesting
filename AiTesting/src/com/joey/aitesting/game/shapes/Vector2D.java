@@ -26,7 +26,7 @@ public class Vector2D {
 	}
 
 	public String toString() {
-		return super.toString() + "[" + x + "," + y + "]";
+		return "[" + x + "," + y + "]";
 	}
 
 	public float lengthSq() {
@@ -169,5 +169,20 @@ public class Vector2D {
 
 	public Vector2D clone() {
 		return new Vector2D(x, y);
+	}
+
+	public static void wrapAround(Vector2D p, Rectangle2D r) {
+		if(p.x  < r.x1){
+			p.x = r.x2;
+		}
+		else if(p.x  > r.x2){
+			p.x = r.x1;
+		}
+		
+		if(p.y  <r.y1){
+			p.y = r.y2;
+		}else if(p.y  >r.y2){
+			p.y = r.y1;
+		}
 	}
 }

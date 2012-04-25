@@ -6,7 +6,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.joey.testing.game.graphics.ConsoleLogger;
+import com.joey.aitesting.game.graphics.ConsoleLogger;
 
 public class OrthoCamController implements InputProcessor {
 	final OrthographicCamera camera;
@@ -92,7 +92,6 @@ public class OrthoCamController implements InputProcessor {
 
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
-		System.out.println("HERE");
 		if (pointer == finger_one_pointer) {
 			finger_one_pointer = -1;
 			// Log.e("IsoTiledMap", "Finger one removed");
@@ -102,9 +101,6 @@ public class OrthoCamController implements InputProcessor {
 		}
 		pointers.remove(pointer);
 		last.set(-1, -1, -1);
-		if(pointers.size() == 0){
-			System.out.println("Hello");
-		}
 		return false;
 	}
 
@@ -144,8 +140,6 @@ public class OrthoCamController implements InputProcessor {
 		Vector3 after = new Vector3(x,y,0);
 		camera.unproject(after);
 		
-		System.out.println(before);
-		System.out.println(after);
 		camera.translate(before.x-after.x, before.y-after.y, 0);	
 	}
 	

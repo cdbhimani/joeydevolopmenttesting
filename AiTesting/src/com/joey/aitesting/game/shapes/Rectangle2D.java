@@ -20,13 +20,13 @@ public class Rectangle2D {
 
 	public void ensureOrder(){
 		float tmp;
-		if(x1<x2){
+		if(x1>x2){
 			tmp= x1;
 			x2 = x1;
 			x1 = x2;
 		}
 		
-		if(y1<y2){
+		if(y1>y2){
 			tmp = y1;
 			y2 = y1;
 			y1 = y2;
@@ -66,9 +66,12 @@ public class Rectangle2D {
 	}
 	
 	public String toString(){
-		return super.toString()+"["+x1+","+y1+"]"+"["+x2+","+y2+"]";
+		return "["+x1+","+y1+"]-["+x2+","+y2+"]";
 	}
 
+	public Vector2D getRandomPos(){
+		return new Vector2D((float)(x1+Math.random()*(getWidth())), (float)(y1+Math.random()*(getHeight())));
+	}
 	public float getWidth() {
 		// TODO Auto-generated method stub
 		return x2-x1;
