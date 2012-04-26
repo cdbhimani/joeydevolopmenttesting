@@ -14,8 +14,9 @@ public class QuadTreeNode<T extends BaseGameEntity>{
 	public QuadTreeNode SW;
 	public QuadTreeNode NE;
 	public QuadTreeNode SE;
-
-	public QuadTreeNode(Rectangle2D Location, int divisionLimit) {
+	QuadTree owner;
+	public QuadTreeNode(QuadTree owner,Rectangle2D Location, int divisionLimit) {
+		this.owner = owner;
 		this.region = Location;
 		this.divisionLimit = divisionLimit;
 		this.isLeaf = true;
@@ -50,10 +51,10 @@ public class QuadTreeNode<T extends BaseGameEntity>{
 		float midY = region.y1+(region.y2-region.y1)/2;
 
 		//Create Regions
-		if(NW == null)NW = new QuadTreeNode(new Rectangle2D(region.x1,region.y1, midX, midY), divisionLimit);
-		if(NE == null)NE = new QuadTreeNode(new Rectangle2D(midX,region.y1, region.x2, midY), divisionLimit);
-		if(SW == null)SW = new QuadTreeNode(new Rectangle2D(region.x1, midY,midX,region.y2), divisionLimit);
-		if(SE == null)SE = new QuadTreeNode(new Rectangle2D(midX, midY,region.x2,region.y2), divisionLimit);
+		if(NW == null)NW = new QuadTreeNode(owner, new Rectangle2D(region.x1,region.y1, midX, midY), divisionLimit);
+		if(NE == null)NE = new QuadTreeNode(owner, new Rectangle2D(midX,region.y1, region.x2, midY), divisionLimit);
+		if(SW == null)SW = new QuadTreeNode(owner, new Rectangle2D(region.x1, midY,midX,region.y2), divisionLimit);
+		if(SE == null)SE = new QuadTreeNode(owner, new Rectangle2D(midX, midY,region.x2,region.y2), divisionLimit);
 
 		//Add Points to region
 		for(T p : points){
@@ -64,19 +65,22 @@ public class QuadTreeNode<T extends BaseGameEntity>{
 	}
 
 	public boolean reachedMaxSubdivision(){
-		return !(Math.abs(region.x1-region.x2) > 1 || Math.abs(region.y1-region.y2) >1);
+		return !(Math.abs(region.x1-region.x2) > owner.minDivision || Math.abs(region.y1-region.y2) >owner.minDivision);
 	}
 	public boolean contains(BaseGameEntity p) {
 		return region.contains(p.pos);
 	}
 
 	public void reset() {
+		if(!isLeaf){
+			if(NW != null)NW.reset();
+			if(NE != null)NE.reset();
+			if(SW != null)SW.reset();
+			if(SE != null)SE.reset();	
+		}
 		isLeaf = true;
 		points.clear();
-		if(NW != null)NW.reset();
-		if(NE != null)NE.reset();
-		if(SW != null)SW.reset();
-		if(SE != null)SE.reset();		
+				
 	}
 
 	public void getAllPoints(ArrayList<T> rst){

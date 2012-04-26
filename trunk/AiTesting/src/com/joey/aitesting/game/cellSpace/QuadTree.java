@@ -22,6 +22,8 @@ public class QuadTree<T extends BaseGameEntity> {
 	ArrayList<T> entities = new ArrayList<T>();
 	Rectangle2D worldBounds;
 
+	float minDivision = 0.01f;
+	
 	public QuadTree(Rectangle2D r, int maxCount) {
 		setWorldSize(r, maxCount);
 	}
@@ -32,7 +34,7 @@ public class QuadTree<T extends BaseGameEntity> {
 			root = null;
 		}
 		this.worldBounds = r;
-		root = new QuadTreeNode<T>(r, maxCount);
+		root = new QuadTreeNode<T>(this, r, maxCount);
 	}
 
 	public void addEntity(T p) {
