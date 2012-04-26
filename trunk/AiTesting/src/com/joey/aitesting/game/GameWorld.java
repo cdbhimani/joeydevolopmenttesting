@@ -85,14 +85,16 @@ public class GameWorld {
 					Vehicle v = vehicles.get(0);
 					if (v != entity) {
 						entity.steering.fleePos =v.pos;
-						entity.steering.useFlee= true;
+						entity.steering.useFleePanic= true;
+						entity.steering.fleePanicDistance = 100;
 					}
 				}
 //				
-//				entity.steering.arrivePos = new Vector2D(0,0);
-//				entity.steering.useArrive = true; 
-//				entity.steering.useFlee = false;
-//				entity.steering.useSeek = false;
+//				entity.steering.fleePos = new Vector2D(0,0);
+//				entity.steering.useFleePanic = true;
+//				entity.steering.fleePanicDistance = 100;
+//				
+				
 				addVehicle(entity);
 			}
 
