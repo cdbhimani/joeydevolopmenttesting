@@ -1,5 +1,7 @@
 package com.joey.aitesting;
 
+import java.lang.management.MemoryUsage;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -67,15 +69,22 @@ public class MyGdxGame implements ApplicationListener {
 	
 	TextField toAddEntityCount;
 
-	long lastUpdate = -1;
+	long lastWorldUpdate = -1;
+	long lastRenderUpdate = -1;
+	
+	float renderTime = 0;
+	float updateWorldTime;
+	float drawWorldtime;
+	
 	@Override
 	public void create() {
 		stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
 				false);
 		batch = new SpriteBatch();
 
-		float sizeX = Gdx.graphics.getWidth()/2;
-		float sizeY = Gdx.graphics.getHeight()/2;
+		float scale = 1;
+		float sizeX = scale*Gdx.graphics.getWidth()/2;
+		float sizeY = scale*Gdx.graphics.getHeight()/2;
 		Rectangle2D bounds = new Rectangle2D(-sizeX, -sizeY, sizeX, sizeY);
 		world = new GameWorld(bounds);
 
@@ -84,6 +93,7 @@ public class MyGdxGame implements ApplicationListener {
 		quadViewer = new QuadTreeViewer(world.quadTree);
 
 		console = new ConsoleLogger();
+		console.setMaxConsoleLines(4);
 		consoleViewer = new ConsoleViewer(console);
 		consoleCamera = new OrthographicCamera();
 
@@ -212,23 +222,47 @@ public class MyGdxGame implements ApplicationListener {
 
 	@Override
 	public void render() {
+		long start;
+		
+		//Calculate Render Time
+		if(lastRenderUpdate < 0){
+			lastRenderUpdate = System.currentTimeMillis();
+		}
+		renderTime = System.currentTimeMillis()-lastRenderUpdate;
+		
+		
+		//Calculate Update world Time
+		start = System.currentTimeMillis();
 		updateWorld();
-		updateFields();
+		updateWorldTime = System.currentTimeMillis()-start;
+		
+		//Calculate Draw World Time
+		start = System.currentTimeMillis();
 		drawWorld();
+		drawWorldtime = System.currentTimeMillis()-start;
+		
+		//Update Fields
+		updateFields();
+		
+		lastRenderUpdate = System.currentTimeMillis();
 	}
 
 	public void updateWorld() {
-		if(lastUpdate < 0){
-			lastUpdate = System.currentTimeMillis();
+		if(lastWorldUpdate < 0){
+			lastWorldUpdate = System.currentTimeMillis();
 		}
-		float diff = (System.currentTimeMillis()-lastUpdate)/1000f;
-		lastUpdate = System.currentTimeMillis();
+		float diff = (System.currentTimeMillis()-lastWorldUpdate)/1000f;
+		lastWorldUpdate = System.currentTimeMillis();
 		world.update(diff);
 		
 	}
 
 	public void updateFields() {
 		worldEntityCount.setText("" +world.getVehicles().size());
+		
+		console.printf("Render World  : %3.3f\n", renderTime);
+		console.printf("Update World  : %3.3f\n", updateWorldTime);
+		console.printf("  Draw World  : %3.3f\n", drawWorldtime);
 	}
 
 	public void drawWorld() {

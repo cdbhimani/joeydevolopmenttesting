@@ -33,7 +33,7 @@ public class QuadTreeViewer<T extends BaseGameEntity> {
 	float spriteScale = 6;
 	
 	long lastUpdate = System.currentTimeMillis();
-	float entitySize = 5;
+	float entitySize = 40;
 
 	public boolean drawBorders = true;
 	public boolean drawEntities = true;
@@ -88,9 +88,9 @@ public class QuadTreeViewer<T extends BaseGameEntity> {
 					
 					for (BaseGameEntity e : node.points) {
 						Vehicle entity = (Vehicle)e;
-						if(entity.steering.useArrive){
-							Vector2D rst = new Vector2D();
-							SteeringBehaviors.moveToClosest(entity.pos, entity.steering.arrivePos, rst, entity.world.worldBounds);
+						if(!entity.steering.useFlee){
+							Vector2D rst = new Vector2D(entity.pos);
+							
 							gridRender.setColor(Color.RED);
 							gridRender.begin(ShapeType.FilledCircle);
 							gridRender.filledCircle(rst.x, rst.y, entitySize);
