@@ -12,6 +12,7 @@ public class SteeringBehaviors {
 	Vehicle vehicle;
 
 	public boolean useFlee = false;
+	public boolean useFleePanic = false;
 	public boolean useSeek = false;
 	public boolean useArrive = false;
 	
@@ -19,6 +20,7 @@ public class SteeringBehaviors {
 	public Vector2D arrivePos;
 	public Vector2D fleePos;
 	
+	public float fleePanicDistance;
 
 	public SteeringBehaviors(Vehicle vehicle) {
 		this.vehicle = vehicle;
@@ -70,6 +72,11 @@ public class SteeringBehaviors {
 			flee(point, vehicle, rst);
 		}
 
+		if (useFleePanic) {
+			moveToClosest(vehicle.pos, fleePos, point, vehicle.world.worldBounds);
+			flee(point, vehicle,fleePanicDistance, rst);
+		}
+		
 		if (useArrive) {
 			moveToClosest(vehicle.pos, arrivePos, point, vehicle.world.worldBounds);
 			arrive(point, vehicle,1, rst);
@@ -92,6 +99,19 @@ public class SteeringBehaviors {
 
 	public static void flee(Vector2D targetPos, Vehicle veh, Vector2D rst) {
 		Vector2D.subtract(veh.pos, targetPos, rst);
+		rst.normalise();
+		rst.scale(veh.maxSpeed);
+
+		rst.subtract(veh.vel);
+	}
+	
+	public static void flee(Vector2D targetPos, Vehicle veh, float fleeDistance, Vector2D rst) {
+		Vector2D.subtract(veh.pos, targetPos, rst);
+		if(rst.lengthSq() > fleeDistance*fleeDistance){
+			rst.x = 0;
+			rst.y = 0;
+			return; 
+		}
 		rst.normalise();
 		rst.scale(veh.maxSpeed);
 
