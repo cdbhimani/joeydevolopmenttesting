@@ -57,7 +57,7 @@ public class Vehicle extends MovingEntity {
 		Vector2D acceleration = new Vector2D();
 		// calculate the combined force from each steering behavior in the
 		// vehicle's list
-		steeringForce = steering.calculate();
+		steeringForce = steering.calculate(time_elapsed);
 
 		// Acceleration = Force/Mass
 		acceleration.x = steeringForce.x / mass;

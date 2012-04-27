@@ -63,11 +63,14 @@ public class QuadTree<T extends BaseGameEntity> {
 		return root;
 	}
 
-	public ArrayList<T> getPointsInRegion(Rectangle2D region) {
-		ArrayList<T> ents = new ArrayList<T>();
+	public void getPointsInRegion(Rectangle2D region, ArrayList<T> ents){
 		synchronized (entities) {
 			root.getPointsInRegion(region, ents);
 		}
+	}
+	public ArrayList<T> getPointsInRegion(Rectangle2D region) {
+		ArrayList<T> ents = new ArrayList<T>();
+		getPointsInRegion(region, ents);
 		return ents;
 	}
 

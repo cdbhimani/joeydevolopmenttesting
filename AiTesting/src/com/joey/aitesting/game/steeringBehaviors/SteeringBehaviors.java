@@ -15,13 +15,31 @@ public class SteeringBehaviors {
 	public boolean useFleePanic = false;
 	public boolean useSeek = false;
 	public boolean useArrive = false;
+	public boolean usePersuit = false;
+	public boolean useEvade = false;
+	public boolean useWander = false;
+	public boolean useCohesion = false;
+	public boolean useSeperation = false;
+	public boolean useAlignment = false;
+	
+	
 	
 	public Vector2D seekPos;
 	public Vector2D arrivePos;
 	public Vector2D fleePos;
+	public Vehicle persuitVehicle;
+	public Vehicle evadeVehicle;
 	
 	public float fleePanicDistance;
-
+	public float wanderRadius;
+	public float wanderDistance;
+	public float wanderJitter;
+	public Vector2D wanderVector;
+	
+	public float neighborRadius = 100;
+	
+	ArrayList<Vehicle> neighbors = new ArrayList<Vehicle>();
+	
 	public SteeringBehaviors(Vehicle vehicle) {
 		this.vehicle = vehicle;
 	}
@@ -58,37 +76,91 @@ public class SteeringBehaviors {
 
 	}
 
-	public Vector2D calculate() {
-		Vector2D rst = new Vector2D();
+	public void calculateNeighbobors(ArrayList<Vehicle> neighbors, Rectangle2D reg){
+		vehicle.world.quadTree.getPointsInRegion(reg, neighbors);
+	}
+	
+	public Vector2D calculate(float updateTime) {
+		Vector2D 
+		Vector2D hold = new Vector2D();
 		Vector2D point = new Vector2D();
 
+		if(useCohesion||useAlignment||useSeperation){
+			neighbors.clear();
+			Rectangle2D reg = new Rectangle2D(
+					vehicle.pos.x-neighborRadius, vehicle.pos.y-neighborRadius, 
+					vehicle.pos.x+neighborRadius, vehicle.pos.y+neighborRadius);
+			calculateNeighbobors(neighbors, reg);
+			//Remove self
+			neighbors.remove(vehicle);
+		}
 		if (useSeek) {
-			moveToClosest(vehicle.pos, seekPos, point,vehicle.world.worldBounds);
-			seek(point, vehicle, rst);
+			moveToClosest(vehicle.pos, seekPos, point,
+					vehicle.world.worldBounds);
+			seek(point, vehicle, hold);
 		}
 
 		if (useFlee) {
-			moveToClosest(vehicle.pos, fleePos, point, vehicle.world.worldBounds);
-			flee(point, vehicle, rst);
+			moveToClosest(vehicle.pos, fleePos, point,
+					vehicle.world.worldBounds);
+			flee(point, vehicle, hold);
 		}
 
 		if (useFleePanic) {
-			moveToClosest(vehicle.pos, fleePos, point, vehicle.world.worldBounds);
-			flee(point, vehicle,fleePanicDistance, rst);
+			moveToClosest(vehicle.pos, fleePos, point,
+					vehicle.world.worldBounds);
+			flee(point, vehicle, fleePanicDistance, hold);
 		}
-		
+
 		if (useArrive) {
-			moveToClosest(vehicle.pos, arrivePos, point, vehicle.world.worldBounds);
-			arrive(point, vehicle,1, rst);
+			moveToClosest(vehicle.pos, arrivePos, point,
+					vehicle.world.worldBounds);
+			arrive(point, vehicle, 1, hold);
+		}
+
+		if (usePersuit) {
+			persuit(vehicle, persuitVehicle, hold);
 		}
 		
-		if (rst.lengthSq() > vehicle.maxSpeed * vehicle.maxSpeed) {
-			rst.normalise();
-			rst.scale(vehicle.maxSpeed);
+		if (useEvade) {
+			evade(vehicle, evadeVehicle, hold);
 		}
-		return rst;
+		
+		if(useWander){
+			if(wanderVector == null){
+				wanderVector = new Vector2D(vehicle.vel);
+				wanderVector.normalise();
+			}
+			wander(vehicle,updateTime, wanderJitter, wanderRadius, wanderDistance, wanderVector, hold);
+		}
+
+		if(useSeperation){
+			seperation(vehicle, neighbors, hold);
+			System.out.println(hold);
+		}
+		if (hold.lengthSq() > vehicle.maxSpeed * vehicle.maxSpeed) {
+			hold.normalise();
+			hold.scale(vehicle.maxSpeed);
+		}
+		return hold;
 	}
 
+	public static void seperation(Vehicle vehicle, ArrayList<Vehicle> neighbors, Vector2D rst){
+		Vector2D hold = new Vector2D();
+		float length = 0;
+		
+		rst.x = 0;
+		rst.y = 0;
+		System.out.println(neighbors.size());
+		for(Vehicle other : neighbors){
+			Vector2D.subtract(vehicle.pos,other.pos, hold);
+			length = hold.length();
+			hold.normalise();
+			
+			rst.x+= hold.x/length;
+			rst.y+= hold.y/length;
+		}
+	}
 	public static void seek(Vector2D targetPos, Vehicle veh, Vector2D rst) {
 		Vector2D.subtract(targetPos, veh.pos, rst);
 		rst.normalise();
@@ -104,13 +176,14 @@ public class SteeringBehaviors {
 
 		rst.subtract(veh.vel);
 	}
-	
-	public static void flee(Vector2D targetPos, Vehicle veh, float fleeDistance, Vector2D rst) {
+
+	public static void flee(Vector2D targetPos, Vehicle veh,
+			float fleeDistance, Vector2D rst) {
 		Vector2D.subtract(veh.pos, targetPos, rst);
-		if(rst.lengthSq() > fleeDistance*fleeDistance){
+		if (rst.lengthSq() > fleeDistance * fleeDistance) {
 			rst.x = 0;
 			rst.y = 0;
-			return; 
+			return;
 		}
 		rst.normalise();
 		rst.scale(veh.maxSpeed);
@@ -118,33 +191,83 @@ public class SteeringBehaviors {
 		rst.subtract(veh.vel);
 	}
 
-	public static void arrive(Vector2D TargetPos, Vehicle veh,
-			int deceleration, Vector2D rst) {
+	public static void arrive(Vector2D TargetPos, Vehicle veh,	int deceleration, Vector2D rst) {
 		Vector2D.subtract(TargetPos, veh.pos, rst);
-
-		// calculate the distance to the target position
 		float dist = rst.length();
 		if (dist > 0) {
-			// because Deceleration is enumerated as an int, this value is
-			// required
-			// to provide fine tweaking of the deceleration.
-
-			// calculate the speed required to reach the target given the
-			// desired
-			// deceleration
 			float speed = dist / (deceleration * DecelerationTweaker);
-			// make sure the velocity does not exceed the max
 			speed = Math.min(speed, veh.getMaxSpeed());
-			// from here proceed just like Seek except we don't need to
-			// normalize
-			// the ToTarget vector because we have already gone to the trouble
-			// of calculating its length: dist.
 			rst.scale(speed / dist);
-			// return (DesiredVelocity - m_pVehicle.Velocity());
 			rst.subtract(veh.vel);
 		} else {
 			rst.setLocation(0, 0);
 		}
+	}
+
+	public static void persuit(Vehicle vehicle, Vehicle persuit, Vector2D rst) {
+		Vector2D.subtract(persuit.pos, vehicle.pos, rst);
+		float RelativeHeading = vehicle.velHead.dot(persuit.velHead);
+		if ((rst.dot(vehicle.velHead) > 0) && (RelativeHeading < -0.95)) { 
+			Vector2D point = new Vector2D();
+			moveToClosest(vehicle.pos, persuit.pos, point,
+					vehicle.world.worldBounds);
+			seek(point, vehicle, rst);
+			return;
+		}
+		float LookAheadTime = rst.length()
+				/ (vehicle.maxSpeed + persuit.vel.length());
+		Vector2D vec = new Vector2D(persuit.vel);
+		vec.scale(LookAheadTime);
+		vec.add(persuit.pos);
+
+		Vector2D point = new Vector2D();
+		moveToClosest(vehicle.pos, vec, point, vehicle.world.worldBounds);
+		seek(point, vehicle, rst);
+	}
+
+	public static void evade(Vehicle vehicle, Vehicle evade, Vector2D rst) {
+		Vector2D holder = new Vector2D();
+		Vector2D.subtract(evade.pos ,vehicle.pos, rst);
+		float LookAheadTime = holder.length()/(vehicle.maxSpeed + evade.vel.length());
+		
+		holder.setLocation(evade.vel);
+		holder.scale(LookAheadTime);
+		holder.add(evade.pos);
+		
+		Vector2D point = new Vector2D();
+		moveToClosest(vehicle.pos, holder, point, vehicle.world.worldBounds);
+		flee(point, vehicle, rst);
+	}
+	public static float turnaroundTime(Vehicle pAgent, Vector2D TargetPos, float coefficient) {
+		Vector2D toTarget = new Vector2D(TargetPos);
+		toTarget.subtract(pAgent.pos);
+		float dot = pAgent.velHead.dot(toTarget);
+		return (dot - 1.0f) * -coefficient;
+	}
+	
+	public static void wander(Vehicle vehicle,float updateTime, float wanderJitter, 
+			float wanderRadius,float wanderDistance, Vector2D wanderVector, 
+			Vector2D rst){
+		//this behavior is dependent on the update rate, so this line must
+		  //be included when using time independent framerate.
+		  double JitterThisTimeSlice = wanderJitter;
+
+		  //first, add a small random vector to the target's position
+		  wanderVector.x += (1-2*Math.random()) * JitterThisTimeSlice;
+		  wanderVector.y += (1-2*Math.random()) * JitterThisTimeSlice;
+
+		  //reproject this new vec2tor back on to a unit circle
+		  wanderVector.normalise();
+		  wanderVector.scale(wanderRadius);
+
+		  //move the target into a position WanderDist in front of the agent
+		  Vector2D wanderPos = new Vector2D(vehicle.vel);
+		  wanderPos.normalise();
+		  wanderPos.scale(wanderDistance);
+		  wanderPos.add(vehicle.pos);
+		  wanderPos.add(wanderVector);
+		  
+		  seek(wanderPos, vehicle, rst);
 	}
 
 	public Vehicle getVehicle() {

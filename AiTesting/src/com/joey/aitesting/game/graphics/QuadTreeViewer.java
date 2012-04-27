@@ -96,7 +96,42 @@ public class QuadTreeViewer<T extends BaseGameEntity> {
 //							gridRender.filledCircle(rst.x, rst.y, entitySize);
 //							gridRender.end();
 //						}
+
 						
+						if(entity.steering.useSeperation){
+							Vector2D rst = new Vector2D(entity.pos);
+							
+							gridRender.setColor(Color.RED);
+							gridRender.begin(ShapeType.Circle);
+							gridRender.circle(rst.x, rst.y, entity.steering.neighborRadius);
+							gridRender.end();
+						}
+						
+						
+//						if (entity.steering.useWander) {
+//							Vector2D rst = new Vector2D(entity.pos);
+//
+//							//Draw Render Circle
+//							Vector2D circle = new Vector2D(entity.vel);
+//							circle.normalise();
+//							circle.scale(entity.steering.wanderDistance);
+//							circle.add(entity.pos);
+//							
+//							gridRender.setColor(Color.BLUE);
+//							gridRender.begin(ShapeType.Circle);
+//							gridRender.circle(circle.x, circle.y, entity.steering.wanderRadius);
+//							gridRender.end();
+//							
+//							gridRender.setColor(Color.GREEN);
+//							gridRender.begin(ShapeType.Line);
+//							gridRender.line(circle.x, circle.y, circle.x+entity.steering.wanderVector.x, circle.y+entity.steering.wanderVector.y);
+//							gridRender.end();
+//							
+//							gridRender.setColor(Color.RED);
+//							gridRender.begin(ShapeType.Circle);
+//							gridRender.circle(circle.x+entity.steering.wanderVector.x, circle.y+entity.steering.wanderVector.y, entity.steering.wanderJitter);
+//							gridRender.end();
+//						}
 						spriteBatch.begin();
 						spriteBatch.draw(spriteRegion, entity.pos.x-sizeX/2, entity.pos.y-sizeY/2, sizeX / 2,
 								sizeY / 2, sizeX, sizeY, 1, 1,
