@@ -82,7 +82,7 @@ public class MyGdxGame implements ApplicationListener {
 				false);
 		batch = new SpriteBatch();
 
-		float scale = 1;
+		float scale = 3;
 		float sizeX = scale*Gdx.graphics.getWidth()/2;
 		float sizeY = scale*Gdx.graphics.getHeight()/2;
 		Rectangle2D bounds = new Rectangle2D(-sizeX, -sizeY, sizeX, sizeY);
@@ -261,7 +261,7 @@ public class MyGdxGame implements ApplicationListener {
 		worldEntityCount.setText("" +world.getVehicles().size());
 		
 		console.printf("Render World  : %3.3f\n", renderTime);
-		console.printf("Update World  : %3.3f\n", updateWorldTime);
+		console.printf("Update Worl8d  : %3.3f\n", updateWorldTime);
 		console.printf("  Draw World  : %3.3f\n", drawWorldtime);
 	}
 
