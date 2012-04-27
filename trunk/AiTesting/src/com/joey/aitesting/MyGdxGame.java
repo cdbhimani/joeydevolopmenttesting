@@ -48,8 +48,8 @@ import com.joey.aitesting.game.shapes.Rectangle2D;
 import com.me.mygdxgame.Gestures.OrthoCamController;
 
 public class MyGdxGame implements ApplicationListener {
-	float MAX_VEL = 200;
-	float MAX_FORCE = 100;
+	float MAX_VEL = 400;
+	float MAX_FORCE = 500;
 
 	Skin skin;
 	Stage stage;
@@ -82,7 +82,7 @@ public class MyGdxGame implements ApplicationListener {
 				false);
 		batch = new SpriteBatch();
 
-		float scale = 3;
+		float scale = 5;
 		float sizeX = scale*Gdx.graphics.getWidth()/2;
 		float sizeY = scale*Gdx.graphics.getHeight()/2;
 		Rectangle2D bounds = new Rectangle2D(-sizeX, -sizeY, sizeX, sizeY);
