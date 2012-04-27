@@ -76,12 +76,54 @@ public class SteeringBehaviors {
 
 	}
 
-	public void calculateNeighbobors(ArrayList<Vehicle> neighbors, Rectangle2D reg){
-		vehicle.world.quadTree.getPointsInRegion(reg, neighbors);
+	public static void calculateNeighbobors(Vehicle vehicle, ArrayList<Vehicle> neighbors, Rectangle2D reg){
+		
+		if(vehicle.world.worldBounds.contains(reg)){
+			vehicle.world.quadTree.getPointsInRegion(reg, neighbors);
+		}else{
+			Rectangle2D world = vehicle.world.worldBounds;
+			boolean x1 = world.x1 < reg.x1 && world.x2 > reg.x1;
+			boolean x2 = world.x1 < reg.x2 && world.x2 > reg.x2;
+			boolean y1 = world.y1 < reg.y1 && world.y2 > reg.y1;
+			boolean y2 = world.y1 < reg.y2 && world.y2 > reg.y2;
+			
+			int count = 0;
+			Rectangle2D tst[] = new Rectangle2D[4];
+			
+			if(x1&&x2){
+				if(y1&&y2){
+					
+				}
+				else{
+					tst[0] = new Rectangle2D();
+					tst[1] = new Rectangle2D();
+				}
+			}else{
+				if(y1&&y2){
+					tst[0] = new Rectangle2D();
+					tst[1] = new Rectangle2D();
+				}
+				else{
+					tst[0] = new Rectangle2D();
+					tst[1] = new Rectangle2D();
+					tst[2] = new Rectangle2D();
+					tst[3] = new Rectangle2D();
+				}
+			}
+			
+			
+			
+			
+			for(int i = 0; i < count; i++){
+				vehicle.world.quadTree.getPointsInRegion(tst[i], neighbors);
+			}
+		}
 	}
 	
 	public Vector2D calculate(float updateTime) {
-		Vector2D 
+		Vector2D rst = new Vector2D();
+		int count = 0;
+		
 		Vector2D hold = new Vector2D();
 		Vector2D point = new Vector2D();
 
@@ -94,36 +136,55 @@ public class SteeringBehaviors {
 			//Remove self
 			neighbors.remove(vehicle);
 		}
+		
 		if (useSeek) {
 			moveToClosest(vehicle.pos, seekPos, point,
 					vehicle.world.worldBounds);
 			seek(point, vehicle, hold);
+			
+			count++;
+			rst.add(hold);
 		}
 
 		if (useFlee) {
 			moveToClosest(vehicle.pos, fleePos, point,
 					vehicle.world.worldBounds);
 			flee(point, vehicle, hold);
+			
+			count++;
+			rst.add(hold);
 		}
 
 		if (useFleePanic) {
 			moveToClosest(vehicle.pos, fleePos, point,
 					vehicle.world.worldBounds);
 			flee(point, vehicle, fleePanicDistance, hold);
+			
+			count++;
+			rst.add(hold);
 		}
 
 		if (useArrive) {
 			moveToClosest(vehicle.pos, arrivePos, point,
 					vehicle.world.worldBounds);
 			arrive(point, vehicle, 1, hold);
+			
+			count++;
+			rst.add(hold);
 		}
 
 		if (usePersuit) {
 			persuit(vehicle, persuitVehicle, hold);
+			
+			count++;
+			rst.add(hold);
 		}
 		
 		if (useEvade) {
 			evade(vehicle, evadeVehicle, hold);
+			
+			count++;
+			rst.add(hold);
 		}
 		
 		if(useWander){
@@ -132,33 +193,87 @@ public class SteeringBehaviors {
 				wanderVector.normalise();
 			}
 			wander(vehicle,updateTime, wanderJitter, wanderRadius, wanderDistance, wanderVector, hold);
+			
+			count++;
+			rst.add(hold);
 		}
 
 		if(useSeperation){
 			seperation(vehicle, neighbors, hold);
-			System.out.println(hold);
+			count++;
+			rst.add(hold);
 		}
-		if (hold.lengthSq() > vehicle.maxSpeed * vehicle.maxSpeed) {
-			hold.normalise();
-			hold.scale(vehicle.maxSpeed);
+		if(useAlignment){
+			alignment(vehicle, neighbors, hold);
+			count++;
+			rst.add(hold);
 		}
-		return hold;
+		if(useCohesion){
+			cohesion(vehicle, neighbors, hold);
+			count++;
+			rst.add(hold);
+		}
+		
+		if(count > 0){
+			rst.scale(1f/count);
+		}
+		if (rst.lengthSq() > vehicle.maxSpeed * vehicle.maxSpeed) {
+			rst.normalise();
+			rst.scale(vehicle.maxSpeed);
+		}
+		return rst;
 	}
 
+	public static void alignment(Vehicle vehicle, ArrayList<Vehicle> neighbors, Vector2D rst){
+		float count = 0;
+		
+		rst.x = 0;
+		rst.y = 0;
+		
+		for(Vehicle other : neighbors){
+			rst.add(other.vel);
+			count++;
+		}
+		if(count >0){
+			rst.scale(1/count);
+		}
+		rst.subtract(vehicle.velHead);
+	}
+	
 	public static void seperation(Vehicle vehicle, ArrayList<Vehicle> neighbors, Vector2D rst){
 		Vector2D hold = new Vector2D();
 		float length = 0;
 		
 		rst.x = 0;
 		rst.y = 0;
-		System.out.println(neighbors.size());
+		
 		for(Vehicle other : neighbors){
 			Vector2D.subtract(vehicle.pos,other.pos, hold);
 			length = hold.length();
 			hold.normalise();
 			
+			if(length > 0){
+				length = 0.01f;
+			}
 			rst.x+= hold.x/length;
 			rst.y+= hold.y/length;
+		}
+	}
+	public static void cohesion(Vehicle vehicle, ArrayList<Vehicle> neighbors, Vector2D rst){
+		//first find the center of mass of all the agents
+		Vector2D hold = new Vector2D();
+		int NeighborCount = 0;
+		//iterate through the neighbors and sum up all the position vectors
+		for(Vehicle other : neighbors){
+			hold.add(other.pos);
+			NeighborCount++;
+		}
+		
+		if (NeighborCount > 0)
+		{
+			//the center of mass is the average of the sum of positions
+			hold.scale(1f/NeighborCount);			
+			seek(hold, vehicle, rst);
 		}
 	}
 	public static void seek(Vector2D targetPos, Vehicle veh, Vector2D rst) {

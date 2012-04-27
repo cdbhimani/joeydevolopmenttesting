@@ -84,9 +84,11 @@ public class GameWorld {
 				if (vehicles.size() > 0) {
 					Vehicle v = vehicles.get(0);
 					if (v != entity) {
-//						entity.steering.evadeVehicle =v;
-//						entity.steering.useEvade= true;
+						entity.steering.evadeVehicle =v;
+						entity.steering.useEvade= true;
 						entity.steering.useSeperation = true;
+						entity.steering.useAlignment = true;
+						entity.steering.useCohesion = true;
 						entity.steering.neighborRadius = 100;
 					}
 				}
@@ -94,7 +96,6 @@ public class GameWorld {
 //				entity.steering.arrivePos = new Vector2D(0,0);
 //				entity.steering.useArrive = true;
 //				
-				
 				entity.steering.useWander = true;
 				entity.steering.wanderDistance = 0;
 				entity.steering.wanderRadius = 90;
