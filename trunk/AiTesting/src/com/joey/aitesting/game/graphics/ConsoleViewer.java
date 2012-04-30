@@ -11,7 +11,7 @@ public class ConsoleViewer {
 	ConsoleLogger console;
 	BitmapFont consoleFont;
 	SpriteBatch consoleBatch;
-	
+	Color textColor = Color.WHITE;
 	public ConsoleViewer(ConsoleLogger log){
 		this.console = log;
 		
@@ -24,10 +24,18 @@ public class ConsoleViewer {
 		consoleBatch.setProjectionMatrix(cam.combined);
 		
 		consoleFont.setScale(1f);
-		consoleFont.setColor(Color.WHITE);
+		consoleFont.setColor(textColor);
 		consoleBatch.begin();
 		consoleFont.drawMultiLine(consoleBatch, console.toString(), 0,Gdx.graphics.getHeight());
 		consoleBatch.end();
+	}
+
+	public Color getTextColor() {
+		return textColor;
+	}
+
+	public void setTextColor(Color textColor) {
+		this.textColor = textColor;
 	}
 	
 }

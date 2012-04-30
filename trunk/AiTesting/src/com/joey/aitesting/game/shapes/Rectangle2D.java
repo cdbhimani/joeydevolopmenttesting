@@ -81,4 +81,25 @@ public class Rectangle2D {
 		// TODO Auto-generated method stub
 		return y2-y1;
 	}
+
+	public void translate(float x, float y){
+		x1 += x;
+		y1 += y;
+		x2 += x;
+		y2 += y;
+	}
+	public void scale(float scale) {
+		x1 *= scale;
+		y1 *= scale;
+		x2 *= scale;
+		y2 *=scale;
+		
+	}
+
+	public void set(Rectangle2D reg) {
+		x1 = reg.x1;
+		x2 = reg.x2;
+		y1 = reg.y1;
+		y2 = reg.y2;
+	}
 }

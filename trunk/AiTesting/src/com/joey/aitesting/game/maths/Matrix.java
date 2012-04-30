@@ -1,9 +1,9 @@
 package com.joey.aitesting.game.maths;
 
 public class Matrix {
-    float e11, e12, e13;
-    float e21, e22, e23;
-    float e31, e32, e33;
+    public float e11, e12, e13;
+    public float e21, e22, e23;
+    public float e31, e32, e33;
 
     Matrix() {
 	e11 = 0.0f;

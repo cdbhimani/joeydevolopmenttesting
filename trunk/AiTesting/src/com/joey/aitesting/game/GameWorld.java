@@ -32,7 +32,7 @@ public class GameWorld {
 		if (paused) {
 			return;
 		}
-		for (int i = 0; i < vehicles.size(); i++) {
+		for (int i = 0; i < vehicles.size(); i++) {	
 			Vehicle v = vehicles.get(i);
 			v.update(updateTime);
 		}
@@ -84,24 +84,25 @@ public class GameWorld {
 				if (vehicles.size() > 0) {
 					Vehicle v = vehicles.get(0);
 					if (v != entity) {
-						entity.steering.evadeVehicle =v;
-						entity.steering.useEvade= true;
+						entity.steering.persuitVehicle = v;
+						entity.steering.usePersuit = true;
+
 						entity.steering.useSeperation = true;
 						entity.steering.useAlignment = true;
 						entity.steering.useCohesion = true;
-						entity.steering.neighborRadius = 100;
+						entity.steering.neighborRadius = 20;
 					}
+				} else {
+					// entity.steering.arrivePos = new Vector2D(0,0);
+					// entity.steering.useArrive = true
+
+					entity.maxSpeed *= 1;
+					entity.steering.useWander = true;
+					entity.steering.wanderDistance = 50;
+					entity.steering.wanderRadius = 90;
+					entity.steering.wanderJitter = 65;
 				}
-				else{
-//				entity.steering.arrivePos = new Vector2D(0,0);
-//				entity.steering.useArrive = true;
-//				
-				entity.steering.useWander = true;
-				entity.steering.wanderDistance = 0;
-				entity.steering.wanderRadius = 90;
-				entity.steering.wanderJitter = 15;
-				}
-				
+
 				addVehicle(entity);
 			}
 

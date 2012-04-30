@@ -4,118 +4,127 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import com.joey.aitesting.game.entities.BaseGameEntity;
 import com.joey.aitesting.game.entities.Vehicle;
+import com.joey.aitesting.game.maths.Transformations;
 import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.shapes.Rectangle2D;
+import com.joey.aitesting.game.shapes.WorldWrapper;
 
 public class SteeringBehaviors {
 	public static final float DecelerationTweaker = .3f;
 	Vehicle vehicle;
 
+	//Fleeing Paramaters
+	public float fleeWeight = 1;
 	public boolean useFlee = false;
 	public boolean useFleePanic = false;
-	public boolean useSeek = false;
-	public boolean useArrive = false;
-	public boolean usePersuit = false;
-	public boolean useEvade = false;
-	public boolean useWander = false;
-	public boolean useCohesion = false;
-	public boolean useSeperation = false;
-	public boolean useAlignment = false;
-	
-	
-	
-	public Vector2D seekPos;
-	public Vector2D arrivePos;
-	public Vector2D fleePos;
-	public Vehicle persuitVehicle;
-	public Vehicle evadeVehicle;
-	
 	public float fleePanicDistance;
+	public Vector2D fleePos;
+	
+	//Seek Parameters
+	public float seekWeight = 1;
+	public boolean useSeek = false;
+	public Vector2D seekPos;
+
+	//Arrive Parameters
+	public float arriveWeight = 1;
+	public boolean useArrive = false;
+	public Vector2D arrivePos;
+	
+	//Persuit Parameters
+	public float persuitWeight = 1;
+	public boolean usePersuit = false;
+	public Vehicle persuitVehicle;
+	
+	//Evade Parameters
+	public float evadeWeight = 1;
+	public boolean useEvade = false;
+	public Vehicle evadeVehicle;
+
+	//Wander Parameters
+	public float wanderWeight = 1;
+	public boolean useWander = false;
 	public float wanderRadius;
 	public float wanderDistance;
 	public float wanderJitter;
 	public Vector2D wanderVector;
 	
-	public float neighborRadius = 100;
+	//Flocking Parameters	
+	public float cohesionWeight = 1;
+	public boolean useCohesion = false;
 	
-	ArrayList<Vehicle> neighbors = new ArrayList<Vehicle>();
+	public float seperationWeight = 1;
+	public boolean useSeperation = false;
+	
+	public float alignmentWeight = 1;
+	public boolean useAlignment = false;
+	
+	public float neighborRadius = 100;
+	HashSet<Vehicle> neighbors = new HashSet<Vehicle>();
+	Rectangle2D regHold[] = null;//For search around edge of world
 	
 	public SteeringBehaviors(Vehicle vehicle) {
 		this.vehicle = vehicle;
 	}
 
 	public boolean isSpacePartitioningOn() {
-		return false;
+		return true;
 	}
 
+	/**
+	 * Determins the closest position of P2 (assuming
+	 * its on a wrapped world given by worldBounds)
+	 * 
+	 *  This is required for following entites
+	 *  of the edge of the world
+	 * @param p1 - The entities position
+	 * @param p2 - The point in the world
+	 * @param rst - The point mapped on the world
+	 * @param worldBounds - The world rectangle
+	 */
 	public static void moveToClosest(Vector2D p1, Vector2D p2, Vector2D rst,
-			Rectangle2D rec) {
-
-		// Prevents reallocation of memory
+			Rectangle2D worldBounds) {
 		Vector2D.subtract(p1, p2, rst);
 
-		if (Math.abs(rst.x) > rec.getWidth() / 2) {
+		if (Math.abs(rst.x) > worldBounds.getWidth() / 2) {
 			if (rst.x > 0) {
-				rst.x = p2.x + rec.getWidth();
+				rst.x = p2.x + worldBounds.getWidth();
 			} else {
-				rst.x = p2.x - rec.getWidth();
+				rst.x = p2.x - worldBounds.getWidth();
 			}
 		} else {
 			rst.x = p2.x;
 		}
 
-		if (Math.abs(rst.y) > rec.getHeight() / 2) {
+		if (Math.abs(rst.y) > worldBounds.getHeight() / 2) {
 			if (rst.y > 0) {
-				rst.y = p2.y + rec.getHeight();
+				rst.y = p2.y + worldBounds.getHeight();
 			} else {
-				rst.y = p2.y - rec.getHeight();
+				rst.y = p2.y - worldBounds.getHeight();
 			}
 		} else {
 			rst.y = p2.y;
 		}
-
 	}
+	
+	
 
-	public static void calculateNeighbobors(Vehicle vehicle, ArrayList<Vehicle> neighbors, Rectangle2D reg){
-		
+	public void calculateNeighbobors(Vehicle vehicle, HashSet<Vehicle> neighbors, Rectangle2D reg){
 		if(vehicle.world.worldBounds.contains(reg)){
 			vehicle.world.quadTree.getPointsInRegion(reg, neighbors);
 		}else{
-			Rectangle2D world = vehicle.world.worldBounds;
-			boolean x1 = world.x1 < reg.x1 && world.x2 > reg.x1;
-			boolean x2 = world.x1 < reg.x2 && world.x2 > reg.x2;
-			boolean y1 = world.y1 < reg.y1 && world.y2 > reg.y1;
-			boolean y2 = world.y1 < reg.y2 && world.y2 > reg.y2;
-			
-			int count = 0;
-			Rectangle2D tst[] = new Rectangle2D[4];
-			
-			if(x1&&x2){
-				if(y1&&y2){
-					
-				}
-				else{
-					tst[0] = new Rectangle2D();
-					tst[1] = new Rectangle2D();
-				}
-			}else{
-				if(y1&&y2){
-					tst[0] = new Rectangle2D();
-					tst[1] = new Rectangle2D();
-				}
-				else{
-					tst[0] = new Rectangle2D();
-					tst[1] = new Rectangle2D();
-					tst[2] = new Rectangle2D();
-					tst[3] = new Rectangle2D();
-				}
+			//If not fully contained in the world search off wrapped world
+			if(regHold == null){
+				regHold = new Rectangle2D[4];
+				regHold[0] = new Rectangle2D(0,0,5,5);
+				regHold[1] = new Rectangle2D(0,0,5,5);
+				regHold[2] = new Rectangle2D(0,0,5,5);
+				regHold[3] = new Rectangle2D(0,0,5,5);
 			}
-			
-			
+			int count = WorldWrapper.getOverlapRegions(reg, vehicle.world.worldBounds, regHold);
 			
 			
 			for(int i = 0; i < count; i++){
-				vehicle.world.quadTree.getPointsInRegion(tst[i], neighbors);
+				vehicle.world.quadTree.getPointsInRegion(regHold[i], neighbors);
 			}
 		}
 	}
@@ -132,59 +141,60 @@ public class SteeringBehaviors {
 			Rectangle2D reg = new Rectangle2D(
 					vehicle.pos.x-neighborRadius, vehicle.pos.y-neighborRadius, 
 					vehicle.pos.x+neighborRadius, vehicle.pos.y+neighborRadius);
-			calculateNeighbobors(neighbors, reg);
+			calculateNeighbobors(vehicle,neighbors, reg);
 			//Remove self
 			neighbors.remove(vehicle);
+			//System.out.println("Finding Neighbours: "+neighbors.size());
 		}
 		
 		if (useSeek) {
 			moveToClosest(vehicle.pos, seekPos, point,
 					vehicle.world.worldBounds);
 			seek(point, vehicle, hold);
-			
 			count++;
 			rst.add(hold);
+			
+			//System.out.println("Seek : "+rst);
 		}
 
 		if (useFlee) {
 			moveToClosest(vehicle.pos, fleePos, point,
 					vehicle.world.worldBounds);
-			flee(point, vehicle, hold);
-			
+			if(useFleePanic){
+				flee(point, vehicle, fleePanicDistance, hold);
+			}else{
+				flee(point, vehicle, hold);
+			}
 			count++;
 			rst.add(hold);
-		}
-
-		if (useFleePanic) {
-			moveToClosest(vehicle.pos, fleePos, point,
-					vehicle.world.worldBounds);
-			flee(point, vehicle, fleePanicDistance, hold);
 			
-			count++;
-			rst.add(hold);
+			//System.out.println("Flee : "+rst);
 		}
 
 		if (useArrive) {
 			moveToClosest(vehicle.pos, arrivePos, point,
 					vehicle.world.worldBounds);
 			arrive(point, vehicle, 1, hold);
-			
 			count++;
 			rst.add(hold);
+			
+			//System.out.println("Arrive : "+rst);
 		}
 
 		if (usePersuit) {
 			persuit(vehicle, persuitVehicle, hold);
-			
 			count++;
 			rst.add(hold);
+			
+			//System.out.println("Persuit : "+rst);
 		}
 		
 		if (useEvade) {
 			evade(vehicle, evadeVehicle, hold);
-			
 			count++;
 			rst.add(hold);
+			
+			//System.out.println("Evade : "+rst);
 		}
 		
 		if(useWander){
@@ -196,35 +206,48 @@ public class SteeringBehaviors {
 			
 			count++;
 			rst.add(hold);
+			
+			//System.out.println("Wander : "+rst);
 		}
 
 		if(useSeperation){
 			seperation(vehicle, neighbors, hold);
 			count++;
 			rst.add(hold);
+			
+			//System.out.println("Seperation : "+rst);
 		}
 		if(useAlignment){
 			alignment(vehicle, neighbors, hold);
 			count++;
 			rst.add(hold);
+			
+			//System.out.println("Alignment : "+rst);
 		}
 		if(useCohesion){
 			cohesion(vehicle, neighbors, hold);
 			count++;
 			rst.add(hold);
+			
+			
+			//System.out.println("Cohesion : "+rst);
 		}
 		
+		
+		//System.out.println("Scale Testing : "+rst);
 		if(count > 0){
 			rst.scale(1f/count);
 		}
-		if (rst.lengthSq() > vehicle.maxSpeed * vehicle.maxSpeed) {
+		if (rst.lengthSq() > vehicle.maxForce * vehicle.maxForce) {
 			rst.normalise();
-			rst.scale(vehicle.maxSpeed);
+			rst.scale(vehicle.maxForce);
 		}
+		
+		//System.out.println("End : "+rst);
 		return rst;
 	}
 
-	public static void alignment(Vehicle vehicle, ArrayList<Vehicle> neighbors, Vector2D rst){
+	public static void alignment(Vehicle vehicle, HashSet<Vehicle> neighbors, Vector2D rst){
 		float count = 0;
 		
 		rst.x = 0;
@@ -240,7 +263,7 @@ public class SteeringBehaviors {
 		rst.subtract(vehicle.velHead);
 	}
 	
-	public static void seperation(Vehicle vehicle, ArrayList<Vehicle> neighbors, Vector2D rst){
+	public static void seperation(Vehicle vehicle, HashSet<Vehicle> neighbors, Vector2D rst){
 		Vector2D hold = new Vector2D();
 		float length = 0;
 		
@@ -259,7 +282,7 @@ public class SteeringBehaviors {
 			rst.y+= hold.y/length;
 		}
 	}
-	public static void cohesion(Vehicle vehicle, ArrayList<Vehicle> neighbors, Vector2D rst){
+	public static void cohesion(Vehicle vehicle, HashSet<Vehicle> neighbors, Vector2D rst){
 		//first find the center of mass of all the agents
 		Vector2D hold = new Vector2D();
 		int NeighborCount = 0;
@@ -363,7 +386,41 @@ public class SteeringBehaviors {
 	public static void wander(Vehicle vehicle,float updateTime, float wanderJitter, 
 			float wanderRadius,float wanderDistance, Vector2D wanderVector, 
 			Vector2D rst){
-		//this behavior is dependent on the update rate, so this line must
+		
+//		
+//		
+//		  //this behavior is dependent on the update rate, so this line must
+//		  //be included when using time independent framerate.
+//		  double JitterThisTimeSlice = wanderJitter * updateTime;
+//
+//		  //first, add a small random vector to the target's position
+//		//first, add a small random vector to the target's position
+//		  wanderVector.x += (1-2*Math.random()) * JitterThisTimeSlice;
+//		  wanderVector.y += (1-2*Math.random()) * JitterThisTimeSlice;
+//
+//		  //reproject this new vector back on to a unit circle
+//		  wanderVector.normalise();
+//
+//		  //increase the length of the vector to the same as the radius
+//		  //of the wander circle
+//		  wanderVector.scale(wanderRadius);
+//
+//		  //move the target into a position WanderDist in front of the agent
+//		  Vector2D target = new Vector2D(wanderVector);
+//		  target.x +=wanderDistance;
+//
+//		  //project the target into world space
+//		  Transformations.PointToWorldSpace(target,
+//		                                       vehicle.velHead,
+//		                                       vehicle.velSide, 
+//		                                       vehicle.pos, rst);
+
+		  //and steer towards it
+//		  rst.subtract(vehicle.pos);
+		
+		
+		
+		  //this behavior is dependent on the update rate, so this line must
 		  //be included when using time independent framerate.
 		  double JitterThisTimeSlice = wanderJitter;
 
@@ -409,3 +466,10 @@ public class SteeringBehaviors {
 		this.seekPos = seekPos;
 	}
 }
+
+//class SumMethod{
+//	Vector2D rst = new Ve;
+//	public SumMethod(){
+//		
+//	}
+//}

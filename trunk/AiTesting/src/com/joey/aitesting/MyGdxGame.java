@@ -48,8 +48,8 @@ import com.joey.aitesting.game.shapes.Rectangle2D;
 import com.me.mygdxgame.Gestures.OrthoCamController;
 
 public class MyGdxGame implements ApplicationListener {
-	float MAX_VEL = 400;
-	float MAX_FORCE = 500;
+	float MAX_VEL = 500;
+	float MAX_FORCE = 50000;
 
 	Skin skin;
 	Stage stage;
@@ -82,7 +82,7 @@ public class MyGdxGame implements ApplicationListener {
 				false);
 		batch = new SpriteBatch();
 
-		float scale = 5;
+		float scale = 3;
 		float sizeX = scale*Gdx.graphics.getWidth()/2;
 		float sizeY = scale*Gdx.graphics.getHeight()/2;
 		Rectangle2D bounds = new Rectangle2D(-sizeX, -sizeY, sizeX, sizeY);
@@ -97,7 +97,7 @@ public class MyGdxGame implements ApplicationListener {
 		consoleViewer = new ConsoleViewer(console);
 		consoleCamera = new OrthographicCamera();
 
-		createStage();
+		createGUI();
 
 		InputMultiplexer multi = new InputMultiplexer();
 		multi.addProcessor(stage);
@@ -107,114 +107,7 @@ public class MyGdxGame implements ApplicationListener {
 
 	}
 
-	public void createStage() {
-		skin = new Skin(Gdx.files.internal("data/uiskin.json"),
-				Gdx.files.internal("data/uiskin.png"));
-
-		final Button addButton = new TextButton("Add",
-				skin.getStyle(TextButtonStyle.class), "button-sl");
-		final Button removeButton = new TextButton("Remove",
-				skin.getStyle(TextButtonStyle.class), "button-s2");
-		final Button button = new TextButton("Menu",
-				skin.getStyle(TextButtonStyle.class), "button-s3");
-		final CheckBox drawGrid = new CheckBox(skin);
-		final CheckBox drawParticles = new CheckBox(skin);
-
-		drawGrid.setChecked(quadViewer.drawQuadTree);
-		drawParticles.setChecked(quadViewer.drawEntities);
-
-		worldEntityCount = new Label("", skin.getStyle(LabelStyle.class));
-		toAddEntityCount = new TextField("1", "",
-				skin.getStyle(TextFieldStyle.class), "styles2");
-		final Window window = new Window("Window",
-				skin.getStyle(WindowStyle.class), "window");
-
-		button.x = 0;
-		button.y = 0;
-		button.width = 50;
-		button.height = 50;
-
-		window.x = 55;
-		window.y = 0;
-
-		worldEntityCount.setAlignment(Align.CENTER);
-
-		window.defaults().spaceBottom(10);
-		window.row().fill().expandX();
-		window.add(new Label("Grid: ", skin));
-		window.add(drawGrid).fill(true, false);
-		window.row().fill().expandX();
-		window.add(new Label("Entity: ", skin));
-		window.add(drawParticles).fill(true, false);
-		window.row().fill().expandX();
-		window.add(addButton).fill(true, false);
-		window.add(removeButton).fill(true, false);
-		window.row().fill().expandX();
-		window.add(new Label("Num: ", skin));
-		window.add(toAddEntityCount).fill(true, false);
-		window.row().fill().expandX();
-		window.add(new Label("Total: ", skin));
-		window.add(worldEntityCount).fill(true, false);
-
-		window.pack();
-
-		stage.addActor(window);
-		stage.addActor(button);
-
-		drawParticles.setClickListener(new ClickListener() {
-
-			@Override
-			public void click(Actor actor, float x, float y) {
-				quadViewer.drawEntities = !quadViewer.drawEntities;
-				drawParticles.setChecked(quadViewer.drawEntities);
-			}
-		});
-
-		drawGrid.setClickListener(new ClickListener() {
-
-			@Override
-			public void click(Actor actor, float x, float y) {
-				quadViewer.drawQuadTree = !quadViewer.drawQuadTree;
-				drawGrid.setChecked(quadViewer.drawQuadTree);
-			}
-		});
-
-		addButton.setClickListener(new ClickListener() {
-
-			@Override
-			public void click(Actor actor, float x, float y) {
-				try {
-					world.addVehicles(
-							Integer.parseInt(toAddEntityCount.getText()), MAX_VEL, MAX_FORCE);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-			}
-		});
-
-		removeButton.setClickListener(new ClickListener() {
-
-			@Override
-			public void click(Actor actor, float x, float y) {
-				try {
-					world.removeVehicles(Integer.parseInt(toAddEntityCount
-							.getText()));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-
-		});
-
-		button.setClickListener(new ClickListener() {
-
-			@Override
-			public void click(Actor actor, float x, float y) {
-				window.visible = !window.visible;
-			}
-		});
-	}
+	
 
 	@Override
 	public void dispose() {
@@ -231,15 +124,15 @@ public class MyGdxGame implements ApplicationListener {
 		renderTime = System.currentTimeMillis()-lastRenderUpdate;
 		
 		
-		//Calculate Update world Time
-		start = System.currentTimeMillis();
-		updateWorld();
-		updateWorldTime = System.currentTimeMillis()-start;
-		
-		//Calculate Draw World Time
-		start = System.currentTimeMillis();
-		drawWorld();
-		drawWorldtime = System.currentTimeMillis()-start;
+//		//Calculate Update world Time
+//		start = System.currentTimeMillis();
+//		updateWorld();
+//		updateWorldTime = System.currentTimeMillis()-start;
+//		
+//		//Calculate Draw World Time
+//		start = System.currentTimeMillis();
+//		drawWorld();
+//		drawWorldtime = System.currentTimeMillis()-start;
 		
 		//Update Fields
 		updateFields();
@@ -259,7 +152,7 @@ public class MyGdxGame implements ApplicationListener {
 
 	public void updateFields() {
 		worldEntityCount.setText("" +world.getVehicles().size());
-		
+		console.printf("FPS  : %d\n", Gdx.graphics.getFramesPerSecond());
 		console.printf("Render World  : %3.3f\n", renderTime);
 		console.printf("Update Worl8d  : %3.3f\n", updateWorldTime);
 		console.printf("  Draw World  : %3.3f\n", drawWorldtime);
@@ -292,6 +185,77 @@ public class MyGdxGame implements ApplicationListener {
 		consoleViewer.draw(consoleCamera);
 	}
 
+	public void createGUI(){
+		skin = new Skin(Gdx.files.internal("data/uiskin.json"),
+				Gdx.files.internal("data/uiskin.png"));
+		final Button addButton = new TextButton("Add",
+				skin.getStyle(TextButtonStyle.class), "button-sl");
+		final Button removeButton = new TextButton("Remove",
+				skin.getStyle(TextButtonStyle.class), "button-s2");
+		final Button button = new TextButton("Menu",
+				skin.getStyle(TextButtonStyle.class), "button-s3");
+		
+		worldEntityCount = new Label("", skin.getStyle(LabelStyle.class));
+		toAddEntityCount = new TextField("1", "",
+				skin.getStyle(TextFieldStyle.class), "styles2");
+		worldEntityCount.setAlignment(Align.CENTER);
+		
+		button.x = 0;
+		button.y = 0;
+		button.width = 50;
+		button.height = 50;
+		
+		final Window window =  new Window("Window",
+				skin.getStyle(WindowStyle.class), "window"); 
+		window.row().fill().expandX();
+		window.add(addButton).fill(true, false);
+		window.add(removeButton).fill(true, false);
+		window.row().fill().expandX();
+		window.add(new Label("Num: ", skin));
+		window.add(toAddEntityCount).fill(true, false);
+		window.row().fill().expandX();
+		window.add(new Label("Total: ", skin));
+		window.add(worldEntityCount).fill(true, false);
+		
+		stage.addActor(button);
+		
+		addButton.setClickListener(new ClickListener() {
+
+			@Override
+			public void click(Actor actor, float x, float y) {
+				try {
+					world.addVehicles(
+							Integer.parseInt(toAddEntityCount.getText()), MAX_VEL, MAX_FORCE);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			}
+		});
+
+		removeButton.setClickListener(new ClickListener() {
+
+			@Override
+			public void click(Actor actor, float x, float y) {
+				try {
+					world.removeVehicles(Integer.parseInt(toAddEntityCount
+							.getText()));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+		});
+
+
+		button.setClickListener(new ClickListener() {
+
+			@Override
+			public void click(Actor actor, float x, float y) {
+				window.visible = !window.visible;
+			}
+		});
+	}
 	@Override
 	public void resize(int width, int height) {
 		quadViewCam.viewportWidth = width;
