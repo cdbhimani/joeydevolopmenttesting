@@ -124,15 +124,15 @@ public class MyGdxGame implements ApplicationListener {
 		renderTime = System.currentTimeMillis()-lastRenderUpdate;
 		
 		
-//		//Calculate Update world Time
-//		start = System.currentTimeMillis();
-//		updateWorld();
-//		updateWorldTime = System.currentTimeMillis()-start;
-//		
-//		//Calculate Draw World Time
-//		start = System.currentTimeMillis();
-//		drawWorld();
-//		drawWorldtime = System.currentTimeMillis()-start;
+		//Calculate Update world Time
+		start = System.currentTimeMillis();
+		updateWorld();
+		updateWorldTime = System.currentTimeMillis()-start;
+		
+		//Calculate Draw World Time
+		start = System.currentTimeMillis();
+		drawWorld();
+		drawWorldtime = System.currentTimeMillis()-start;
 		
 		//Update Fields
 		updateFields();
@@ -188,6 +188,7 @@ public class MyGdxGame implements ApplicationListener {
 	public void createGUI(){
 		skin = new Skin(Gdx.files.internal("data/uiskin.json"),
 				Gdx.files.internal("data/uiskin.png"));
+		
 		final Button addButton = new TextButton("Add",
 				skin.getStyle(TextButtonStyle.class), "button-sl");
 		final Button removeButton = new TextButton("Remove",
@@ -196,8 +197,7 @@ public class MyGdxGame implements ApplicationListener {
 				skin.getStyle(TextButtonStyle.class), "button-s3");
 		
 		worldEntityCount = new Label("", skin.getStyle(LabelStyle.class));
-		toAddEntityCount = new TextField("1", "",
-				skin.getStyle(TextFieldStyle.class), "styles2");
+		toAddEntityCount = new TextField("1", "",skin.getStyle(TextFieldStyle.class), "styles2");
 		worldEntityCount.setAlignment(Align.CENTER);
 		
 		button.x = 0;
@@ -205,8 +205,7 @@ public class MyGdxGame implements ApplicationListener {
 		button.width = 50;
 		button.height = 50;
 		
-		final Window window =  new Window("Window",
-				skin.getStyle(WindowStyle.class), "window"); 
+		final Window window =  new Window("Window",	skin.getStyle(WindowStyle.class), "window"); 
 		window.row().fill().expandX();
 		window.add(addButton).fill(true, false);
 		window.add(removeButton).fill(true, false);
@@ -216,9 +215,13 @@ public class MyGdxGame implements ApplicationListener {
 		window.row().fill().expandX();
 		window.add(new Label("Total: ", skin));
 		window.add(worldEntityCount).fill(true, false);
+		window.pack();
+		window.visible = true;
+		window.x = 55;
+		window.y = 0;
 		
 		stage.addActor(button);
-		
+		stage.addActor(window);
 		addButton.setClickListener(new ClickListener() {
 
 			@Override
