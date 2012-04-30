@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.joey.aitesting.game.GameWorld;
 import com.joey.aitesting.game.HeadingSmoother;
+import com.joey.aitesting.game.maths.Transformations;
 import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.steeringBehaviors.SteeringBehaviors;
 
@@ -15,8 +16,8 @@ public class Vehicle extends MovingEntity {
 	public boolean smoothingOn;
 	public float timeElapsed;
 
-	ArrayList<Vector2D> vehicleShape = new ArrayList<Vector2D>();
-
+	ArrayList<Vector2D> localVehicleShape = new ArrayList<Vector2D>();
+	public ArrayList<Vector2D> transformedVehicleShape = new ArrayList<Vector2D>();
 	public Vehicle(GameWorld world) {
 		this(world, new Vector2D(), 1, new Vector2D(), 1, 10, 10, 10);
 	}
@@ -35,13 +36,17 @@ public class Vehicle extends MovingEntity {
 		this.timeElapsed = 0;
 		this.steering = new SteeringBehaviors(this);
 		
-		setupShape();
+		setupShape(10f);
 	}
 
-	public void setupShape() {
-		vehicleShape.add(new Vector2D(-1.0f, 0.6f));
-		vehicleShape.add(new Vector2D(1.0f, 0.0f));
-		vehicleShape.add(new Vector2D(-1.0f, -0.6f));
+	public void setupShape(float scale) {
+		localVehicleShape.add(new Vector2D(-1.0f*scale, 0.6f*scale));
+		localVehicleShape.add(new Vector2D(1.0f*scale, 0.0f*scale));
+		localVehicleShape.add(new Vector2D(-1.0f*scale, -0.6f*scale));
+		
+		transformedVehicleShape.add(new Vector2D(-1.0f*scale, 0.6f*scale));
+		transformedVehicleShape.add(new Vector2D(1.0f*scale, 0.0f*scale));
+		transformedVehicleShape.add(new Vector2D(-1.0f*scale, -0.6f*scale));
 	}
 
 	@Override
@@ -90,8 +95,8 @@ public class Vehicle extends MovingEntity {
 		if (isSmoothingOn()) {
 			smoothedHeading = headingSmoother.update(velHead);
 		}
-		
-		
+
+		Transformations.WorldTransform(localVehicleShape, pos, velHead,velSide, transformedVehicleShape);
 	}
 
 	public GameWorld getWorld() {
@@ -108,14 +113,6 @@ public class Vehicle extends MovingEntity {
 
 	public void setSmoothingOn(boolean smoothingOn) {
 		this.smoothingOn = smoothingOn;
-	}
-
-	public ArrayList<Vector2D> getVehicleShape() {
-		return vehicleShape;
-	}
-
-	public void setVehicleShape(ArrayList<Vector2D> vehicleShape) {
-		this.vehicleShape = vehicleShape;
 	}
 
 	public SteeringBehaviors getSteering() {

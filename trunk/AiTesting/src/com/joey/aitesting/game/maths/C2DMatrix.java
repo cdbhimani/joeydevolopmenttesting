@@ -57,7 +57,20 @@ public class C2DMatrix {
 			vPoint.y = tempY;
 		}
 	}
+	// applies a 2D transformation matrix to a stdevector of Vector2Ds
+	public void transformVector2Ds(List<Vector2D> points,List<Vector2D> transFormedPoints) {
+		Vector2D vPoint;
+		Vector2D rst;
+		for (int i = 0; i < points.size(); ++i) {
+			vPoint = points.get(i);
+			rst = transFormedPoints.get(i);
+			rst.x = (meMatrix.e11 * vPoint.x) + (meMatrix.e21 * vPoint.y)
+					+ (meMatrix.e31);
+			rst.y = (meMatrix.e12 * vPoint.x) + (meMatrix.e22 * vPoint.y)
+					+ (meMatrix.e32);
+		}
 
+	}
 	// applies a 2D transformation matrix to a single Vector2D
 	public void transformVector2Ds(Vector2D vPoint) {
 		float tempX = (meMatrix.e11 * vPoint.x) + (meMatrix.e21 * vPoint.y)

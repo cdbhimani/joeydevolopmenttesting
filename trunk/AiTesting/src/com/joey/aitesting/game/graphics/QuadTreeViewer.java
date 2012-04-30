@@ -38,7 +38,7 @@ public class QuadTreeViewer<T extends BaseGameEntity> {
 	public boolean drawBorders = true;
 	public boolean drawEntities = true;
 	public boolean drawQuadTree = true;
-	public boolean drawBehaviour = true;
+	public boolean drawBehaviour = false;
 	
 	
 	public QuadTreeViewer(QuadTree<T> tree) {
@@ -157,11 +157,22 @@ public class QuadTreeViewer<T extends BaseGameEntity> {
 								gridRender.end();
 							}
 						}
-						spriteBatch.begin();
-						spriteBatch.draw(spriteRegion, entity.pos.x-sizeX/2, entity.pos.y-sizeY/2, sizeX / 2,
-								sizeY / 2, sizeX, sizeY, 1, 1,
-								(float) (Math.toDegrees(entity.angle)));
-						spriteBatch.end();
+						gridRender.setColor(Color.BLUE);
+						gridRender.begin(ShapeType.Triangle);
+						gridRender.triangle(
+								entity.transformedVehicleShape.get(0).x,
+								entity.transformedVehicleShape.get(0).y,
+								entity.transformedVehicleShape.get(1).x,
+								entity.transformedVehicleShape.get(1).y,
+								entity.transformedVehicleShape.get(2).x,
+								entity.transformedVehicleShape.get(2).y
+								);
+						gridRender.end();
+						//spriteBatch.begin();
+						//spriteBatch.draw(spriteRegion, entity.pos.x-sizeX/2, entity.pos.y-sizeY/2, sizeX / 2,
+							//	sizeY / 2, sizeX, sizeY, 1, 1,
+							//	(float) (Math.toDegrees(entity.angle)));
+						//spriteBatch.end();
 					}
 				}
 			}else{
