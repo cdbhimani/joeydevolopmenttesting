@@ -38,7 +38,7 @@ public class QuadTreeViewer<T extends BaseGameEntity> {
 	public boolean drawBorders = true;
 	public boolean drawEntities = true;
 	public boolean drawQuadTree = true;
-	public boolean drawBehaviour = false;
+	public boolean drawBehaviour = true;
 	
 	
 	public QuadTreeViewer(QuadTree<T> tree) {
@@ -90,7 +90,7 @@ public class QuadTreeViewer<T extends BaseGameEntity> {
 						Vehicle entity = (Vehicle)e;
 						
 						if(drawBehaviour){
-							if (!entity.steering.useFlee) {
+							if (entity.steering.useFlee) {
 								Vector2D rst = new Vector2D(entity.pos);
 
 								gridRender.setColor(Color.RED);
@@ -98,6 +98,14 @@ public class QuadTreeViewer<T extends BaseGameEntity> {
 								gridRender.filledCircle(rst.x, rst.y,
 										entitySize);
 								gridRender.end();
+								
+								if(entity.steering.useFleePanic){
+									gridRender.setColor(Color.RED);
+									gridRender.begin(ShapeType.FilledCircle);
+									gridRender.filledCircle(rst.x, rst.y,
+											entity.steering.fleePanicDistance);
+									gridRender.end();	
+								}
 							}
 
 						

@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -63,13 +64,13 @@ public class QuadTree<T extends BaseGameEntity> {
 		return root;
 	}
 
-	public void getPointsInRegion(Rectangle2D region, ArrayList<T> ents){
+	public void getPointsInRegion(Rectangle2D region, HashSet<T> ents){
 		synchronized (entities) {
 			root.getPointsInRegion(region, ents);
 		}
 	}
-	public ArrayList<T> getPointsInRegion(Rectangle2D region) {
-		ArrayList<T> ents = new ArrayList<T>();
+	public HashSet<T> getPointsInRegion(Rectangle2D region) {
+		HashSet<T> ents = new HashSet<T>();
 		getPointsInRegion(region, ents);
 		return ents;
 	}

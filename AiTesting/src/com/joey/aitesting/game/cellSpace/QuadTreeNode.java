@@ -1,6 +1,7 @@
 package com.joey.aitesting.game.cellSpace;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import com.joey.aitesting.game.entities.BaseGameEntity;
 import com.joey.aitesting.game.shapes.Rectangle2D;
@@ -83,7 +84,7 @@ public class QuadTreeNode<T extends BaseGameEntity>{
 				
 	}
 
-	public void getAllPoints(ArrayList<T> rst){
+	public void getAllPoints(HashSet<T> rst){
 		if(isLeaf){
 			rst.addAll(points);
 		} else{
@@ -94,7 +95,7 @@ public class QuadTreeNode<T extends BaseGameEntity>{
 		}
 	}
 	
-	public void getPointsInRegion(Rectangle2D searchArea, ArrayList<T> rst) {
+	public void getPointsInRegion(Rectangle2D searchArea, HashSet<T> rst) {
 		if(searchArea.intersects(region)){
 			if(isLeaf || searchArea.contains(region)){
 				getAllPoints(rst);
