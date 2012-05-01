@@ -38,7 +38,7 @@ public class QuadTreeViewer<T extends BaseGameEntity> {
 	public boolean drawBorders = true;
 	public boolean drawEntities = true;
 	public boolean drawQuadTree = true;
-	public boolean drawBehaviour = false;
+	public boolean drawBehaviour = true;
 	
 	
 	public QuadTreeViewer(QuadTree<T> tree) {

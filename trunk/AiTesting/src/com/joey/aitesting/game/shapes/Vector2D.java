@@ -114,8 +114,8 @@ public class Vector2D {
 
 	public void setPerp(Vector2D dir) {
 		// TODO Auto-generated method stub
-		x = -y;
-		y = x;
+		this.x = -dir.y;
+		this.y = dir.x;
 	}
 
 	public void setPerp() {

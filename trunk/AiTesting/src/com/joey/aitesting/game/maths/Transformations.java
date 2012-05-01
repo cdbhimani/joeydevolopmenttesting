@@ -1,7 +1,15 @@
 package com.joey.aitesting.game.maths;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import com.joey.aitesting.game.entities.MovingEntity;
 import com.joey.aitesting.game.entities.Vehicle;
@@ -9,34 +17,104 @@ import com.joey.aitesting.game.shapes.Vector2D;
 
 public class Transformations {
 	
-	public static void main(String input[]){
-		float scale = 10;
+	public static void main(String input[]) throws InterruptedException{
+		final int sizeX = 200;
+		final int sizeY = 200;
+		float scale = 50;
 		ArrayList<Vector2D> localVehicleShape = new ArrayList<Vector2D>();
 		ArrayList<Vector2D> transformedVehicleShape = new ArrayList<Vector2D>();
 		
-		localVehicleShape.add(new Vector2D(-1.0f*scale, 0.6f*scale));
+		localVehicleShape.add(new Vector2D(0f*scale, 1f*scale));
 		localVehicleShape.add(new Vector2D(1.0f*scale, 0.0f*scale));
-		localVehicleShape.add(new Vector2D(-1.0f*scale, -0.6f*scale));
+		localVehicleShape.add(new Vector2D(1f*scale, 1f*scale));
 		
-		transformedVehicleShape.add(new Vector2D(-1.0f*scale, 0.6f*scale));
-		transformedVehicleShape.add(new Vector2D(1.0f*scale, 0.0f*scale));
-		transformedVehicleShape.add(new Vector2D(-1.0f*scale, -0.6f*scale));
+		transformedVehicleShape.add(localVehicleShape.get(0).clone());
+		transformedVehicleShape.add(localVehicleShape.get(1).clone());
+		transformedVehicleShape.add(localVehicleShape.get(2).clone());
 		
-		Vector2D vel = new Vector2D(1,1);
-		Vector2D velHead = new Vector2D();
-		Vector2D velSide = new Vector2D();
+	
+		final BufferedImage rst = new BufferedImage(sizeX,sizeY, BufferedImage.TYPE_INT_ARGB);
+		final Graphics2D g = rst.createGraphics();
 		
-		if (vel.lengthSq() > 0.00000001) {
-			velHead.setLocation(vel);
-			velHead.normalise();
+		final Color or = new Color(1f,0f,0f,0.5f);
+		final Color tr = new Color(0f,1f,0f,0.5f);
+		
+		
+		
+		final Vector2D t1 = transformedVehicleShape.get(0);
+		final Vector2D t2 = transformedVehicleShape.get(1);
+		final Vector2D t3 = transformedVehicleShape.get(2);
+		final Vector2D o1 = localVehicleShape.get(0);
+		final Vector2D o2 = localVehicleShape.get(1);
+		final Vector2D o3 = localVehicleShape.get(2);
+		
+		JPanel p = new JPanel(){
+			
+			public void paintLine(Graphics2D g, Vector2D v1, Vector2D v2, int sizeX, int sizeY, int nodeSize){
+				drawNode(g,v1,sizeX, sizeY, nodeSize);
+				drawNode(g,v2,sizeX, sizeY, nodeSize);
+				g.drawLine(sizeX/2+(int)v1.x, sizeY/2+(int)v1.y, sizeX/2+(int)v2.x, sizeY/2+(int)v2.y);
+			}
+			
+			public void drawNode(Graphics2D g, Vector2D v1, int sizeX, int sizeY, int nodeSize){
+				g.drawRect(sizeX/2+(int)v1.x-nodeSize/2, sizeY/2+(int)v1.y-nodeSize/2, nodeSize, nodeSize);
+			}
+			@Override
+			protected void paintComponent(Graphics g1) {
+				// TODO Auto-generated method stub
+				super.paintComponent(g1);
 
-			velSide.setPerp(velHead);
+				g.setColor(Color.white);
+				g.fillRect(0, 0, getWidth(), getHeight());
 
-		}
+				g.setColor(Color.blue);
+				g.fillOval(sizeX/2-1, sizeY/2-2, 4, 4);
+				int orgSize = 4;
+				int traSize = 8;
+				
+				g.setColor(or);
+				paintLine(g, o1, o2, sizeX, sizeY, orgSize);
+				paintLine(g, o3, o2, sizeX, sizeY, orgSize);
+				paintLine(g, o1, o3, sizeX, sizeY, orgSize);
+				
+				g.setColor(tr);
+
+				paintLine(g, t1, t2, sizeX, sizeY, traSize);
+				paintLine(g, t3, t2, sizeX, sizeY, traSize);
+				paintLine(g, t1, t3, sizeX, sizeY, traSize);
+				
+				
+				g1.drawImage(rst, 0,0,null);
+			}
+		};
+		p.setBackground(Color.WHITE);
+		JFrame f= new JFrame();
+		f.setLocation(400, 400);
+		f.getContentPane().setLayout(new BorderLayout());
+		f.getContentPane().add(p);
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		f.setSize(sizeX, sizeY);
+		f.setVisible(true);
 		
-		Transformations.WorldTransform(localVehicleShape, new Vector2D(0,0), velHead, velSide, transformedVehicleShape);
-		for(int i = 0; i < transformedVehicleShape.size(); i++){
-			System.out.println(transformedVehicleShape.get(i));
+		float angle = 1;
+		final Vector2D vel = new Vector2D();
+		final Vector2D velHead = new Vector2D();
+		final Vector2D velSide = new Vector2D();
+		while(true){
+			vel.setLocation((float)Math.cos(Math.toRadians(angle)),(float)Math.sin(Math.toRadians(angle)));
+			
+			if (vel.lengthSq() > 0.00000001) {
+				velHead.setLocation(vel);
+				velHead.normalise();
+				velSide.setPerp(velHead);
+			}
+			
+			
+			Transformations.WorldTransform(localVehicleShape, new Vector2D(0,0), velHead, velSide, transformedVehicleShape);
+			angle+=1/5f;
+			
+			Thread.sleep((long)(1000/360f));
+			p.repaint();
 		}
 	}
 	public static void PointToLocalSpace(MovingEntity vehicle, Vector2D point,
