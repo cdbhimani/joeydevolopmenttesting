@@ -387,11 +387,11 @@ public class SteeringBehaviors {
 			float wanderRadius,float wanderDistance, Vector2D wanderVector, 
 			Vector2D rst){
 		
-//		
-//		
+		
+		
 //		  //this behavior is dependent on the update rate, so this line must
 //		  //be included when using time independent framerate.
-//		  double JitterThisTimeSlice = wanderJitter * updateTime;
+//		  double JitterThisTimeSlice = wanderJitter * updateTime*10;
 //
 //		  //first, add a small random vector to the target's position
 //		//first, add a small random vector to the target's position
@@ -414,8 +414,8 @@ public class SteeringBehaviors {
 //		                                       vehicle.velHead,
 //		                                       vehicle.velSide, 
 //		                                       vehicle.pos, rst);
-
-		  //and steer towards it
+//
+//		  //and steer towards it
 //		  rst.subtract(vehicle.pos);
 		
 		
