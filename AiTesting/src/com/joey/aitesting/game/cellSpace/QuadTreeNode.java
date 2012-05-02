@@ -98,7 +98,12 @@ public class QuadTreeNode<T extends BaseGameEntity>{
 	public void getPointsInRegion(Rectangle2D searchArea, HashSet<T> rst) {
 		if(searchArea.intersects(region)){
 			if(isLeaf || searchArea.contains(region)){
-				getAllPoints(rst);
+				//getAllPoints(rst);
+				for(T p : points){
+					if(searchArea.contains(p.pos)){
+						rst.add(p);
+					}
+				}
 			}else{
 				if(NW != null)NW.getPointsInRegion(searchArea, rst);
 				if(NE != null)NE.getPointsInRegion(searchArea, rst);

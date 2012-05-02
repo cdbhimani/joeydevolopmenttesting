@@ -1,6 +1,7 @@
 package com.joey.aitesting.game.graphics;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
@@ -38,7 +39,7 @@ public class GameWorldViewer{
 
 	public boolean drawBorders = true;
 	public boolean drawEntities = true;
-	public boolean drawQuadTree = true;
+	public boolean drawQuadTree = false;
 	public boolean drawBehaviour = false;
 	
 	
@@ -79,6 +80,119 @@ public class GameWorldViewer{
 		}
 
 	}
+	
+	private void drawEntity(GLCommon gl, Camera camera, Rectangle2D drawRegion, BaseGameEntity e){
+		Vehicle vehicle = (Vehicle)e;
+		
+		if(e.getId() == 0){
+			HashSet<Vehicle> neighbors = new HashSet<Vehicle>();
+			Rectangle2D reg = new Rectangle2D(
+					vehicle.pos.x-vehicle.steering.neighborRadius, vehicle.pos.y-vehicle.steering.neighborRadius, 
+					vehicle.pos.x+vehicle.steering.neighborRadius, vehicle.pos.y+vehicle.steering.neighborRadius);
+			reg.ensureOrder();
+			vehicle.steering.calculateNeighbobors(vehicle,neighbors, reg);
+			//Remove self
+			neighbors.remove(vehicle);
+			
+			for(Vehicle v : neighbors){
+				gridRender.setColor(Color.RED);
+				gridRender.begin(ShapeType.FilledCircle);
+				gridRender.filledCircle(v.pos.x, v.pos.y,
+						10);
+				gridRender.end();	
+			}
+			
+		}
+		if(!drawBehaviour){
+			if (vehicle.steering.useFlee) {
+				Vector2D rst = new Vector2D(vehicle.pos);
+
+				gridRender.setColor(Color.RED);
+				gridRender.begin(ShapeType.FilledCircle);
+				gridRender.filledCircle(rst.x, rst.y,
+						entitySize);
+				gridRender.end();
+				
+				if(vehicle.steering.useFleePanic){
+					gridRender.setColor(Color.RED);
+					gridRender.begin(ShapeType.FilledCircle);
+					gridRender.filledCircle(rst.x, rst.y,
+							vehicle.steering.fleePanicDistance);
+					gridRender.end();	
+				}
+			}
+
+		
+			if (vehicle.steering.useSeperation||vehicle.steering.useCohesion || vehicle.steering.useAlignment) {
+				Vector2D rst = new Vector2D(vehicle.pos);
+
+				Rectangle2D reg = new Rectangle2D(
+						vehicle.pos.x-vehicle.steering.neighborRadius, vehicle.pos.y-vehicle.steering.neighborRadius, 
+						vehicle.pos.x+vehicle.steering.neighborRadius, vehicle.pos.y+vehicle.steering.neighborRadius);
+				reg.ensureOrder();
+				
+				gridRender.setColor(Color.RED);
+				gridRender.begin(ShapeType.Rectangle);
+				gridRender.rect(reg.x1, reg.y1, reg.getWidth(), reg.getHeight());
+				gridRender.end();
+			}
+		
+		
+			if (vehicle.steering.useWander) {
+				Vector2D rst = new Vector2D(vehicle.pos);
+
+				// Draw Render Circle
+				Vector2D circle = new Vector2D(vehicle.vel);
+				circle.normalise();
+				circle.scale(vehicle.steering.wanderDistance);
+				circle.add(vehicle.pos);
+
+				gridRender.setColor(Color.BLUE);
+				gridRender.begin(ShapeType.Circle);
+				gridRender.circle(circle.x, circle.y,
+						vehicle.steering.wanderRadius);
+				gridRender.end();
+
+				gridRender.setColor(Color.GREEN);
+				gridRender.begin(ShapeType.Line);
+				gridRender
+						.line(circle.x,
+								circle.y,
+								circle.x
+										+ vehicle.steering.wanderVector.x,
+								circle.y
+										+ vehicle.steering.wanderVector.y);
+				gridRender.end();
+
+				gridRender.setColor(Color.RED);
+				gridRender.begin(ShapeType.Circle);
+				gridRender
+						.circle(circle.x
+								+ vehicle.steering.wanderVector.x,
+								circle.y
+										+ vehicle.steering.wanderVector.y,
+								vehicle.steering.wanderJitter);
+				gridRender.end();
+			}
+		}
+		gridRender.setColor(Color.BLUE);
+		gridRender.begin(ShapeType.Triangle);
+		gridRender.triangle(
+				vehicle.transformedVehicleShape.get(0).x,
+				vehicle.transformedVehicleShape.get(0).y,
+				vehicle.transformedVehicleShape.get(1).x,
+				vehicle.transformedVehicleShape.get(1).y,
+				vehicle.transformedVehicleShape.get(2).x,
+				vehicle.transformedVehicleShape.get(2).y
+				);
+		gridRender.end();
+		//spriteBatch.begin();
+		//spriteBatch.draw(spriteRegion, entity.pos.x-sizeX/2, entity.pos.y-sizeY/2, sizeX / 2,
+			//	sizeY / 2, sizeX, sizeY, 1, 1,
+			//	(float) (Math.toDegrees(entity.angle)));
+		//spriteBatch.end();
+		
+	}
 	private void renderEntitiesInCell(GLCommon gl, Camera camera, Rectangle2D drawRegion,
 			QuadTreeNode node) {
 		float sizeX = spriteTexture.getWidth() / spriteScale;
@@ -88,92 +202,7 @@ public class GameWorldViewer{
 				if(drawEntities){
 					
 					for (Object e : node.points) {
-						Vehicle entity = (Vehicle)e;
-						
-						if(drawBehaviour){
-							if (entity.steering.useFlee) {
-								Vector2D rst = new Vector2D(entity.pos);
-
-								gridRender.setColor(Color.RED);
-								gridRender.begin(ShapeType.FilledCircle);
-								gridRender.filledCircle(rst.x, rst.y,
-										entitySize);
-								gridRender.end();
-								
-								if(entity.steering.useFleePanic){
-									gridRender.setColor(Color.RED);
-									gridRender.begin(ShapeType.FilledCircle);
-									gridRender.filledCircle(rst.x, rst.y,
-											entity.steering.fleePanicDistance);
-									gridRender.end();	
-								}
-							}
-
-						
-							if (entity.steering.useSeperation||entity.steering.useCohesion || entity.steering.useAlignment) {
-								Vector2D rst = new Vector2D(entity.pos);
-
-								gridRender.setColor(Color.RED);
-								gridRender.begin(ShapeType.Circle);
-								gridRender.circle(rst.x, rst.y,
-										entity.steering.neighborRadius);
-								gridRender.end();
-							}
-						
-						
-							if (entity.steering.useWander) {
-								Vector2D rst = new Vector2D(entity.pos);
-
-								// Draw Render Circle
-								Vector2D circle = new Vector2D(entity.vel);
-								circle.normalise();
-								circle.scale(entity.steering.wanderDistance);
-								circle.add(entity.pos);
-
-								gridRender.setColor(Color.BLUE);
-								gridRender.begin(ShapeType.Circle);
-								gridRender.circle(circle.x, circle.y,
-										entity.steering.wanderRadius);
-								gridRender.end();
-
-								gridRender.setColor(Color.GREEN);
-								gridRender.begin(ShapeType.Line);
-								gridRender
-										.line(circle.x,
-												circle.y,
-												circle.x
-														+ entity.steering.wanderVector.x,
-												circle.y
-														+ entity.steering.wanderVector.y);
-								gridRender.end();
-
-								gridRender.setColor(Color.RED);
-								gridRender.begin(ShapeType.Circle);
-								gridRender
-										.circle(circle.x
-												+ entity.steering.wanderVector.x,
-												circle.y
-														+ entity.steering.wanderVector.y,
-												entity.steering.wanderJitter);
-								gridRender.end();
-							}
-						}
-						gridRender.setColor(Color.BLUE);
-						gridRender.begin(ShapeType.Triangle);
-						gridRender.triangle(
-								entity.transformedVehicleShape.get(0).x,
-								entity.transformedVehicleShape.get(0).y,
-								entity.transformedVehicleShape.get(1).x,
-								entity.transformedVehicleShape.get(1).y,
-								entity.transformedVehicleShape.get(2).x,
-								entity.transformedVehicleShape.get(2).y
-								);
-						gridRender.end();
-						//spriteBatch.begin();
-						//spriteBatch.draw(spriteRegion, entity.pos.x-sizeX/2, entity.pos.y-sizeY/2, sizeX / 2,
-							//	sizeY / 2, sizeX, sizeY, 1, 1,
-							//	(float) (Math.toDegrees(entity.angle)));
-						//spriteBatch.end();
+						drawEntity(gl, camera, drawRegion, (BaseGameEntity)e);
 					}
 				}
 			}else{

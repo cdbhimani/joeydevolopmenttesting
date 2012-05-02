@@ -52,19 +52,20 @@ public class SteeringBehaviors {
 	public Vector2D wanderVector;
 	
 	//Flocking Parameters	
-	public float cohesionWeight = 1;
+	public float cohesionWeight = 1f;
 	public boolean useCohesion = false;
 	
-	public float seperationWeight = 1;
+	public float seperationWeight = 1f;
 	public boolean useSeperation = false;
 	
-	public float alignmentWeight = 1;
+	public float alignmentWeight = 1f;
 	public boolean useAlignment = false;
 	
 	public float neighborRadius = 100;
 	HashSet<Vehicle> neighbors = new HashSet<Vehicle>();
 	Rectangle2D regHold[] = null;//For search around edge of world
 	
+	public float obstacleAvoidanceWeight =1f;
 	public boolean useObstacleAvoidance = false;
 	public float obstacleSearchBoxDistance = 100;
 	
@@ -147,23 +148,28 @@ public class SteeringBehaviors {
 			Rectangle2D reg = new Rectangle2D(
 					vehicle.pos.x-neighborRadius, vehicle.pos.y-neighborRadius, 
 					vehicle.pos.x+neighborRadius, vehicle.pos.y+neighborRadius);
+			reg.ensureOrder();
 			calculateNeighbobors(vehicle,neighbors, reg);
 			//Remove self
 			neighbors.remove(vehicle);
-			//System.out.println("Finding Neighbours: "+neighbors.size());
+			System.out.println("Finding Neighbours: "+neighbors.size());
+		}else{
+			neighbors.clear();
 		}
 		
 		if (useSeek) {
+			hold.setLocation(0,0);
 			moveToClosest(vehicle.pos, seekPos, point,
 					vehicle.world.worldBounds);
 			seek(point, vehicle, hold);
-			count++;
+			count+=seekWeight;
 			rst.add(hold);
 			
 			//System.out.println("Seek : "+rst);
 		}
 
 		if (useFlee) {
+			hold.setLocation(0,0);
 			moveToClosest(vehicle.pos, fleePos, point,
 					vehicle.world.worldBounds);
 			if(useFleePanic){
@@ -171,81 +177,89 @@ public class SteeringBehaviors {
 			}else{
 				flee(point, vehicle, hold);
 			}
-			count++;
+			count+=fleeWeight;
 			rst.add(hold);
 			
 			//System.out.println("Flee : "+rst);
 		}
 
 		if (useArrive) {
+			hold.setLocation(0,0);
 			moveToClosest(vehicle.pos, arrivePos, point,
 					vehicle.world.worldBounds);
 			arrive(point, vehicle, 1, hold);
-			count++;
+			count+=arriveWeight;
 			rst.add(hold);
 			
 			//System.out.println("Arrive : "+rst);
 		}
 
 		if (usePersuit) {
+			hold.setLocation(0,0);
 			persuit(vehicle, persuitVehicle, hold);
-			count++;
+			count+=persuitWeight;
 			rst.add(hold);
 			
 			//System.out.println("Persuit : "+rst);
 		}
 		
 		if (useEvade) {
+			hold.setLocation(0,0);
 			evade(vehicle, evadeVehicle, hold);
-			count++;
+			count+=evadeWeight;
 			rst.add(hold);
 			
 			//System.out.println("Evade : "+rst);
 		}
 		
 		if(useWander){
+			hold.setLocation(0,0);
 			if(wanderVector == null){
 				wanderVector = new Vector2D(vehicle.vel);
 				wanderVector.normalise();
 			}
 			wander(vehicle,updateTime, wanderJitter, wanderRadius, wanderDistance, wanderVector, hold);
 			
-			count++;
+			count+=wanderWeight;
 			rst.add(hold);
 			
 			//System.out.println("Wander : "+rst);
 		}
 
 		if(useSeperation){
+			hold.setLocation(0,0);
 			seperation(vehicle, neighbors, hold);
-			count++;
+			count+=seperationWeight;
 			rst.add(hold);
 			
-			//System.out.println("Seperation : "+rst);
+			System.out.println("Seperation : "+hold);
 		}
 		if(useAlignment){
+			hold.setLocation(0,0);
 			alignment(vehicle, neighbors, hold);
-			count++;
+			count+=alignmentWeight;
 			rst.add(hold);
 			
-			//System.out.println("Alignment : "+rst);
+			System.out.println("Alignment : "+hold);
 		}
 		if(useCohesion){
+			hold.setLocation(0,0);
 			cohesion(vehicle, neighbors, hold);
-			count++;
+			count+=cohesionWeight;
 			rst.add(hold);
 			
 			
-			//System.out.println("Cohesion : "+rst);
+			System.out.println("Cohesion : "+hold);
 		}
 		
 		if(useObstacleAvoidance){
+			hold.setLocation(0,0);
 			obstacleAvoidance(vehicle.world.getObstacles(), vehicle,obstacleSearchBoxDistance,hold);
-			count++;
+			count+=obstacleAvoidanceWeight;
 			rst.add(hold);
 			
 			
-			//System.out.println("Cohesion : "+rst);
+			System.out.println("Cohesion : "+hold);
 		}
 		
 		//System.out.println("Scale Testing : "+rst);
@@ -257,7 +271,7 @@ public class SteeringBehaviors {
 			rst.scale(vehicle.maxForce);
 		}
 		
-		//System.out.println("End : "+rst);
+		System.out.println("End : "+rst);
 		return rst;
 	}
 
@@ -271,10 +285,11 @@ public class SteeringBehaviors {
 			rst.add(other.vel);
 			count++;
 		}
+		
 		if(count >0){
 			rst.scale(1/count);
+			rst.subtract(vehicle.velHead);
 		}
-		rst.subtract(vehicle.velHead);
 	}
 	
 	public static void seperation(Vehicle vehicle, HashSet<Vehicle> neighbors, Vector2D rst){

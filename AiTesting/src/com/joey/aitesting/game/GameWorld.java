@@ -90,28 +90,32 @@ public class GameWorld {
 				entity.mass = 1;
 				entity.scale = new Vector2D(1, 1);
 
-				if (vehicles.size() > 0) {
-					Vehicle v = vehicles.get(0);
-					if (v != entity) {
-						entity.steering.persuitVehicle = v;
-						entity.steering.usePersuit = true;
-
+//				if (vehicles.size() > 0) {
+//					Vehicle v = vehicles.get(0);
+//					if (v != entity) {
+//						entity.steering.evadeVehicle= v;
+//						entity.steering.useEvade = false;
+						entity.vel.scale(10);
+						entity.maxForce = 1000;
+						entity.steering.seperationWeight = 8.19f;
+						entity.steering.alignmentWeight = 0.92f;
+						entity.steering.cohesionWeight= 2.37f;
 						entity.steering.useSeperation = true;
 						entity.steering.useAlignment = true;
 						entity.steering.useCohesion = true;
-						entity.steering.neighborRadius = 20;
-					}
-				} else {
-					// entity.steering.arrivePos = new Vector2D(0,0);
-					// entity.steering.useArrive = true
-
-					entity.maxSpeed *= 1;
-					entity.steering.useWander = true;
-					entity.steering.wanderDistance = 50;
-					entity.steering.wanderRadius = 90;
-					entity.steering.wanderJitter = 65;
-				}
-
+						entity.steering.neighborRadius = 100;
+//					}
+//				} else {
+//					// entity.steering.arrivePos = new Vector2D(0,0);
+//					// entity.steering.useArrive = true
+//
+//					entity.maxSpeed *= 1;
+//					entity.steering.useWander = true;
+//					entity.steering.wanderDistance = 50;
+//					entity.steering.wanderRadius = 90;
+//					entity.steering.wanderJitter = 65;
+//				}
+//
 				addVehicle(entity);
 			}
 
