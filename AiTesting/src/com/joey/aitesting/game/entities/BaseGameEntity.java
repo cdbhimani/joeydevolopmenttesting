@@ -15,7 +15,8 @@ public abstract class BaseGameEntity {
 	public Vector2D pos;
 	public Vector2D scale;
 	public boolean tagged;
-
+	public float radius =1;
+	
 	public BaseGameEntity(){
 	    id = getNextValidId();
 	    pos = new Vector2D();
@@ -28,11 +29,16 @@ public abstract class BaseGameEntity {
 	    this();
 	    this.entityType = entityType;
 	}
-	
 	public BaseGameEntity(int entityType, Vector2D pos){
 	    this();
 	    this.pos = pos;
 	    this.entityType = entityType;
+	}
+	public BaseGameEntity(int entityType, Vector2D pos, float radius){
+	    this();
+	    this.pos = pos;
+	    this.entityType = entityType;
+	    this.radius = radius;
 	}
 
 	public BaseGameEntity(int entityType, int forcedId){

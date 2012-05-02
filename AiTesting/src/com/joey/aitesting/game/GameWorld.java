@@ -3,8 +3,9 @@ package com.joey.aitesting.game;
 import com.badlogic.gdx.Gdx;
 import com.joey.aitesting.game.cellSpace.QuadTree;
 import com.joey.aitesting.game.entities.BaseGameEntity;
+import com.joey.aitesting.game.entities.Obstacle;
 import com.joey.aitesting.game.entities.Vehicle;
-import com.joey.aitesting.game.graphics.QuadTreeViewer;
+import com.joey.aitesting.game.graphics.GameWorldViewer;
 import com.joey.aitesting.game.shapes.Rectangle2D;
 import com.joey.aitesting.game.shapes.Vector2D;
 
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 public class GameWorld {
 	public static final int MAX_CELL_COUNT = 2;
 	ArrayList<Vehicle> vehicles;
-	ArrayList<BaseGameEntity> obstacles;
+	ArrayList<Obstacle> obstacles;
 	ArrayList<Wall2D> walls;
 	public QuadTree<Vehicle> quadTree;
 	public Rectangle2D worldBounds;
@@ -22,7 +23,7 @@ public class GameWorld {
 
 	public GameWorld(Rectangle2D worldBounds) {
 		vehicles = new ArrayList<Vehicle>();
-		obstacles = new ArrayList<BaseGameEntity>();
+		obstacles = new ArrayList<Obstacle>();
 		walls = new ArrayList<Wall2D>();
 		quadTree = new QuadTree<Vehicle>(worldBounds, MAX_CELL_COUNT);
 		setWorldSize(worldBounds);
@@ -53,6 +54,14 @@ public class GameWorld {
 	public ArrayList<Vehicle> getVehicles() {
 		// TODO Auto-generated method stub
 		return vehicles;
+	}
+	public ArrayList<Obstacle> getObstacles() {
+		// TODO Auto-generated method stub
+		return obstacles;
+	}
+	public ArrayList<Wall2D> getWalls() {
+		// TODO Auto-generated method stub
+		return walls;
 	}
 
 	public void addVehicle(Vehicle v) {

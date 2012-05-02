@@ -16,10 +16,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
-import com.joey.aitesting.game.graphics.QuadTreeViewer;
+import com.joey.aitesting.game.graphics.GameWorldViewer;
 
 public class QuadTreeViewerControler extends Window{
-	QuadTreeViewer quadViewer;
+	GameWorldViewer quadViewer;
 	Skin skin;
 	public QuadTreeViewerControler(Skin skin, Stage stage){
 		super("QuadTree Controler", skin);
