@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
+import com.joey.aitesting.game.GameWorld;
 import com.joey.aitesting.game.cellSpace.QuadTree;
 import com.joey.aitesting.game.cellSpace.QuadTreeNode;
 import com.joey.aitesting.game.entities.BaseGameEntity;
@@ -22,8 +23,8 @@ import com.joey.aitesting.game.shapes.Rectangle2D;
 import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.steeringBehaviors.SteeringBehaviors;
 
-public class QuadTreeViewer<T extends BaseGameEntity> {
-	public QuadTree<T> tree;
+public class GameWorldViewer{
+	public GameWorld world;
 
 	ShapeRenderer gridRender;
 	SpriteBatch spriteBatch;
@@ -38,11 +39,11 @@ public class QuadTreeViewer<T extends BaseGameEntity> {
 	public boolean drawBorders = true;
 	public boolean drawEntities = true;
 	public boolean drawQuadTree = true;
-	public boolean drawBehaviour = true;
+	public boolean drawBehaviour = false;
 	
 	
-	public QuadTreeViewer(QuadTree<T> tree) {
-		this.tree = tree;
+	public GameWorldViewer(GameWorld world) {
+		this.world = world;
 		gridRender = new ShapeRenderer();
 		spriteBatch = new SpriteBatch();
 		loadTextures();
@@ -54,10 +55,10 @@ public class QuadTreeViewer<T extends BaseGameEntity> {
 	}
 
 	public void rebuildTree() {
-		tree.rebuild();
+		world.quadTree.rebuild();
 	}
 
-	private void renderGridInCell(GLCommon gl, Camera camera, Rectangle2D drawRegion,QuadTreeNode<T> node) {
+	private void renderGridInCell(GLCommon gl, Camera camera, Rectangle2D drawRegion,QuadTreeNode node) {
 		if (drawRegion.intersects(node.region)) {
 			if (node.isLeaf) {
 				if(drawQuadTree){
@@ -79,14 +80,14 @@ public class QuadTreeViewer<T extends BaseGameEntity> {
 
 	}
 	private void renderEntitiesInCell(GLCommon gl, Camera camera, Rectangle2D drawRegion,
-			QuadTreeNode<T> node) {
+			QuadTreeNode node) {
 		float sizeX = spriteTexture.getWidth() / spriteScale;
 		float sizeY = spriteTexture.getHeight() / spriteScale;
 		if (drawRegion.intersects(node.region)) {
 			if (node.isLeaf) {
 				if(drawEntities){
 					
-					for (BaseGameEntity e : node.points) {
+					for (Object e : node.points) {
 						Vehicle entity = (Vehicle)e;
 						
 						if(drawBehaviour){
@@ -189,15 +190,17 @@ public class QuadTreeViewer<T extends BaseGameEntity> {
 		
 		gridRender.setProjectionMatrix(camera.combined);
 		spriteBatch.setProjectionMatrix(camera.combined);
-		synchronized (tree) {			
+		//Draw Entities
+		synchronized (world.quadTree) {			
 			if(drawQuadTree){
-				renderGridInCell(gl, camera, drawRegion, tree.getRootNode());
+				renderGridInCell(gl, camera, drawRegion, world.quadTree.getRootNode());
 			}
 			
 			if(drawEntities||drawBorders){
-				renderEntitiesInCell(gl, camera, drawRegion, tree.getRootNode());
+				renderEntitiesInCell(gl, camera, drawRegion, world.quadTree.getRootNode());
 			}
 		}
+		
 
 	}
 

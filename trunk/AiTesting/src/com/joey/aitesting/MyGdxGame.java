@@ -43,7 +43,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.TableLayout;
 import com.joey.aitesting.game.GameWorld;
 import com.joey.aitesting.game.graphics.ConsoleLogger;
 import com.joey.aitesting.game.graphics.ConsoleViewer;
-import com.joey.aitesting.game.graphics.QuadTreeViewer;
+import com.joey.aitesting.game.graphics.GameWorldViewer;
 import com.joey.aitesting.game.shapes.Rectangle2D;
 import com.me.mygdxgame.Gestures.OrthoCamController;
 
@@ -57,9 +57,9 @@ public class MyGdxGame implements ApplicationListener {
 	Actor root;
 	GameWorld world;
 
-	QuadTreeViewer quadViewer;
-	OrthoCamController quadViewCamController;
-	OrthographicCamera quadViewCam;
+	GameWorldViewer worldViewer;
+	OrthoCamController worldViewCamController;
+	OrthographicCamera worldViewCam;
 
 	ConsoleViewer consoleViewer;
 	ConsoleLogger console;
@@ -88,9 +88,9 @@ public class MyGdxGame implements ApplicationListener {
 		Rectangle2D bounds = new Rectangle2D(-sizeX, -sizeY, sizeX, sizeY);
 		world = new GameWorld(bounds);
 
-		quadViewCam = new OrthographicCamera();
-		quadViewCamController = new OrthoCamController(quadViewCam);
-		quadViewer = new QuadTreeViewer(world.quadTree);
+		worldViewCam = new OrthographicCamera();
+		worldViewCamController = new OrthoCamController(worldViewCam);
+		worldViewer = new GameWorldViewer(world);
 
 		console = new ConsoleLogger();
 		console.setMaxConsoleLines(4);
@@ -101,7 +101,7 @@ public class MyGdxGame implements ApplicationListener {
 
 		InputMultiplexer multi = new InputMultiplexer();
 		multi.addProcessor(stage);
-		multi.addProcessor(quadViewCamController);
+		multi.addProcessor(worldViewCamController);
 		// multi.addProcessor(this);
 		Gdx.input.setInputProcessor(multi);
 
@@ -161,8 +161,8 @@ public class MyGdxGame implements ApplicationListener {
 	public void drawWorld() {
 		GL10 gl = Gdx.gl10;
 
-		quadViewCam.update();
-		quadViewCam.apply(gl);
+		worldViewCam.update();
+		worldViewCam.apply(gl);
 
 		gl.glClearColor(1, 1, 1, 1);
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
@@ -171,11 +171,11 @@ public class MyGdxGame implements ApplicationListener {
 		Vector3 p2 = new Vector3(Gdx.graphics.getWidth(),
 				Gdx.graphics.getHeight(), 0);
 
-		quadViewCam.unproject(p1);
-		quadViewCam.unproject(p2);
+		worldViewCam.unproject(p1);
+		worldViewCam.unproject(p2);
 
 		Rectangle2D drawRegion = new Rectangle2D(p1.x, p2.y, p2.x, p1.y);
-		quadViewer.render(gl, quadViewCam, drawRegion);
+		worldViewer.render(gl, worldViewCam, drawRegion);
 
 		stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
 		stage.draw();
@@ -261,8 +261,8 @@ public class MyGdxGame implements ApplicationListener {
 	}
 	@Override
 	public void resize(int width, int height) {
-		quadViewCam.viewportWidth = width;
-		quadViewCam.viewportHeight = height;
+		worldViewCam.viewportWidth = width;
+		worldViewCam.viewportHeight = height;
 
 		consoleCamera.viewportWidth = width;
 		consoleCamera.viewportHeight = height;
