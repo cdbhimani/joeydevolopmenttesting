@@ -27,7 +27,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Align;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
@@ -48,8 +47,8 @@ import com.joey.aitesting.game.shapes.Rectangle2D;
 import com.me.mygdxgame.Gestures.OrthoCamController;
 
 public class MyGdxGame implements ApplicationListener {
-	float MAX_VEL = 500;
-	float MAX_FORCE = 50000;
+	float MAX_VEL = 147.86f;
+	float MAX_FORCE = 4f;
 
 	Skin skin;
 	Stage stage;
@@ -82,7 +81,7 @@ public class MyGdxGame implements ApplicationListener {
 				false);
 		batch = new SpriteBatch();
 
-		float scale = 3;
+		float scale = 1;
 		float sizeX = scale*Gdx.graphics.getWidth()/2;
 		float sizeY = scale*Gdx.graphics.getHeight()/2;
 		Rectangle2D bounds = new Rectangle2D(-sizeX, -sizeY, sizeX, sizeY);
