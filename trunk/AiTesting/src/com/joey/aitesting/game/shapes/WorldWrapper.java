@@ -5,15 +5,15 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-
+import com.sun.awt.AWTUtilities;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class WorldWrapper {
 
 	public static void main(String input[]) throws InterruptedException{
-	
-		final Rectangle2D reg = new Rectangle2D(110,130,190,210);
+		final int recCount[] = new int[1];
+		final Rectangle2D reg = new Rectangle2D(60,60,140,140);
 		final Rectangle2D world = new Rectangle2D(100,100,200,200);
 		final Rectangle2D hold[] = new Rectangle2D[4];
 		hold[0] = new Rectangle2D(0,0,5,5);
@@ -22,16 +22,16 @@ public class WorldWrapper {
 		hold[3] = new Rectangle2D(0,0,5,5);
 		
 		
-		final int num = getOverlapRegions(reg, world, hold);
+		recCount[0] = getOverlapRegions(reg, world, hold);
 		
-		System.out.println("Found : "+num);
-		for(int i = 0; i < num; i++){
-			//System.out.println(hold[i]);
+		System.out.println("Found : "+recCount[0]);
+		for(int i = 0; i < recCount[0]; i++){
+			System.out.println(hold[i]);
 		}
 		
 		
-		float dx = -50;
-		float dy = -50;
+		float dx = -80;
+		float dy = -80;
 		reg.translate(dx,dy);
 		world.translate(dx,dy);
 		hold[0].translate(dx,dy);
@@ -39,7 +39,7 @@ public class WorldWrapper {
 		hold[2].translate(dx,dy);
 		hold[3].translate(dx,dy);
 		
-		float scale = 3;
+		float scale = 1;
 		reg.scale(scale);
 		world.scale(scale);
 		hold[0].scale(scale);
@@ -71,17 +71,22 @@ public class WorldWrapper {
 				g.setColor(Color.PINK);
 				fillRectangle(g, reg);
 				
+				
 				g.setColor(Color.red);
-				drawRectangle(g, hold[0]);
+				if(recCount[0] > 0)
+					drawRectangle(g, hold[0]);
 				
 				g.setColor(Color.green);
-				drawRectangle(g, hold[1]);
+				if(recCount[0] > 1)
+					drawRectangle(g, hold[1]);
 				
 				g.setColor(Color.BLUE);
-				drawRectangle(g, hold[2]);
+				if(recCount[0] > 2)
+					drawRectangle(g, hold[2]);
 				
 				g.setColor(Color.CYAN);
-				drawRectangle(g, hold[3]);
+				if(recCount[0] > 3)
+					drawRectangle(g, hold[3]);
 
 				
 			}
@@ -93,22 +98,30 @@ public class WorldWrapper {
 		f.getContentPane().setLayout(new BorderLayout());
 		f.getContentPane().add(panel);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setSize(800, 600);
+		f.setLocation(800, 600);
+		f.setSize(300, 300);
 		
 		f.setVisible(true);
+		AWTUtilities.setWindowOpacity(f, 0.2f);
 		
-		
-		while(true){
+		while(true)
+		{
 			Thread.sleep(100);
-			reg.translate(0, 1);
+			reg.translate(2, 5);
 			System.out.println(reg);
-			getOverlapRegions(reg, world, hold);
+			recCount[0]=getOverlapRegions(reg, world, hold);
 			f.repaint();
 			
 			if(reg.y1 > world.y2){
-				float width = reg.getHeight();
-				reg.y1 = world.y1-width;
-				reg.y2 = reg.y1+width;
+				float height = reg.getHeight();
+				reg.y1 = world.y1-height;
+				reg.y2 = reg.y1+height;
+			}
+			
+			if(reg.x1 > world.x2){
+				float width = reg.getWidth();
+				reg.x1 = world.x1-width;
+				reg.x2 = reg.x1+width;
 			}
 		}
 	}
@@ -167,10 +180,114 @@ public class WorldWrapper {
 			rst[1].x2 = reg.x2;
 			rst[1].y2 = world.y2;
 			return 2;
-		}else{
-			rst[0].set(reg);
-			return 1;
+		}else if((kPlusY^kPlusX) == flag){
+			rst[0].x1 = reg.x1;
+			rst[0].y1 = reg.y1;
+			rst[0].x2 = world.x2;
+			rst[0].y2 = world.y2;
+			
+			rst[1].x1 = world.x1;
+			rst[1].y1 = world.y1;
+			rst[1].x2 = reg.x2-world.getWidth();
+			rst[1].y2 = reg.y2-world.getHeight();
+			
+			rst[2].x1 = world.x1;
+			rst[2].y1 = reg.y1;
+			rst[2].x2 = reg.x2-world.getWidth();
+			rst[2].y2 =  world.y2;
+			
+			rst[3].x1 = reg.x1;
+			rst[3].y1 = world.y1;
+			rst[3].x2 = world.x2;
+			rst[3].y2 = reg.y2-world.getHeight();
+			return 4;
+			
+		}else if((kMinusY^kMinusX) == flag){
+			rst[0].x1 = world.x1;
+			rst[0].y1 = world.y1;
+			rst[0].x2 = reg.x2;
+			rst[0].y2 = reg.y2;
+			
+			rst[1].x1 = reg.x1+world.getWidth();
+			rst[1].y1 = reg.y1+world.getHeight();
+			rst[1].x2 = world.x2;
+			rst[1].y2 = world.y2;
+			
+			rst[2].x1 = reg.x1+world.getWidth();
+			rst[2].y1 = world.y1;
+			rst[2].x2 = world.x2;
+			rst[2].y2 = reg.y2;
+			
+			rst[3].x1 = world.x1;
+			rst[3].y1 = reg.y1+world.getHeight();
+			rst[3].x2 = reg.x2;
+			rst[3].y2 = world.y2;
+			return 4;
+		}else if((kPlusY^kMinusX) == flag){
+			System.out.println("HERE");
+			rst[0].x1 = world.x1;
+			rst[0].y1 = reg.y1;
+			rst[0].x2 = reg.x2;
+			rst[0].y2 = world.y2;
+			
+			rst[1].x1 = reg.x1+world.getWidth();
+			rst[1].y1 = world.y1;
+			rst[1].x2 = world.x2;
+			rst[1].y2 = reg.y2-world.getHeight();
+			
+			rst[2].x1 = reg.x1+world.getWidth();
+			rst[2].y1 = reg.y1;
+			rst[2].x2 = world.x2;
+			rst[2].y2 =  world.y2;
+			
+			rst[3].x1 = world.x1;
+			rst[3].y1 = world.y1;
+			rst[3].x2 = reg.x2;
+			rst[3].y2 = reg.y2-world.getHeight();
+			return 4;
+			
+		}else if((kMinusY^kPlusX) == flag){
+			rst[0].x1 = reg.x1;
+			rst[0].y1 = world.y1;
+			rst[0].x2 = world.x2;
+			rst[0].y2 = reg.y2;
+			
+			rst[1].x1 = world.x1;
+			rst[1].y1 = reg.y1+world.getHeight();
+			rst[1].x2 = reg.x2-world.getWidth();
+			rst[1].y2 = world.y2;
+			
+			rst[2].x1 = world.x1;
+			rst[2].y1 = world.y1;
+			rst[2].x2 = reg.x2-world.getWidth();
+			rst[2].y2 = reg.y2;
+			
+			rst[3].x1 = reg.x1;
+			rst[3].y1 = reg.y1+world.getHeight();
+			rst[3].x2 = world.x2;
+			rst[3].y2 = world.y2;
+			return 4;
 		}
+		boolean debug = false;
+		if(debug){
+			System.out.println("Minus X: "+leftPad(Integer.toBinaryString(flag), Integer.SIZE, '0'));		
+			System.out.println("Minus X: "+leftPad(Integer.toBinaryString(kMinusX), Integer.SIZE, '0'));
+			System.out.println("Minus Y: "+leftPad(Integer.toBinaryString(kMinusY), Integer.SIZE, '0'));
+			System.out.println("Plus  X: "+leftPad(Integer.toBinaryString(kPlusX), Integer.SIZE, '0'));
+			System.out.println("Plus  Y: "+leftPad(Integer.toBinaryString(kPlusY), Integer.SIZE, '0'));
+		}
+		rst[0].set(reg);
+		return 1;
+	}
+	
+	public static String leftPad(String val, int length, char c){
+		StringBuilder build = new StringBuilder();
+		int num = length-val.length();
+		for(int i = 0; i < num; i++){
+			build.append(c);
+		}
+		build.append(val);
+		return build.toString();
 	}
 	 
 	/**
