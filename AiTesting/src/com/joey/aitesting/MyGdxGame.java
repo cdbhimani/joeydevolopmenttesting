@@ -81,7 +81,7 @@ public class MyGdxGame implements ApplicationListener {
 				false);
 		batch = new SpriteBatch();
 
-		float scale = 1;
+		float scale = 2;
 		float sizeX = scale*Gdx.graphics.getWidth()/2;
 		float sizeY = scale*Gdx.graphics.getHeight()/2;
 		Rectangle2D bounds = new Rectangle2D(-sizeX, -sizeY, sizeX, sizeY);

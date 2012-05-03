@@ -103,7 +103,7 @@ public class GameWorldViewer{
 			}
 			
 		}
-		if(!drawBehaviour){
+		if(vehicle.steering.drawBehaviour){
 			if (vehicle.steering.useFlee) {
 				Vector2D rst = new Vector2D(vehicle.pos);
 
