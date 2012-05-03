@@ -51,6 +51,8 @@ public class Vehicle extends MovingEntity {
 
 	@Override
 	public void update(float time_elapsed) {
+		
+		//System.out.println("\n\nEntity : "+id);
 		// update the time elapsed
 		this.timeElapsed = time_elapsed;
 
@@ -63,7 +65,7 @@ public class Vehicle extends MovingEntity {
 		// calculate the combined force from each steering behavior in the
 		// vehicle's list
 		steeringForce = steering.calculate(time_elapsed);
-
+		
 		// Acceleration = Force/Mass
 		acceleration.x = steeringForce.x / mass;
 		acceleration.y = steeringForce.y / mass;
@@ -79,6 +81,11 @@ public class Vehicle extends MovingEntity {
 		pos.x += vel.x * time_elapsed;
 		pos.y += vel.y * time_elapsed;
 		
+//		System.out.println("Steering Force : "+steeringForce);
+//		System.out.println("Time : "+time_elapsed);
+//		System.out.println("Pos : "+pos);
+//		System.out.println("Vel : "+vel);
+//		System.out.println("Acl : "+acceleration);
 		// update the heading if the vehicle has a non zero velocity
 		if (vel.lengthSq() > 0.00000001) {
 			velHead.setLocation(vel);

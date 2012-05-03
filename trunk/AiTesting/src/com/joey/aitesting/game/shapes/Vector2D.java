@@ -26,7 +26,7 @@ public class Vector2D {
 	}
 
 	public String toString() {
-		return "[" + x + "," + y + "]";
+		return "[" + x + "," + y + "]("+length()+")";
 	}
 
 	public float lengthSq() {

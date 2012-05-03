@@ -16,6 +16,7 @@ public class SteeringBehaviors {
 	public static final float DecelerationTweaker = .3f;
 	Vehicle vehicle;
 
+	public boolean drawBehaviour = false;
 	//Fleeing Paramaters
 	public float fleeWeight = 1;
 	public boolean useFlee = false;
@@ -138,7 +139,7 @@ public class SteeringBehaviors {
 	
 	public Vector2D calculate(float updateTime) {
 		Vector2D rst = new Vector2D();
-		int count = 0;
+		
 		
 		Vector2D hold = new Vector2D();
 		Vector2D point = new Vector2D();
@@ -152,7 +153,7 @@ public class SteeringBehaviors {
 			calculateNeighbobors(vehicle,neighbors, reg);
 			//Remove self
 			neighbors.remove(vehicle);
-			System.out.println("Finding Neighbours: "+neighbors.size());
+//			//System.out.println("Finding Neighbours: "+neighbors.size());
 		}else{
 			neighbors.clear();
 		}
@@ -162,10 +163,10 @@ public class SteeringBehaviors {
 			moveToClosest(vehicle.pos, seekPos, point,
 					vehicle.world.worldBounds);
 			seek(point, vehicle, hold);
-			count+=seekWeight;
+			hold.scale(seekWeight);
 			rst.add(hold);
 			
-			//System.out.println("Seek : "+rst);
+			////System.out.println("Seek : "+rst);
 		}
 
 		if (useFlee) {
@@ -177,10 +178,10 @@ public class SteeringBehaviors {
 			}else{
 				flee(point, vehicle, hold);
 			}
-			count+=fleeWeight;
+			hold.scale(fleeWeight);
 			rst.add(hold);
 			
-			//System.out.println("Flee : "+rst);
+			////System.out.println("Flee : "+rst);
 		}
 
 		if (useArrive) {
@@ -188,28 +189,28 @@ public class SteeringBehaviors {
 			moveToClosest(vehicle.pos, arrivePos, point,
 					vehicle.world.worldBounds);
 			arrive(point, vehicle, 1, hold);
-			count+=arriveWeight;
+			hold.scale(arriveWeight);
 			rst.add(hold);
 			
-			//System.out.println("Arrive : "+rst);
+			////System.out.println("Arrive : "+rst);
 		}
 
 		if (usePersuit) {
 			hold.setLocation(0,0);
 			persuit(vehicle, persuitVehicle, hold);
-			count+=persuitWeight;
+			hold.scale(persuitWeight);
 			rst.add(hold);
 			
-			//System.out.println("Persuit : "+rst);
+			////System.out.println("Persuit : "+rst);
 		}
 		
 		if (useEvade) {
 			hold.setLocation(0,0);
 			evade(vehicle, evadeVehicle, hold);
-			count+=evadeWeight;
+			hold.scale(evadeWeight);
 			rst.add(hold);
 			
-			//System.out.println("Evade : "+rst);
+			////System.out.println("Evade : "+rst);
 		}
 		
 		if(useWander){
@@ -220,58 +221,54 @@ public class SteeringBehaviors {
 			}
 			wander(vehicle,updateTime, wanderJitter, wanderRadius, wanderDistance, wanderVector, hold);
 			
-			count+=wanderWeight;
+			hold.scale(wanderWeight);
 			rst.add(hold);
 			
-			//System.out.println("Wander : "+rst);
+			////System.out.println("Wander : "+rst);
 		}
 
 		if(useSeperation){
 			hold.setLocation(0,0);
 			seperation(vehicle, neighbors, hold);
-			count+=seperationWeight;
+			hold.scale(seperationWeight);
 			rst.add(hold);
 			
-			System.out.println("Seperation : "+hold);
+			//System.out.println("Seperation : "+hold);
 		}
 		if(useAlignment){
 			hold.setLocation(0,0);
 			alignment(vehicle, neighbors, hold);
-			count+=alignmentWeight;
+			hold.scale(alignmentWeight);
 			rst.add(hold);
 			
-			System.out.println("Alignment : "+hold);
+			//System.out.println("Alignment : "+hold);
 		}
 		if(useCohesion){
 			hold.setLocation(0,0);
 			cohesion(vehicle, neighbors, hold);
-			count+=cohesionWeight;
+			hold.scale(cohesionWeight);
 			rst.add(hold);
 			
 			
-			System.out.println("Cohesion : "+hold);
+			//System.out.println("Cohesion : "+hold);
 		}
 		
 		if(useObstacleAvoidance){
 			hold.setLocation(0,0);
 			obstacleAvoidance(vehicle.world.getObstacles(), vehicle,obstacleSearchBoxDistance,hold);
-			count+=obstacleAvoidanceWeight;
+			hold.scale(obstacleAvoidanceWeight);
 			rst.add(hold);
 			
 			
-			System.out.println("Cohesion : "+hold);
+			//System.out.println("Cohesion : "+hold);
 		}
 		
-		//System.out.println("Scale Testing : "+rst);
-		if(count > 0){
-			rst.scale(1f/count);
-		}
 		if (rst.lengthSq() > vehicle.maxForce * vehicle.maxForce) {
 			rst.normalise();
 			rst.scale(vehicle.maxForce);
 		}
 		
-		System.out.println("End : "+rst);
+		//System.out.println("End : "+rst);
 		return rst;
 	}
 
