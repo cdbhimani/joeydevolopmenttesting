@@ -130,6 +130,43 @@ public class WorldWrapper {
 	public static int kPlusX = 4;
 	public static int kPlusY = 8;
 	
+	/**
+	 * Determins the closest position of P2 (assuming
+	 * its on a wrapped world given by worldBounds)
+	 * 
+	 *  This is required for following entites
+	 *  of the edge of the world
+	 * @param p1 - The entities position
+	 * @param p2 - The point in the world
+	 * @param rst - The point mapped on the world
+	 * @param worldBounds - The world rectangle
+	 */
+	public static void moveToClosest(Vector2D p1, Vector2D p2, Vector2D rst,
+			Rectangle2D worldBounds) {
+		Vector2D.subtract(p1, p2, rst);
+
+		if (Math.abs(rst.x) > worldBounds.getWidth() / 2) {
+			if (rst.x > 0) {
+				rst.x = p2.x + worldBounds.getWidth();
+			} else {
+				rst.x = p2.x - worldBounds.getWidth();
+			}
+		} else {
+			rst.x = p2.x;
+		}
+
+		if (Math.abs(rst.y) > worldBounds.getHeight() / 2) {
+			if (rst.y > 0) {
+				rst.y = p2.y + worldBounds.getHeight();
+			} else {
+				rst.y = p2.y - worldBounds.getHeight();
+			}
+		} else {
+			rst.y = p2.y;
+		}
+	}
+	
+	
 	public static  int getOverlapRegions( Rectangle2D reg, Rectangle2D world, Rectangle2D rst[])
 	{
 		int flag = testOverlapFlag(reg, world);

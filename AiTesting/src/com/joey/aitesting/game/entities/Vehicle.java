@@ -6,7 +6,7 @@ import com.joey.aitesting.game.GameWorld;
 import com.joey.aitesting.game.HeadingSmoother;
 import com.joey.aitesting.game.maths.Transformations;
 import com.joey.aitesting.game.shapes.Vector2D;
-import com.joey.aitesting.game.steeringBehaviors.SteeringBehaviors;
+import com.joey.aitesting.game.steering.SteeringBehaviors;
 
 public class Vehicle extends MovingEntity {
 	public GameWorld world;

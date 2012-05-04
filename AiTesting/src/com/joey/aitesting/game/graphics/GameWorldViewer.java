@@ -24,7 +24,7 @@ import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.maths.Transformations;
 import com.joey.aitesting.game.shapes.Rectangle2D;
 import com.joey.aitesting.game.shapes.Vector2D;
-import com.joey.aitesting.game.steeringBehaviors.SteeringBehaviors;
+import com.joey.aitesting.game.steering.SteeringBehaviors;
 
 public class GameWorldViewer{
 	public GameWorld world;
