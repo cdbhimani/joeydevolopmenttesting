@@ -36,10 +36,11 @@ public class Vehicle extends MovingEntity {
 		this.timeElapsed = 0;
 		this.steering = new SteeringBehaviors(this);
 		
-		setupShape(5f);
+		setupShape(15f);
 	}
 
 	public void setupShape(float scale) {
+		radius = scale;
 		localVehicleShape.add(new Vector2D(-1.0f*scale, 0.6f*scale));
 		localVehicleShape.add(new Vector2D(1.0f*scale, 0.0f*scale));
 		localVehicleShape.add(new Vector2D(-1.0f*scale, -0.6f*scale));

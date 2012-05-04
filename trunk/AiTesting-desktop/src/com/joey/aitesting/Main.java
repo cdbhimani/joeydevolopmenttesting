@@ -1,5 +1,6 @@
 package com.joey.aitesting;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
@@ -8,9 +9,12 @@ public class Main {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "AiTesting";
 		cfg.useGL20 = false;
-		cfg.width = 300;
-		cfg.height = 300;
+		cfg.width = 600;
+		cfg.height = 600;
+
 		
-		new LwjglApplication(ApplicationCentral.getApplication(), cfg);
+		
+		LwjglApplication app = new LwjglApplication(ApplicationCentral.getApplication(), cfg);
+		
 	}
 }

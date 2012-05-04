@@ -19,7 +19,9 @@ import com.joey.aitesting.game.GameWorld;
 import com.joey.aitesting.game.cellSpace.QuadTree;
 import com.joey.aitesting.game.cellSpace.QuadTreeNode;
 import com.joey.aitesting.game.entities.BaseGameEntity;
+import com.joey.aitesting.game.entities.Obstacle;
 import com.joey.aitesting.game.entities.Vehicle;
+import com.joey.aitesting.game.maths.Transformations;
 import com.joey.aitesting.game.shapes.Rectangle2D;
 import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.steeringBehaviors.SteeringBehaviors;
@@ -41,7 +43,7 @@ public class GameWorldViewer{
 	public boolean drawEntities = true;
 	public boolean drawQuadTree = false;
 	public boolean drawBehaviour = false;
-	
+	public boolean drawObstacles = true;
 	
 	public GameWorldViewer(GameWorld world) {
 		this.world = world;
@@ -84,26 +86,30 @@ public class GameWorldViewer{
 	private void drawEntity(GLCommon gl, Camera camera, Rectangle2D drawRegion, BaseGameEntity e){
 		Vehicle vehicle = (Vehicle)e;
 		
-		if(e.getId() == 0){
-			HashSet<Vehicle> neighbors = new HashSet<Vehicle>();
-			Rectangle2D reg = new Rectangle2D(
-					vehicle.pos.x-vehicle.steering.neighborRadius, vehicle.pos.y-vehicle.steering.neighborRadius, 
-					vehicle.pos.x+vehicle.steering.neighborRadius, vehicle.pos.y+vehicle.steering.neighborRadius);
-			reg.ensureOrder();
-			vehicle.steering.calculateNeighbobors(vehicle,neighbors, reg);
-			//Remove self
-			neighbors.remove(vehicle);
-			
-			for(Vehicle v : neighbors){
+		if(vehicle.steering.drawBehaviour){
+			if(vehicle.steering.useObstacleAvoidance){
+				
+				Vector2D p1 = new Vector2D(0,-vehicle.radius);
+				Vector2D p2 = new Vector2D(vehicle.steering.obstacleSearchBoxDistance,-vehicle.radius);
+				Vector2D p3 = new Vector2D(vehicle.steering.obstacleSearchBoxDistance,vehicle.radius);
+				Vector2D p4 = new Vector2D(0,vehicle.radius);
+				ArrayList<Vector2D> points = new ArrayList<Vector2D>();
+				points.add(p1);
+				points.add(p2);
+				points.add(p3);
+				points.add(p4);
+				Transformations.WorldTransform(points, vehicle.pos, vehicle.velHead, vehicle.velSide);
+				
 				gridRender.setColor(Color.RED);
-				gridRender.begin(ShapeType.FilledCircle);
-				gridRender.filledCircle(v.pos.x, v.pos.y,
-						10);
-				gridRender.end();	
+				gridRender.begin(ShapeType.Line);
+				gridRender.line(p1.x, p1.y, p2.x, p2.y);
+				gridRender.line(p2.x, p2.y, p3.x, p3.y);
+				gridRender.line(p3.x, p3.y, p4.x, p4.y);
+				gridRender.line(p4.x, p4.y, p1.x, p1.y);
+				gridRender.end();
 			}
 			
-		}
-		if(vehicle.steering.drawBehaviour){
+			
 			if (vehicle.steering.useFlee) {
 				Vector2D rst = new Vector2D(vehicle.pos);
 
@@ -126,10 +132,24 @@ public class GameWorldViewer{
 			if (vehicle.steering.useSeperation||vehicle.steering.useCohesion || vehicle.steering.useAlignment) {
 				Vector2D rst = new Vector2D(vehicle.pos);
 
+				
 				Rectangle2D reg = new Rectangle2D(
 						vehicle.pos.x-vehicle.steering.neighborRadius, vehicle.pos.y-vehicle.steering.neighborRadius, 
 						vehicle.pos.x+vehicle.steering.neighborRadius, vehicle.pos.y+vehicle.steering.neighborRadius);
+				
 				reg.ensureOrder();
+				
+				HashSet<Vehicle> neighbors = new HashSet<Vehicle>();
+				vehicle.steering.calculateNeighbobors(vehicle,neighbors, reg);
+				neighbors.remove(vehicle);
+				
+				for(Vehicle v : neighbors){
+					gridRender.setColor(Color.RED);
+					gridRender.begin(ShapeType.Circle);
+					gridRender.circle(v.pos.x, v.pos.y,
+							10);
+					gridRender.end();	
+				}
 				
 				gridRender.setColor(Color.RED);
 				gridRender.begin(ShapeType.Rectangle);
@@ -228,9 +248,22 @@ public class GameWorldViewer{
 			if(drawEntities||drawBorders){
 				renderEntitiesInCell(gl, camera, drawRegion, world.quadTree.getRootNode());
 			}
+			
+			if(drawObstacles){
+				renderObstacles(gl, camera, drawRegion, world.getObstacles());
+			}
 		}
 		
 
+	}
+
+	private void renderObstacles(GLCommon gl, Camera camera,Rectangle2D drawRegion, ArrayList<Obstacle> obstacles) {
+		for(Obstacle o : obstacles){
+			gridRender.setColor(Color.BLACK);
+			gridRender.begin(ShapeType.Circle);
+			gridRender.circle(o.pos.x, o.pos.y, o.radius);
+			gridRender.end();
+		}
 	}
 
 }
