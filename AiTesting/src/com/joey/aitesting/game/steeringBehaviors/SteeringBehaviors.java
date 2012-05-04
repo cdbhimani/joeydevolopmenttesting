@@ -41,7 +41,9 @@ public class SteeringBehaviors {
 	
 	//Evade Parameters
 	public float evadeWeight = 1;
+	public float evadePanicDistance = 30;
 	public boolean useEvade = false;
+	public boolean useEvadePanic = false;
 	public Vehicle evadeVehicle;
 
 	//Wander Parameters
@@ -206,7 +208,12 @@ public class SteeringBehaviors {
 		
 		if (useEvade) {
 			hold.setLocation(0,0);
-			evade(vehicle, evadeVehicle, hold);
+			if(useEvadePanic){
+				evade(vehicle, evadeVehicle,evadePanicDistance, hold);
+			}else{
+				evade(vehicle, evadeVehicle, hold);	
+			}
+			
 			hold.scale(evadeWeight);
 			rst.add(hold);
 			
@@ -388,7 +395,28 @@ public class SteeringBehaviors {
 		moveToClosest(vehicle.pos, vec, point, vehicle.world.worldBounds);
 		seek(point, vehicle, rst);
 	}
-
+	public static void evade(Vehicle vehicle, Vehicle evade,float panicDistance, Vector2D rst) {
+		
+		Vector2D.subtract(evade.pos ,vehicle.pos, rst);
+		if (rst.lengthSq() > panicDistance * panicDistance) {
+			rst.x = 0;
+			rst.y = 0;
+			return;
+		}
+		
+		Vector2D holder = new Vector2D();
+		
+		float LookAheadTime = holder.length()/(vehicle.maxSpeed + evade.vel.length());
+		
+		holder.setLocation(evade.vel);
+		holder.scale(LookAheadTime);
+		holder.add(evade.pos);
+		
+		Vector2D point = new Vector2D();
+		moveToClosest(vehicle.pos, holder, point, vehicle.world.worldBounds);
+		flee(point, vehicle, rst);
+	}
+	
 	public static void evade(Vehicle vehicle, Vehicle evade, Vector2D rst) {
 		Vector2D holder = new Vector2D();
 		Vector2D.subtract(evade.pos ,vehicle.pos, rst);

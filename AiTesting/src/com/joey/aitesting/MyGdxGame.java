@@ -39,6 +39,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.TableLayout;
+import com.joey.aitesting.game.ExitListner;
 import com.joey.aitesting.game.GameWorld;
 import com.joey.aitesting.game.graphics.ConsoleLogger;
 import com.joey.aitesting.game.graphics.ConsoleViewer;
@@ -81,7 +82,7 @@ public class MyGdxGame implements ApplicationListener {
 				false);
 		batch = new SpriteBatch();
 
-		float scale = 2;
+		float scale = 1;
 		float sizeX = scale*Gdx.graphics.getWidth()/2;
 		float sizeY = scale*Gdx.graphics.getHeight()/2;
 		Rectangle2D bounds = new Rectangle2D(-sizeX, -sizeY, sizeX, sizeY);
@@ -101,8 +102,10 @@ public class MyGdxGame implements ApplicationListener {
 		InputMultiplexer multi = new InputMultiplexer();
 		multi.addProcessor(stage);
 		multi.addProcessor(worldViewCamController);
+		multi.addProcessor(new ExitListner());
 		// multi.addProcessor(this);
 		Gdx.input.setInputProcessor(multi);
+		world.addObstacles(5,50);
 
 	}
 

@@ -74,6 +74,14 @@ public class GameWorld {
 		quadTree.removeEntity(v);
 	}
 
+	public void addObstacles(int count, float radius) {
+		synchronized (obstacles) {
+			for (int i = 0; i < count; i++) {
+				Obstacle ob = new Obstacle(worldBounds.getRandomPos(), radius);
+				obstacles.add(ob);
+			}
+		}
+	}
 	// Add a new viechle in random position
 	public void addVehicles(int count, float maxVel, float maxForce) {
 		synchronized (quadTree) {
@@ -81,10 +89,6 @@ public class GameWorld {
 
 				Vehicle entity = new Vehicle(this);
 				entity.pos.setLocation(worldBounds.getRandomPos());
-				entity.vel.setLocation(
-						(float) (maxVel * (1 - 2 * Math.random())),
-						(float) (maxVel * (1 - 2 * Math.random())));
-
 				entity.maxSpeed = maxVel;
 				entity.maxForce = maxForce;
 				entity.mass = 1;
@@ -93,32 +97,55 @@ public class GameWorld {
 //				if(vehicles.size() < 1){
 //					entity.steering.drawBehaviour = true;
 //				}
-				if (vehicles.size() > 0) {
-					Vehicle v = vehicles.get(0);
-					if (v != entity) {
-						entity.steering.evadeVehicle= v;
-						entity.steering.useEvade = true;
+//				if (vehicles.size() > 0) {
+//					Vehicle v = vehicles.get(0);
+//					if (v != entity) {
+//						entity.steering.evadeVehicle= v;
+//						entity.steering.evadePanicDistance = 100;
+//						entity.steering.useEvade = true;
+//						entity.steering.useEvadePanic = true;
+//						entity.steering.evadeWeight = 5;
+//						
+						entity.steering.useObstacleAvoidance = true;
+						entity.steering.obstacleAvoidanceWeight = 10;
+						entity.steering.obstacleSearchBoxDistance= 10;
+						
+						entity.steering.useWander = true;
+						entity.steering.wanderDistance = 50;
+						entity.steering.wanderRadius = 30;
+						entity.steering.wanderJitter = .1f;
+						
 						entity.maxSpeed = 100;
+						
+						entity.vel.setLocation(
+								(float) (entity.maxSpeed * (1 - 2 * Math.random())),
+								(float) (entity.maxSpeed * (1 - 2 * Math.random())));
+						
 						entity.maxForce = 2000;
-						entity.steering.seperationWeight = 1.1f;
-						entity.steering.alignmentWeight = 2f;
+						entity.steering.seperationWeight = 1f;
+						entity.steering.alignmentWeight = 1f;
 						entity.steering.cohesionWeight= 1f;
-						entity.steering.useSeperation = true;
-						entity.steering.useAlignment = true;
-						entity.steering.useCohesion = true;
-						entity.steering.neighborRadius = 30;
-					}
-				} else {
-					// entity.steering.arrivePos = new Vector2D(0,0);
-					// entity.steering.useArrive = true
-					entity.maxSpeed = 500;
-					entity.maxForce = 1000;
-					entity.steering.useWander = true;
-					entity.steering.wanderDistance = 50;
-					entity.steering.wanderRadius = 90;
-					entity.steering.wanderJitter = 65;
-				}
-//
+
+						entity.steering.useSeperation = false;
+						entity.steering.useAlignment = false;
+						entity.steering.useCohesion = false;
+						entity.steering.neighborRadius = 40;
+						
+						entity.steering.drawBehaviour = true;
+//					}
+//				} else {
+//					// entity.steering.arrivePos = new Vector2D(0,0);
+//					// entity.steering.useArrive = true
+//					entity.maxSpeed = Gdx.graphics.getWidth()/4;
+//					entity.maxForce = 2000;
+//					entity.steering.useWander = true;
+//					entity.steering.wanderDistance = 50;
+//					entity.steering.wanderRadius = 90;
+//					entity.steering.wanderJitter = 65;
+//					entity.steering.drawBehaviour = true;
+//					
+//				}
+
 				addVehicle(entity);
 			}
 

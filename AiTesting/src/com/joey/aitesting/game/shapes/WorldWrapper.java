@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import com.sun.awt.AWTUtilities;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -24,7 +23,6 @@ public class WorldWrapper {
 		
 		recCount[0] = getOverlapRegions(reg, world, hold);
 		
-		System.out.println("Found : "+recCount[0]);
 		for(int i = 0; i < recCount[0]; i++){
 			System.out.println(hold[i]);
 		}
@@ -102,7 +100,6 @@ public class WorldWrapper {
 		f.setSize(300, 300);
 		
 		f.setVisible(true);
-		AWTUtilities.setWindowOpacity(f, 0.2f);
 		
 		while(true)
 		{
@@ -224,7 +221,6 @@ public class WorldWrapper {
 			rst[3].y2 = world.y2;
 			return 4;
 		}else if((kPlusY^kMinusX) == flag){
-			System.out.println("HERE");
 			rst[0].x1 = world.x1;
 			rst[0].y1 = reg.y1;
 			rst[0].x2 = reg.x2;
