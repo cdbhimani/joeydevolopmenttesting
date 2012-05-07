@@ -5,6 +5,7 @@ import com.joey.aitesting.game.cellSpace.QuadTree;
 import com.joey.aitesting.game.entities.BaseGameEntity;
 import com.joey.aitesting.game.entities.Obstacle;
 import com.joey.aitesting.game.entities.Vehicle;
+import com.joey.aitesting.game.entities.Wall2D;
 import com.joey.aitesting.game.graphics.GameWorldViewer;
 import com.joey.aitesting.game.shapes.Rectangle2D;
 import com.joey.aitesting.game.shapes.Vector2D;
@@ -94,57 +95,53 @@ public class GameWorld {
 				entity.mass = 1;
 				entity.scale = new Vector2D(1, 1);
 
+				
+				
+				entity.steering.useWallAvoidance = true;
+				entity.steering.wallAvoidanceWeight = 10;
+				entity.steering.feelerCount = 3;
+				entity.steering.feelerFOV = (float) Math.PI;
+				entity.steering.feelerLength = 150;
+				
+				
+				entity.maxForce = 2000;
+				entity.maxSpeed = 300;
+				entity.vel.setLocation(
+						(float) (entity.maxSpeed * (1 - 2 * Math.random())),
+						(float) (entity.maxSpeed * (1 - 2 * Math.random())));
+				
 //				if(vehicles.size() < 1){
 //					entity.steering.drawBehaviour = true;
 //				}
-//				if (vehicles.size() > 0) {
-//					Vehicle v = vehicles.get(0);
-//					if (v != entity) {
-//						entity.steering.evadeVehicle= v;
-//						entity.steering.evadePanicDistance = 100;
-//						entity.steering.useEvade = true;
-//						entity.steering.useEvadePanic = true;
-//						entity.steering.evadeWeight = 5;
-//						
-						entity.steering.useObstacleAvoidance = true;
-						entity.steering.obstacleAvoidanceWeight = 10;
-						entity.steering.obstacleSearchBoxDistance= 10;
+				if (vehicles.size() > 0) {
+					Vehicle v = vehicles.get(0);
+					if (v != entity) {
+						entity.steering.evadeVehicle= v;
+						entity.steering.evadePanicDistance = 500;
+						entity.steering.useEvade = true;
+						entity.steering.useEvadePanic = true;
+						entity.steering.evadeWeight = 5;
 						
-						entity.steering.useWander = true;
-						entity.steering.wanderDistance = 50;
-						entity.steering.wanderRadius = 30;
-						entity.steering.wanderJitter = .1f;
 						
-						entity.maxSpeed = 100;
-						
-						entity.vel.setLocation(
-								(float) (entity.maxSpeed * (1 - 2 * Math.random())),
-								(float) (entity.maxSpeed * (1 - 2 * Math.random())));
-						
-						entity.maxForce = 2000;
-						entity.steering.seperationWeight = 1f;
-						entity.steering.alignmentWeight = 1f;
+
+						entity.steering.seperationWeight = 2f;
+						entity.steering.alignmentWeight = 5f;
 						entity.steering.cohesionWeight= 1f;
 
-						entity.steering.useSeperation = false;
-						entity.steering.useAlignment = false;
-						entity.steering.useCohesion = false;
-						entity.steering.neighborRadius = 40;
+						entity.steering.useSeperation = true;
+						entity.steering.useAlignment = true;
+						entity.steering.useCohesion = true;
+						entity.steering.neighborRadius = 60;
 						
-						entity.steering.drawBehaviour = true;
-//					}
-//				} else {
-//					// entity.steering.arrivePos = new Vector2D(0,0);
-//					// entity.steering.useArrive = true
-//					entity.maxSpeed = Gdx.graphics.getWidth()/4;
-//					entity.maxForce = 2000;
-//					entity.steering.useWander = true;
-//					entity.steering.wanderDistance = 50;
-//					entity.steering.wanderRadius = 90;
-//					entity.steering.wanderJitter = 65;
-//					entity.steering.drawBehaviour = true;
-//					
-//				}
+						entity.steering.drawBehaviour = false;
+					}
+				} else {
+					entity.steering.useWander = true;
+					entity.steering.wanderDistance = 100;
+					entity.steering.wanderRadius = 60;
+					entity.steering.wanderJitter = 30;
+					entity.steering.drawBehaviour = true;	
+				}
 
 				addVehicle(entity);
 			}
@@ -163,6 +160,12 @@ public class GameWorld {
 				}
 			}
 
+		}
+	}
+
+	public void addWall(Wall2D w) {
+		synchronized (walls) {
+			walls.add(w);
 		}
 	}
 

@@ -20,6 +20,7 @@ import com.joey.aitesting.game.steering.behaviors.ObstacleAvoidance;
 import com.joey.aitesting.game.steering.behaviors.Persuit;
 import com.joey.aitesting.game.steering.behaviors.Seek;
 import com.joey.aitesting.game.steering.behaviors.Seperation;
+import com.joey.aitesting.game.steering.behaviors.WallAvoidance;
 import com.joey.aitesting.game.steering.behaviors.Wander;
 
 public class SteeringBehaviors {
@@ -27,6 +28,18 @@ public class SteeringBehaviors {
 	Vehicle vehicle;
 
 	public boolean drawBehaviour = false;
+	
+	// Wall Avoidance
+	public boolean useWallAvoidance = false;
+	public float wallAvoidanceWeight = 1;
+	
+	//Feelers
+	public int feelerCount = 0;
+	public float feelerLength = 1;
+	public float feelerFOV = 0.5f;
+	public List<Vector2D> localFeelers;
+	public List<Vector2D> worldFeelers;
+	
 	//Fleeing Paramaters
 	public float fleeWeight = 1;
 	public boolean useFlee = false;
@@ -85,12 +98,10 @@ public class SteeringBehaviors {
 	public SteeringBehaviors(Vehicle vehicle) {
 		this.vehicle = vehicle;
 	}
-
+	
 	public boolean isSpacePartitioningOn() {
 		return true;
 	}
-
-	
 
 	public void calculateNeighbobors(Vehicle vehicle, HashSet<Vehicle> neighbors, Rectangle2D reg){
 		if(vehicle.world.worldBounds.contains(reg)){
@@ -129,9 +140,38 @@ public class SteeringBehaviors {
 			calculateNeighbobors(vehicle,neighbors, reg);
 			//Remove self
 			neighbors.remove(vehicle);
-//			//System.out.println("Finding Neighbours: "+neighbors.size());
+			//System.out.println("Finding Neighbours: "+neighbors.size());
 		}else{
 			neighbors.clear();
+		}
+		
+		
+		if(useWallAvoidance){
+			if(localFeelers == null){
+				localFeelers = WallAvoidance.createFeelers(feelerCount, feelerLength, feelerFOV);
+				worldFeelers = WallAvoidance.createFeelers(feelerCount, feelerLength, feelerFOV);
+			}
+			Transformations.WorldTransform(localFeelers, vehicle.pos, vehicle.velHead, vehicle.velSide, worldFeelers);
+			
+			hold.setLocation(0,0);
+			WallAvoidance.WallAvoidance(vehicle, worldFeelers, vehicle.world.getWalls(), hold);
+			hold.scale(wallAvoidanceWeight);
+			if(hold.lengthSq() > 1){
+				return hold;
+			}
+			rst.add(hold);
+		}
+		
+		if(useObstacleAvoidance){
+			hold.setLocation(0,0);
+			ObstacleAvoidance.obstacleAvoidance(vehicle,vehicle.world.getObstacles(), obstacleSearchBoxDistance,hold);
+			hold.scale(obstacleAvoidanceWeight);
+			
+			rst.add(hold);		
+			if(hold.lengthSq() > 1){
+				return hold;
+			}
+			//System.out.println("Cohesion : "+hold);
 		}
 		
 		if (useSeek) {
@@ -142,7 +182,7 @@ public class SteeringBehaviors {
 			hold.scale(seekWeight);
 			rst.add(hold);
 			
-			////System.out.println("Seek : "+rst);
+			//System.out.println("Seek : "+rst);
 		}
 
 		if (useFlee) {
@@ -157,7 +197,7 @@ public class SteeringBehaviors {
 			hold.scale(fleeWeight);
 			rst.add(hold);
 			
-			////System.out.println("Flee : "+rst);
+			//System.out.println("Flee : "+rst);
 		}
 
 		if (useArrive) {
@@ -168,7 +208,7 @@ public class SteeringBehaviors {
 			hold.scale(arriveWeight);
 			rst.add(hold);
 			
-			////System.out.println("Arrive : "+rst);
+			//System.out.println("Arrive : "+rst);
 		}
 
 		if (usePersuit) {
@@ -177,7 +217,7 @@ public class SteeringBehaviors {
 			hold.scale(persuitWeight);
 			rst.add(hold);
 			
-			////System.out.println("Persuit : "+rst);
+			//System.out.println("Persuit : "+rst);
 		}
 		
 		if (useEvade) {
@@ -191,7 +231,7 @@ public class SteeringBehaviors {
 			hold.scale(evadeWeight);
 			rst.add(hold);
 			
-			////System.out.println("Evade : "+rst);
+			//System.out.println("Evade : "+rst);
 		}
 		
 		if(useWander){
@@ -205,7 +245,7 @@ public class SteeringBehaviors {
 			hold.scale(wanderWeight);
 			rst.add(hold);
 			
-			////System.out.println("Wander : "+rst);
+			//System.out.println("Wander : "+rst);
 		}
 
 		if(useSeperation){
@@ -234,13 +274,7 @@ public class SteeringBehaviors {
 			//System.out.println("Cohesion : "+hold);
 		}
 		
-		if(useObstacleAvoidance){
-			hold.setLocation(0,0);
-			ObstacleAvoidance.obstacleAvoidance(vehicle,vehicle.world.getObstacles(), obstacleSearchBoxDistance,hold);
-			hold.scale(obstacleAvoidanceWeight);
-			rst.add(hold);		
-			//System.out.println("Cohesion : "+hold);
-		}
+		
 		
 		if (rst.lengthSq() > vehicle.maxForce * vehicle.maxForce) {
 			rst.normalise();
@@ -251,23 +285,13 @@ public class SteeringBehaviors {
 		return rst;
 	}
 
-	
-	
-
-
-
-	
-	
 	public static float turnaroundTime(Vehicle pAgent, Vector2D TargetPos, float coefficient) {
 		Vector2D toTarget = new Vector2D(TargetPos);
 		toTarget.subtract(pAgent.pos);
 		float dot = pAgent.velHead.dot(toTarget);
 		return (dot - 1.0f) * -coefficient;
 	}
-	
-	
-	
-	
+		
 	public Vehicle getVehicle() {
 		return vehicle;
 	}

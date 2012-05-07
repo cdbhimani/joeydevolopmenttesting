@@ -17,7 +17,17 @@ public class Rectangle2D {
 		this.x2 = x2;
 		this.y2 = y2;
 	}
+	
+	public Rectangle2D(Rectangle2D r){
+		this.x1 = r.x1;
+		this.y1 = r.y1;
+		this.x2 = r.x2;
+		this.y2 = r.y2;
+	}
 
+	public Rectangle2D clone(){
+		return new Rectangle2D(this);
+	}
 	public void ensureOrder(){
 		float tmp;
 		if(x1>x2){
@@ -101,5 +111,12 @@ public class Rectangle2D {
 		x2 = reg.x2;
 		y1 = reg.y1;
 		y2 = reg.y2;
+	}
+
+	public void inset(float inset) {
+		x1+=inset;
+		y1+=inset;
+		x2-=inset;
+		y2-=inset;
 	}
 }
