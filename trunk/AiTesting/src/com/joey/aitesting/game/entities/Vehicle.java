@@ -36,7 +36,7 @@ public class Vehicle extends MovingEntity {
 		this.timeElapsed = 0;
 		this.steering = new SteeringBehaviors(this);
 		
-		setupShape(15f);
+		setupShape(5f);
 	}
 
 	public void setupShape(float scale) {

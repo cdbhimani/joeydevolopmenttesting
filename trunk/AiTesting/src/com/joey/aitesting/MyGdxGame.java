@@ -1,6 +1,7 @@
 package com.joey.aitesting;
 
 import java.lang.management.MemoryUsage;
+import java.util.ArrayList;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -41,10 +42,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.TableLayout;
 import com.joey.aitesting.game.ExitListner;
 import com.joey.aitesting.game.GameWorld;
+import com.joey.aitesting.game.entities.Wall2D;
 import com.joey.aitesting.game.graphics.ConsoleLogger;
 import com.joey.aitesting.game.graphics.ConsoleViewer;
 import com.joey.aitesting.game.graphics.GameWorldViewer;
 import com.joey.aitesting.game.shapes.Rectangle2D;
+import com.joey.aitesting.game.shapes.Vector2D;
 import com.me.mygdxgame.Gestures.OrthoCamController;
 
 public class MyGdxGame implements ApplicationListener {
@@ -82,7 +85,7 @@ public class MyGdxGame implements ApplicationListener {
 				false);
 		batch = new SpriteBatch();
 
-		float scale = 1;
+		float scale = 5;
 		float sizeX = scale*Gdx.graphics.getWidth()/2;
 		float sizeY = scale*Gdx.graphics.getHeight()/2;
 		Rectangle2D bounds = new Rectangle2D(-sizeX, -sizeY, sizeX, sizeY);
@@ -103,12 +106,89 @@ public class MyGdxGame implements ApplicationListener {
 		multi.addProcessor(stage);
 		multi.addProcessor(worldViewCamController);
 		multi.addProcessor(new ExitListner());
-		// multi.addProcessor(this);
 		Gdx.input.setInputProcessor(multi);
-		world.addObstacles(5,50);
+		
 
+		createWalls(world);
+//		world.addObstacles(30, 60);
 	}
 
+	public void addRectangle(GameWorld world, Rectangle2D rec, float inset, boolean inside){
+		Wall2D top = new Wall2D();	
+		Wall2D bottom = new Wall2D();
+		Wall2D left = new Wall2D();
+		Wall2D right = new Wall2D();
+		
+		Rectangle2D r = rec.clone();
+		r.inset(inset);
+		
+		bottom.p1.x = r.x1;
+		bottom.p1.y = r.y1;
+		bottom.p2.x = r.x2;
+		bottom.p2.y = r.y1;
+		
+		top.p1.x = r.x1;
+		top.p1.y = r.y2;
+		top.p2.x = r.x2;
+		top.p2.y = r.y2;
+		top.useFlipNormal = true;
+		
+		left.p1.x = r.x1;
+		left.p1.y = r.y1;
+		left.p2.x = r.x1;
+		left.p2.y = r.y2;
+		left.useFlipNormal = true;
+		
+		right.p1.x = r.x2;
+		right.p1.y = r.y1;
+		right.p2.x = r.x2;
+		right.p2.y = r.y2;
+		
+		if(!inside){
+			left.useFlipNormal=!left.useFlipNormal;
+			right.useFlipNormal=!right.useFlipNormal;
+			top.useFlipNormal=!top.useFlipNormal;
+			bottom.useFlipNormal=!bottom.useFlipNormal;
+		}
+		
+		bottom.calculateNormal();
+		top.calculateNormal();
+		left.calculateNormal();
+		right.calculateNormal();
+		
+		world.addWall(bottom);
+		world.addWall(top);
+		world.addWall(left);
+		world.addWall(right);
+	}
+	public void createWalls(GameWorld world){
+		addRectangle(world, world.worldBounds, 30, true);
+		ArrayList<Rectangle2D> hold = new ArrayList<Rectangle2D>();
+		while(hold.size() < 10){
+			Vector2D p = world.worldBounds.getRandomPos();
+			float size = 250;
+			Rectangle2D r = new Rectangle2D(p.x,p.y,p.x+size,p.y+size);
+			
+			if(world.worldBounds.contains(r)){
+				boolean ok = true;
+				for(Rectangle2D r2 : hold){
+					if(r2.intersects(r)){
+						ok= false;
+					}
+				}
+				if(ok){
+					hold.add(r);
+				}
+			}
+			
+			
+			
+		}
+		
+		for(Rectangle2D r : hold){
+			addRectangle(world,r , 0, false);
+		}
+	}
 	
 
 	@Override

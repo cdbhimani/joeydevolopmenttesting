@@ -24,6 +24,12 @@ public class Vector2D {
 		float dy = p.y - y;
 		return dx * dx + dy * dy;
 	}
+	
+	public float distance(Vector2D p) {
+		float dx = p.x - x;
+		float dy = p.y - y;
+		return (float)Math.sqrt(dx * dx + dy * dy);
+	}
 
 	public String toString() {
 		return "[" + x + "," + y + "]("+length()+")";
@@ -185,4 +191,11 @@ public class Vector2D {
 			p.y = r.y1;
 		}
 	}
+
+	public void flip() {
+		x= -x;
+		y =-y;
+	}
+
+
 }

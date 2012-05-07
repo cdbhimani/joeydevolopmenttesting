@@ -2,6 +2,7 @@ package com.joey.aitesting.game.graphics;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
@@ -21,37 +22,40 @@ import com.joey.aitesting.game.cellSpace.QuadTreeNode;
 import com.joey.aitesting.game.entities.BaseGameEntity;
 import com.joey.aitesting.game.entities.Obstacle;
 import com.joey.aitesting.game.entities.Vehicle;
+import com.joey.aitesting.game.entities.Wall2D;
 import com.joey.aitesting.game.maths.Transformations;
 import com.joey.aitesting.game.shapes.Rectangle2D;
 import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.steering.SteeringBehaviors;
 
-public class GameWorldViewer{
+public class GameWorldViewer {
 	public GameWorld world;
 
 	ShapeRenderer gridRender;
 	SpriteBatch spriteBatch;
-	
+
 	private Texture spriteTexture;
 	private TextureRegion spriteRegion;
 	float spriteScale = 6;
-	
+
 	long lastUpdate = System.currentTimeMillis();
 	float entitySize = 40;
 
+	float wallNormSize = 30f;
 	public boolean drawBorders = true;
 	public boolean drawEntities = true;
 	public boolean drawQuadTree = false;
 	public boolean drawBehaviour = false;
 	public boolean drawObstacles = true;
-	
+	public boolean drawWalls = true;
+
 	public GameWorldViewer(GameWorld world) {
 		this.world = world;
 		gridRender = new ShapeRenderer();
 		spriteBatch = new SpriteBatch();
 		loadTextures();
 	}
-	
+
 	public void loadTextures() {
 		spriteTexture = new Texture(Gdx.files.internal("fish1.png"));
 		spriteRegion = new TextureRegion(spriteTexture);
@@ -61,45 +65,68 @@ public class GameWorldViewer{
 		world.quadTree.rebuild();
 	}
 
-	private void renderGridInCell(GLCommon gl, Camera camera, Rectangle2D drawRegion,QuadTreeNode node) {
+	private void renderGridInCell(GLCommon gl, Camera camera,
+			Rectangle2D drawRegion, QuadTreeNode node) {
 		if (drawRegion.intersects(node.region)) {
 			if (node.isLeaf) {
-				if(drawQuadTree){
+				if (drawQuadTree) {
 					gridRender.setColor(Color.RED);
 					gridRender.begin(ShapeType.Rectangle);
 					gridRender.rect(node.region.x1, node.region.y1,
-							node.region.x2 - node.region.x1,
-							node.region.y2 - node.region.y1);
+							node.region.x2 - node.region.x1, node.region.y2
+									- node.region.y1);
 					gridRender.end();
 				}
-			}else{
-				if(node.NW != null)renderGridInCell(gl, camera, drawRegion, node.NW);
-				if(node.NE != null)renderGridInCell(gl, camera, drawRegion, node.NE);
-				if(node.SW != null)renderGridInCell(gl, camera, drawRegion, node.SW);
-				if(node.SE != null)renderGridInCell(gl, camera, drawRegion, node.SE);
+			} else {
+				if (node.NW != null)
+					renderGridInCell(gl, camera, drawRegion, node.NW);
+				if (node.NE != null)
+					renderGridInCell(gl, camera, drawRegion, node.NE);
+				if (node.SW != null)
+					renderGridInCell(gl, camera, drawRegion, node.SW);
+				if (node.SE != null)
+					renderGridInCell(gl, camera, drawRegion, node.SE);
 			}
 
 		}
 
 	}
-	
-	private void drawEntity(GLCommon gl, Camera camera, Rectangle2D drawRegion, BaseGameEntity e){
-		Vehicle vehicle = (Vehicle)e;
+
+	private void drawEntity(GLCommon gl, Camera camera, Rectangle2D drawRegion,
+			BaseGameEntity e) {
+		Vehicle vehicle = (Vehicle) e;
+
 		
-		if(vehicle.steering.drawBehaviour){
-			if(vehicle.steering.useObstacleAvoidance){
-				
-				Vector2D p1 = new Vector2D(0,-vehicle.radius);
-				Vector2D p2 = new Vector2D(vehicle.steering.obstacleSearchBoxDistance,-vehicle.radius);
-				Vector2D p3 = new Vector2D(vehicle.steering.obstacleSearchBoxDistance,vehicle.radius);
-				Vector2D p4 = new Vector2D(0,vehicle.radius);
+		
+		if (vehicle.steering.drawBehaviour) {
+			if(vehicle.steering.worldFeelers != null){
+				for(Vector2D f : vehicle.steering.worldFeelers){
+					gridRender.setColor(Color.RED);
+					gridRender.begin(ShapeType.Line);
+					gridRender.line(vehicle.pos.x, vehicle.pos.y,f.x, f.y);
+					
+					gridRender.end();
+				}
+			}
+			if (vehicle.steering.useObstacleAvoidance) {
+				// the detection box length is proportional to the agent's
+				// velocity
+				float box = vehicle.steering.obstacleSearchBoxDistance
+						+ (vehicle.getVel().length() / vehicle.maxSpeed)
+						* vehicle.steering.obstacleSearchBoxDistance;
+
+				Vector2D p1 = new Vector2D(0, -vehicle.radius);
+				Vector2D p2 = new Vector2D(box, -vehicle.radius);
+				Vector2D p3 = new Vector2D(box, vehicle.radius);
+				Vector2D p4 = new Vector2D(0, vehicle.radius);
 				ArrayList<Vector2D> points = new ArrayList<Vector2D>();
 				points.add(p1);
 				points.add(p2);
 				points.add(p3);
 				points.add(p4);
-				Transformations.WorldTransform(points, vehicle.pos, vehicle.velHead, vehicle.velSide);
-				
+				Transformations.WorldTransform(points, vehicle.pos,
+						vehicle.velHead, vehicle.velSide);
+
 				gridRender.setColor(Color.RED);
 				gridRender.begin(ShapeType.Line);
 				gridRender.line(p1.x, p1.y, p2.x, p2.y);
@@ -108,56 +135,54 @@ public class GameWorldViewer{
 				gridRender.line(p4.x, p4.y, p1.x, p1.y);
 				gridRender.end();
 			}
-			
-			
+
 			if (vehicle.steering.useFlee) {
 				Vector2D rst = new Vector2D(vehicle.pos);
 
 				gridRender.setColor(Color.RED);
 				gridRender.begin(ShapeType.FilledCircle);
-				gridRender.filledCircle(rst.x, rst.y,
-						entitySize);
+				gridRender.filledCircle(rst.x, rst.y, entitySize);
 				gridRender.end();
-				
-				if(vehicle.steering.useFleePanic){
+
+				if (vehicle.steering.useFleePanic) {
 					gridRender.setColor(Color.RED);
 					gridRender.begin(ShapeType.FilledCircle);
 					gridRender.filledCircle(rst.x, rst.y,
 							vehicle.steering.fleePanicDistance);
-					gridRender.end();	
+					gridRender.end();
 				}
 			}
 
-		
-			if (vehicle.steering.useSeperation||vehicle.steering.useCohesion || vehicle.steering.useAlignment) {
+			if (vehicle.steering.useSeperation || vehicle.steering.useCohesion
+					|| vehicle.steering.useAlignment) {
 				Vector2D rst = new Vector2D(vehicle.pos);
 
-				
-				Rectangle2D reg = new Rectangle2D(
-						vehicle.pos.x-vehicle.steering.neighborRadius, vehicle.pos.y-vehicle.steering.neighborRadius, 
-						vehicle.pos.x+vehicle.steering.neighborRadius, vehicle.pos.y+vehicle.steering.neighborRadius);
-				
+				Rectangle2D reg = new Rectangle2D(vehicle.pos.x
+						- vehicle.steering.neighborRadius, vehicle.pos.y
+						- vehicle.steering.neighborRadius, vehicle.pos.x
+						+ vehicle.steering.neighborRadius, vehicle.pos.y
+						+ vehicle.steering.neighborRadius);
+
 				reg.ensureOrder();
-				
+
 				HashSet<Vehicle> neighbors = new HashSet<Vehicle>();
-				vehicle.steering.calculateNeighbobors(vehicle,neighbors, reg);
+				vehicle.steering.calculateNeighbobors(vehicle, neighbors, reg);
 				neighbors.remove(vehicle);
-				
-				for(Vehicle v : neighbors){
+
+				for (Vehicle v : neighbors) {
 					gridRender.setColor(Color.RED);
 					gridRender.begin(ShapeType.Circle);
-					gridRender.circle(v.pos.x, v.pos.y,
-							10);
-					gridRender.end();	
+					gridRender.circle(v.pos.x, v.pos.y, 10);
+					gridRender.end();
 				}
-				
+
 				gridRender.setColor(Color.RED);
 				gridRender.begin(ShapeType.Rectangle);
-				gridRender.rect(reg.x1, reg.y1, reg.getWidth(), reg.getHeight());
+				gridRender
+						.rect(reg.x1, reg.y1, reg.getWidth(), reg.getHeight());
 				gridRender.end();
 			}
-		
-		
+
 			if (vehicle.steering.useWander) {
 				Vector2D rst = new Vector2D(vehicle.pos);
 
@@ -175,93 +200,122 @@ public class GameWorldViewer{
 
 				gridRender.setColor(Color.GREEN);
 				gridRender.begin(ShapeType.Line);
-				gridRender
-						.line(circle.x,
-								circle.y,
-								circle.x
-										+ vehicle.steering.wanderVector.x,
-								circle.y
-										+ vehicle.steering.wanderVector.y);
+				gridRender.line(circle.x, circle.y, circle.x
+						+ vehicle.steering.wanderVector.x, circle.y
+						+ vehicle.steering.wanderVector.y);
 				gridRender.end();
 
 				gridRender.setColor(Color.RED);
 				gridRender.begin(ShapeType.Circle);
-				gridRender
-						.circle(circle.x
-								+ vehicle.steering.wanderVector.x,
-								circle.y
-										+ vehicle.steering.wanderVector.y,
-								vehicle.steering.wanderJitter);
+				gridRender.circle(circle.x + vehicle.steering.wanderVector.x,
+						circle.y + vehicle.steering.wanderVector.y,
+						vehicle.steering.wanderJitter);
 				gridRender.end();
 			}
 		}
 		gridRender.setColor(Color.BLUE);
 		gridRender.begin(ShapeType.Triangle);
-		gridRender.triangle(
-				vehicle.transformedVehicleShape.get(0).x,
+		gridRender.triangle(vehicle.transformedVehicleShape.get(0).x,
 				vehicle.transformedVehicleShape.get(0).y,
 				vehicle.transformedVehicleShape.get(1).x,
 				vehicle.transformedVehicleShape.get(1).y,
 				vehicle.transformedVehicleShape.get(2).x,
-				vehicle.transformedVehicleShape.get(2).y
-				);
+				vehicle.transformedVehicleShape.get(2).y);
 		gridRender.end();
-		//spriteBatch.begin();
-		//spriteBatch.draw(spriteRegion, entity.pos.x-sizeX/2, entity.pos.y-sizeY/2, sizeX / 2,
-			//	sizeY / 2, sizeX, sizeY, 1, 1,
-			//	(float) (Math.toDegrees(entity.angle)));
-		//spriteBatch.end();
-		
+		// spriteBatch.begin();
+		// spriteBatch.draw(spriteRegion, entity.pos.x-sizeX/2,
+		// entity.pos.y-sizeY/2, sizeX / 2,
+		// sizeY / 2, sizeX, sizeY, 1, 1,
+		// (float) (Math.toDegrees(entity.angle)));
+		// spriteBatch.end();
+
 	}
-	private void renderEntitiesInCell(GLCommon gl, Camera camera, Rectangle2D drawRegion,
-			QuadTreeNode node) {
+
+	private void renderEntitiesInCell(GLCommon gl, Camera camera,
+			Rectangle2D drawRegion, QuadTreeNode node) {
 		float sizeX = spriteTexture.getWidth() / spriteScale;
 		float sizeY = spriteTexture.getHeight() / spriteScale;
 		if (drawRegion.intersects(node.region)) {
 			if (node.isLeaf) {
-				if(drawEntities){
-					
+				if (drawEntities) {
+
 					for (Object e : node.points) {
-						drawEntity(gl, camera, drawRegion, (BaseGameEntity)e);
+						drawEntity(gl, camera, drawRegion, (BaseGameEntity) e);
 					}
 				}
-			}else{
-				if(node.NW != null)renderEntitiesInCell(gl, camera, drawRegion, node.NW);
-				if(node.NE != null)renderEntitiesInCell(gl, camera, drawRegion, node.NE);
-				if(node.SW != null)renderEntitiesInCell(gl, camera, drawRegion, node.SW);
-				if(node.SE != null)renderEntitiesInCell(gl, camera, drawRegion, node.SE);
+			} else {
+				if (node.NW != null)
+					renderEntitiesInCell(gl, camera, drawRegion, node.NW);
+				if (node.NE != null)
+					renderEntitiesInCell(gl, camera, drawRegion, node.NE);
+				if (node.SW != null)
+					renderEntitiesInCell(gl, camera, drawRegion, node.SW);
+				if (node.SE != null)
+					renderEntitiesInCell(gl, camera, drawRegion, node.SE);
 			}
 
 		}
 	}
 
 	public void render(GLCommon gl, Camera camera, Rectangle2D drawRegion) {
-		
+
 		gridRender.setProjectionMatrix(camera.combined);
 		spriteBatch.setProjectionMatrix(camera.combined);
-		//Draw Entities
-		synchronized (world.quadTree) {			
-			if(drawQuadTree){
-				renderGridInCell(gl, camera, drawRegion, world.quadTree.getRootNode());
+		// Draw Entities
+		synchronized (world.quadTree) {
+			if (drawQuadTree) {
+				renderGridInCell(gl, camera, drawRegion,
+						world.quadTree.getRootNode());
 			}
-			
-			if(drawEntities||drawBorders){
-				renderEntitiesInCell(gl, camera, drawRegion, world.quadTree.getRootNode());
+
+			if (drawEntities || drawBorders) {
+				renderEntitiesInCell(gl, camera, drawRegion,
+						world.quadTree.getRootNode());
 			}
-			
-			if(drawObstacles){
+
+			if (drawObstacles) {
 				renderObstacles(gl, camera, drawRegion, world.getObstacles());
 			}
+			
+			if(drawWalls){
+				renderWalls(gl, camera, drawRegion, world.getWalls(), wallNormSize);
+			}
 		}
-		
 
 	}
 
-	private void renderObstacles(GLCommon gl, Camera camera,Rectangle2D drawRegion, ArrayList<Obstacle> obstacles) {
-		for(Obstacle o : obstacles){
+	private void renderWalls(GLCommon gl, Camera camera,
+			Rectangle2D drawRegion, ArrayList<Wall2D> wall, float normalSize) {
+		for (Wall2D w : wall) {
+			gridRender.setColor(Color.BLACK);
+			gridRender.begin(ShapeType.Line);
+			gridRender.line(w.p1.x, w.p1.y, w.p2.x, w.p2.y);
+			gridRender.end();
+			
+			//Draw Normal
+			float x = (w.p1.x+w.p2.x)/2;
+			float y = (w.p1.y+w.p2.y)/2;
+			gridRender.setColor(Color.RED);
+			gridRender.begin(ShapeType.Line);
+			gridRender.line(x,y, x+normalSize*w.vN.x, y+normalSize*w.vN.y);
+			gridRender.end();
+			
+			
+		}
+		
+	}
+	
+	private void renderObstacles(GLCommon gl, Camera camera,
+			Rectangle2D drawRegion, ArrayList<Obstacle> obstacles) {
+		for (Obstacle o : obstacles) {
 			gridRender.setColor(Color.BLACK);
 			gridRender.begin(ShapeType.Circle);
 			gridRender.circle(o.pos.x, o.pos.y, o.radius);
+			gridRender.end();
+			
+			gridRender.setColor(Color.BLACK);
+			gridRender.begin(ShapeType.FilledCircle);
+			gridRender.filledCircle(o.pos.x, o.pos.y, 2);
 			gridRender.end();
 		}
 	}
