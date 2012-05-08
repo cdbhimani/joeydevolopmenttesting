@@ -2,27 +2,58 @@ package com.joey.aitesting.game;
 
 import java.util.ArrayList;
 
+import com.joey.aitesting.MyGdxGame;
 import com.joey.aitesting.game.entities.Obstacle;
 import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.entities.Wall2D;
+import com.joey.aitesting.game.entities.WaypointPath;
 import com.joey.aitesting.game.shapes.Rectangle2D;
 import com.joey.aitesting.game.shapes.Vector2D;
+import com.joey.aitesting.game.steering.behaviors.FollowPath;
 
 public class GameWorldCreator {
 	
 	public static void CreateGameWorld(GameWorld world) {
-		CreateWallAvoidanceWorld(world);
+		//CreateWallAvoidanceWorld(world);
+		CreatePathFollowWorld(world);
 	}
 
 	private static void CreateEntity(GameWorld world, float maxVel,
 			float maxForce) {
-		CreateWallAvoidanceEntity(world, maxVel, maxForce);
+//		CreateWallAvoidanceEntity(world, maxVel, maxForce);
+		CratePathFollowEntity(world, maxVel, maxForce);
 	}
 
 	public static void CreatePathFollowWorld(GameWorld world) {
-		
+		addEntity(world, 1, MyGdxGame.MAX_VEL, MyGdxGame.MAX_FORCE);
 	}
 
+	public static void CratePathFollowEntity(GameWorld world, float maxVel, float maxForce){
+		WaypointPath path = new WaypointPath();
+		for(int i = 0 ; i < 3; i++){
+			path.addPoint(world.worldBounds.getRandomPos());
+		}
+		path.loop = true;
+		
+		Vehicle entity = new Vehicle(world);
+		entity.pos.setLocation(world.worldBounds.getRandomPos());
+		entity.maxSpeed = maxVel;
+		entity.maxForce = maxForce;
+		entity.vel.setLocation(
+				(float) (entity.maxSpeed * (1 - 2 * Math.random())),
+				(float) (entity.maxSpeed * (1 - 2 * Math.random())));
+		entity.mass = 1;
+		entity.scale = new Vector2D(1, 1);
+		
+		entity.steering.useFollowPath = true;
+		entity.steering.path = path;
+		entity.steering.followPathWaypointDistance= 50;
+		
+		
+		entity.steering.drawBehaviour = true;
+		world.addVehicle(entity);
+		
+	}
 	public static void CreateWallAvoidanceWorld(GameWorld world) {
 		//Add outer Boundary
 		Wall2D.addRectangle(world, world.worldBounds, 30, true);
@@ -119,6 +150,7 @@ public class GameWorldCreator {
 			entity.steering.drawBehaviour = true;
 		}
 
+		world.addVehicle(entity);
 	}
 
 	// Add remove random set of viechle in random position
