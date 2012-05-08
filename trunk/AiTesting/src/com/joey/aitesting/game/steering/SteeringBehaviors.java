@@ -204,7 +204,7 @@ public class SteeringBehaviors {
 			hold.setLocation(0,0);
 			WorldWrapper.moveToClosest(vehicle.pos, arrivePos, point,
 					vehicle.world.worldBounds);
-			Arrive.arrive(point, vehicle, 1, hold);
+			Arrive.arrive(vehicle,point,1, hold);
 			hold.scale(arriveWeight);
 			rst.add(hold);
 			

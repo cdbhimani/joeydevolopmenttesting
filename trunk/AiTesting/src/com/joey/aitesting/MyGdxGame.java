@@ -42,6 +42,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.TableLayout;
 import com.joey.aitesting.game.ExitListner;
 import com.joey.aitesting.game.GameWorld;
+import com.joey.aitesting.game.GameWorldCreator;
 import com.joey.aitesting.game.entities.Wall2D;
 import com.joey.aitesting.game.graphics.ConsoleLogger;
 import com.joey.aitesting.game.graphics.ConsoleViewer;
@@ -109,86 +110,12 @@ public class MyGdxGame implements ApplicationListener {
 		Gdx.input.setInputProcessor(multi);
 		
 
-		createWalls(world);
+		GameWorldCreator.CreateGameWorld(world);
 //		world.addObstacles(30, 60);
 	}
 
-	public void addRectangle(GameWorld world, Rectangle2D rec, float inset, boolean inside){
-		Wall2D top = new Wall2D();	
-		Wall2D bottom = new Wall2D();
-		Wall2D left = new Wall2D();
-		Wall2D right = new Wall2D();
-		
-		Rectangle2D r = rec.clone();
-		r.inset(inset);
-		
-		bottom.p1.x = r.x1;
-		bottom.p1.y = r.y1;
-		bottom.p2.x = r.x2;
-		bottom.p2.y = r.y1;
-		
-		top.p1.x = r.x1;
-		top.p1.y = r.y2;
-		top.p2.x = r.x2;
-		top.p2.y = r.y2;
-		top.useFlipNormal = true;
-		
-		left.p1.x = r.x1;
-		left.p1.y = r.y1;
-		left.p2.x = r.x1;
-		left.p2.y = r.y2;
-		left.useFlipNormal = true;
-		
-		right.p1.x = r.x2;
-		right.p1.y = r.y1;
-		right.p2.x = r.x2;
-		right.p2.y = r.y2;
-		
-		if(!inside){
-			left.useFlipNormal=!left.useFlipNormal;
-			right.useFlipNormal=!right.useFlipNormal;
-			top.useFlipNormal=!top.useFlipNormal;
-			bottom.useFlipNormal=!bottom.useFlipNormal;
-		}
-		
-		bottom.calculateNormal();
-		top.calculateNormal();
-		left.calculateNormal();
-		right.calculateNormal();
-		
-		world.addWall(bottom);
-		world.addWall(top);
-		world.addWall(left);
-		world.addWall(right);
-	}
-	public void createWalls(GameWorld world){
-		addRectangle(world, world.worldBounds, 30, true);
-		ArrayList<Rectangle2D> hold = new ArrayList<Rectangle2D>();
-		while(hold.size() < 10){
-			Vector2D p = world.worldBounds.getRandomPos();
-			float size = 250;
-			Rectangle2D r = new Rectangle2D(p.x,p.y,p.x+size,p.y+size);
-			
-			if(world.worldBounds.contains(r)){
-				boolean ok = true;
-				for(Rectangle2D r2 : hold){
-					if(r2.intersects(r)){
-						ok= false;
-					}
-				}
-				if(ok){
-					hold.add(r);
-				}
-			}
-			
-			
-			
-		}
-		
-		for(Rectangle2D r : hold){
-			addRectangle(world,r , 0, false);
-		}
-	}
+	
+	
 	
 
 	@Override
@@ -309,7 +236,7 @@ public class MyGdxGame implements ApplicationListener {
 			@Override
 			public void click(Actor actor, float x, float y) {
 				try {
-					world.addVehicles(
+					GameWorldCreator.addEntity(world,
 							Integer.parseInt(toAddEntityCount.getText()), MAX_VEL, MAX_FORCE);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -323,7 +250,7 @@ public class MyGdxGame implements ApplicationListener {
 			@Override
 			public void click(Actor actor, float x, float y) {
 				try {
-					world.removeVehicles(Integer.parseInt(toAddEntityCount
+					GameWorldCreator.removeVehicles(world,Integer.parseInt(toAddEntityCount
 							.getText()));
 				} catch (Exception e) {
 					e.printStackTrace();
