@@ -16,7 +16,7 @@ public class Arrive extends AbstractBehavior{
 		
 	}
 
-	public static void arrive(Vector2D TargetPos, Vehicle veh,	int deceleration, Vector2D rst) {
+	public static void arrive(Vehicle veh,	Vector2D TargetPos, int deceleration, Vector2D rst) {
 		Vector2D.subtract(TargetPos, veh.pos, rst);
 		float dist = rst.length();
 		if (dist > 0) {
