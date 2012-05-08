@@ -6,10 +6,11 @@ import java.util.List;
 import com.joey.aitesting.game.shapes.Vector2D;
 
 public class WaypointPath {
-	ArrayList<Vector2D> points = new ArrayList<Vector2D>();
+	public ArrayList<Vector2D> points = new ArrayList<Vector2D>();
+	public boolean loop = false;
 	
 	int currentNode = 0;
-	boolean loop = false;
+	
 	
 	public WaypointPath(){
 	}
@@ -22,13 +23,20 @@ public class WaypointPath {
 	}
 	
 	public boolean hasNext(){
-		return loop || currentNode > points.size() ;
+		return loop || currentNode < points.size()-1 ;
+	}
+	
+	public boolean finished(){
+		return !loop && currentNode == points.size()-1 ;
 	}
 	
 	public void next(){
 		currentNode++;
-		if(currentNode > points.size() && loop){
+		if(loop && currentNode == points.size()){
 			currentNode = 0;
+		}
+		if(!loop && currentNode == points.size()){
+			currentNode = points.size()-1;
 		}
 	}
 	

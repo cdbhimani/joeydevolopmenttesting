@@ -7,6 +7,7 @@ import java.util.List;
 import com.joey.aitesting.game.entities.BaseGameEntity;
 import com.joey.aitesting.game.entities.Obstacle;
 import com.joey.aitesting.game.entities.Vehicle;
+import com.joey.aitesting.game.entities.WaypointPath;
 import com.joey.aitesting.game.maths.Transformations;
 import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.shapes.Rectangle2D;
@@ -16,6 +17,7 @@ import com.joey.aitesting.game.steering.behaviors.Arrive;
 import com.joey.aitesting.game.steering.behaviors.Cohesion;
 import com.joey.aitesting.game.steering.behaviors.Evade;
 import com.joey.aitesting.game.steering.behaviors.Flee;
+import com.joey.aitesting.game.steering.behaviors.FollowPath;
 import com.joey.aitesting.game.steering.behaviors.ObstacleAvoidance;
 import com.joey.aitesting.game.steering.behaviors.Persuit;
 import com.joey.aitesting.game.steering.behaviors.Seek;
@@ -28,6 +30,13 @@ public class SteeringBehaviors {
 	Vehicle vehicle;
 
 	public boolean drawBehaviour = false;
+	
+	//Waypoint Path
+	public boolean useFollowPath = false;
+	public float followPathWeight = 1;
+	public float followPathWaypointDistance = 10;
+	public WaypointPath path;
+	
 	
 	// Wall Avoidance
 	public boolean useWallAvoidance = false;
@@ -174,6 +183,12 @@ public class SteeringBehaviors {
 			//System.out.println("Cohesion : "+hold);
 		}
 		
+		if(useFollowPath){
+			hold.setLocation(0,0);
+			FollowPath.PathFollow(vehicle, path, followPathWaypointDistance, hold);
+			hold.scale(followPathWeight);
+			rst.add(hold);
+		}
 		if (useSeek) {
 			hold.setLocation(0,0);
 			WorldWrapper.moveToClosest(vehicle.pos, seekPos, point,

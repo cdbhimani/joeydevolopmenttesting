@@ -23,6 +23,7 @@ import com.joey.aitesting.game.entities.BaseGameEntity;
 import com.joey.aitesting.game.entities.Obstacle;
 import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.entities.Wall2D;
+import com.joey.aitesting.game.entities.WaypointPath;
 import com.joey.aitesting.game.maths.Transformations;
 import com.joey.aitesting.game.shapes.Rectangle2D;
 import com.joey.aitesting.game.shapes.Vector2D;
@@ -99,6 +100,35 @@ public class GameWorldViewer {
 		
 		
 		if (vehicle.steering.drawBehaviour) {
+			if(vehicle.steering.useFollowPath){
+				WaypointPath path = vehicle.steering.path;
+				
+				for(int i = 0; i < path.points.size(); i++){
+					Vector2D p1 = path.points.get(i);
+					Vector2D p2 = null;
+					if(i+1 < path.points.size()){
+						p2 = path.points.get(i+1);
+					}else{
+						if(path.loop){
+							p2 = path.points.get(0);
+						}
+					}
+					
+					if(p2 != null){
+						gridRender.setColor(Color.BLACK);
+						gridRender.begin(ShapeType.Line);
+						gridRender.line(p1.x, p1.y, p2.x, p2.y);
+						gridRender.end();
+					}
+					
+					gridRender.setColor(Color.RED);
+					gridRender.begin(ShapeType.Circle);
+					gridRender.circle(p1.x, p1.y, vehicle.steering.followPathWaypointDistance);
+					gridRender.end();
+				}
+			}
+			
+			
 			if(vehicle.steering.worldFeelers != null){
 				for(Vector2D f : vehicle.steering.worldFeelers){
 					gridRender.setColor(Color.RED);

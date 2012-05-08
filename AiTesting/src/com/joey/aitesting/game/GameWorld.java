@@ -1,17 +1,12 @@
 package com.joey.aitesting.game;
 
-import com.badlogic.gdx.Gdx;
+import java.util.ArrayList;
+
 import com.joey.aitesting.game.cellSpace.QuadTree;
-import com.joey.aitesting.game.entities.BaseGameEntity;
 import com.joey.aitesting.game.entities.Obstacle;
 import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.entities.Wall2D;
-import com.joey.aitesting.game.graphics.GameWorldViewer;
 import com.joey.aitesting.game.shapes.Rectangle2D;
-import com.joey.aitesting.game.shapes.Vector2D;
-
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
 
 public class GameWorld {
 	public static final int MAX_CELL_COUNT = 2;

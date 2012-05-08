@@ -20,13 +20,14 @@ public class FollowPath extends AbstractBehavior {
 	}
 
 	public static void PathFollow(Vehicle vehicle, WaypointPath path,float waypointDistance, Vector2D rst){
+		
 		//move to next target if close enough to current target (working in
 		  //distance squared space)
 		  if(path.getCurrentNode().distance(vehicle.pos)< waypointDistance){
 			  path.next();
 		  }
 
-		  if (!path.hasNext()){
+		  if (path.hasNext()){
 		    Seek.seek(vehicle, path.getCurrentNode(), rst);
 		  }
 		  else{
