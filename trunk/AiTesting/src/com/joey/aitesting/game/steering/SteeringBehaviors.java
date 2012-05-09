@@ -18,7 +18,9 @@ import com.joey.aitesting.game.steering.behaviors.Cohesion;
 import com.joey.aitesting.game.steering.behaviors.Evade;
 import com.joey.aitesting.game.steering.behaviors.Flee;
 import com.joey.aitesting.game.steering.behaviors.FollowPath;
+import com.joey.aitesting.game.steering.behaviors.Interpose;
 import com.joey.aitesting.game.steering.behaviors.ObstacleAvoidance;
+import com.joey.aitesting.game.steering.behaviors.OffsetPursuit;
 import com.joey.aitesting.game.steering.behaviors.Persuit;
 import com.joey.aitesting.game.steering.behaviors.Seek;
 import com.joey.aitesting.game.steering.behaviors.Seperation;
@@ -30,6 +32,17 @@ public class SteeringBehaviors {
 	Vehicle vehicle;
 
 	public boolean drawBehaviour = false;
+	//Offset Pursuit
+	public boolean useOffsetPursuit = false;
+	public float offsetPursuitWeight = 1f;
+	public Vehicle offsetPursuitVehicle;
+	public Vector2D offsetPursuitOffset;
+	
+	//Interpose Variables
+	public boolean useInterpose = false;
+	public float interposeWeight = 1f;
+	public Vehicle interposeA;
+	public Vehicle interposeB;
 	
 	//Waypoint Path
 	public boolean useFollowPath = false;
@@ -183,6 +196,18 @@ public class SteeringBehaviors {
 			//System.out.println("Cohesion : "+hold);
 		}
 		
+		if(useOffsetPursuit){
+			hold.setLocation(0,0);
+			OffsetPursuit.OffsetPursuit(vehicle, offsetPursuitVehicle, offsetPursuitOffset, hold);
+			hold.scale(offsetPursuitWeight);
+			rst.add(hold);
+		}
+		if(useInterpose){
+			hold.setLocation(0,0);
+			Interpose.interpose(vehicle, interposeA, interposeB, hold);
+			hold.scale(interposeWeight);
+			rst.add(hold);
+		}
 		if(useFollowPath){
 			hold.setLocation(0,0);
 			FollowPath.PathFollow(vehicle, path, followPathWaypointDistance, hold);

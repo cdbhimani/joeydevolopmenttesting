@@ -52,8 +52,8 @@ import com.joey.aitesting.game.shapes.Vector2D;
 import com.me.mygdxgame.Gestures.OrthoCamController;
 
 public class MyGdxGame implements ApplicationListener {
-	public static float MAX_VEL = 600f;
-	public static float MAX_FORCE = 1000f;
+	public static float MAX_VEL = 300f;
+	public static float MAX_FORCE = 10000f;
 
 	Skin skin;
 	Stage stage;
