@@ -31,7 +31,7 @@ public class FollowPath extends AbstractBehavior {
 		    Seek.seek(vehicle, path.getCurrentNode(), rst);
 		  }
 		  else{
-		    Arrive.arrive(vehicle, path.getCurrentNode(),Deceleration.FAST, rst);
+		    Arrive.arrive(vehicle, path.getCurrentNode(),Deceleration.FAST,Arrive.DecelerationTweaker, rst);
 		  }
 	}
 }

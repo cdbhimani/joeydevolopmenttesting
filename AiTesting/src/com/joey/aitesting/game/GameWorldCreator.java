@@ -13,70 +13,139 @@ import com.joey.aitesting.game.steering.behaviors.FollowPath;
 
 public class GameWorldCreator {
 
+	public static float MAX_VEL = 300;
+	public static float MAX_FORCE = 10000f;
+
 	public static void CreateGameWorld(GameWorld world) {
 		// CreateWallAvoidanceWorld(world);
 		// CreatePathFollowWorld(world);
-		CreateInterposeWorld(world);
+		 CreateOffsetPursuitWorld(world);
+//		CreateInterposeWorld(world);
+
 	}
 
 	private static void CreateEntity(GameWorld world, float maxVel,
 			float maxForce) {
 		// CreateWallAvoidanceEntity(world, maxVel, maxForce);
 		// CratePathFollowEntity(world, maxVel, maxForce);
-		CrateInterposeEntity(world, maxVel, maxForce);
+		 CrateOffsetPursuitEntity(world, maxVel, maxForce);
+//		CreateInterposeEntity(world, maxVel, maxForce);
 	}
 
-	public static void CreateInterposeWorld(GameWorld world) {
-		addEntity(world, 2, MyGdxGame.MAX_VEL, MyGdxGame.MAX_FORCE);
+	public static void CreateInterposeWorld(GameWorld world){
+		addEntity(world, 3, GameWorldCreator.MAX_VEL,
+				GameWorldCreator.MAX_FORCE);
 	}
-
-	public static void CrateInterposeEntity(GameWorld world, float maxVel,float maxForce) {
+	
+	public static void CreateInterposeEntity(GameWorld world, float maxVel, float maxForce){
 		Vehicle entity = new Vehicle(world);
-		entity.pos.setLocation(world.worldBounds.getRandomPos());
+		entity.pos.setLocation(world.worldBounds.getInset(100).getRandomPos());
 		entity.maxSpeed = maxVel;
 		entity.maxForce = maxForce;
-		entity.vel.setLocation(
-				(float) (entity.maxSpeed * (1 - 2 * Math.random())),
-				(float) (entity.maxSpeed * (1 - 2 * Math.random())));
+		
 		entity.mass = 1;
 		entity.scale = new Vector2D(1, 1);
 
-		int entityCount = world.vehicles.size(); 
-		switch (entityCount % 3) {
-		case 0: //Create a path following Leader
+		int entityCount = world.vehicles.size();
+		switch (entityCount%3) {
+		case 0:
+			entity.steering.useWander = true;
+			entity.steering.wanderDistance = 100;
+			entity.steering.wanderRadius = 60;
+			entity.steering.wanderJitter = 30;
+			entity.steering.drawBehaviour = true;
+			break;
+		case 1:
+//			entity.steering.useOffsetPursuit = true;
+//			entity.steering.offsetPursuitWeight = 10f;
+//			entity.steering.offsetPursuitVehicle = world.vehicles.get(entityCount - 1);
+//			entity.steering.offsetPursuitOffset = new Vector2D(0,100);
+//			
+//			
+			entity.steering.useWander = true;
+			entity.steering.wanderDistance = 100;
+			entity.steering.wanderRadius = 60;
+			entity.steering.wanderJitter = 30;
+			entity.steering.drawBehaviour = true;
+			break;
+		case 2:
+			entity.steering.useInterpose = true;
+			entity.steering.interposeA = world.vehicles.get(entityCount - 1);
+			entity.steering.interposeB = world.vehicles.get(entityCount - 2);
+			entity.steering.interposeWeight = 10;
+			break;
+
+		}
+		
+		entity.vel.setLocation(
+				(float) (entity.maxSpeed * (1 - 2 * Math.random())),
+				(float) (entity.maxSpeed * (1 - 2 * Math.random())));
+		world.addVehicle(entity);
+	}
+	
+	
+	public static void CreateOffsetPursuitWorld(GameWorld world) {
+		addEntity(world, 2, GameWorldCreator.MAX_VEL,
+				GameWorldCreator.MAX_FORCE);
+	}
+
+	public static void CrateOffsetPursuitEntity(GameWorld world, float maxVel,
+			float maxForce) {
+		Vehicle entity = new Vehicle(world);
+		entity.pos.setLocation(world.worldBounds.getInset(100).getRandomPos());
+		entity.maxSpeed = maxVel;
+		entity.maxForce = maxForce;
+		
+		entity.mass = 1;
+		entity.scale = new Vector2D(1, 1);
+
+		int entityCount = world.vehicles.size();
+		if (entityCount == 0) {// Create a path following Leader
 			WaypointPath path = new WaypointPath();
 			for (int i = 0; i < 3; i++) {
 				path.addPoint(world.worldBounds.getRandomPos());
 			}
 			path.loop = true;
-			
-			entity.steering.useFollowPath = true;
+
+			entity.steering.useWander = true;
+			entity.steering.wanderDistance = 100;
+			entity.steering.wanderRadius = 60;
+			entity.steering.wanderJitter = 30;
+			entity.steering.drawBehaviour = true;
+
+			entity.steering.followPathWeight = 10f;
+			entity.steering.useFollowPath = false;
 			entity.steering.path = path;
-			entity.steering.followPathWaypointDistance = 50;
-			break;
-		case 1: //Create an offset follower to this random moving guy
+			entity.steering.followPathWaypointDistance = 10;
+			entity.steering.drawBehaviour = true;
+		} else {
+			entity.maxSpeed *= 4;
 			entity.steering.useOffsetPursuit = true;
-			entity.steering.offsetPursuitWeight = 1f;
-			entity.steering.offsetPursuitVehicle = world.vehicles.get(entityCount-1);
-			entity.steering.offsetPursuitOffset = new Vector2D(-10,0);
-			break;
-		case 2:
-			System.out.println(2);
-			break;
+			entity.steering.offsetPursuitWeight = 10f;
+			entity.steering.offsetPursuitVehicle = world.vehicles
+					.get(entityCount - 1);
+			float box = 50;
+			entity.steering.offsetPursuitOffset = new Vector2D(-box, 0);
 		}
+		
+		
+		entity.vel.setLocation(
+				(float) (entity.maxSpeed * (1 - 2 * Math.random())),
+				(float) (entity.maxSpeed * (1 - 2 * Math.random())));
 		world.addVehicle(entity);
 
 	}
 
 	public static void CreatePathFollowWorld(GameWorld world) {
-		addEntity(world, 1, MyGdxGame.MAX_VEL, MyGdxGame.MAX_FORCE);
+		addEntity(world, 1, GameWorldCreator.MAX_VEL,
+				GameWorldCreator.MAX_FORCE);
 	}
 
 	public static void CratePathFollowEntity(GameWorld world, float maxVel,
 			float maxForce) {
 		WaypointPath path = new WaypointPath();
-		for (int i = 0; i < 3; i++) {
-			path.addPoint(world.worldBounds.getRandomPos());
+		for (int i = 0; i < 10; i++) {
+			path.addPoint(world.worldBounds.getInset(50).getRandomPos());
 		}
 		path.loop = true;
 
@@ -92,7 +161,8 @@ public class GameWorldCreator {
 
 		entity.steering.useFollowPath = true;
 		entity.steering.path = path;
-		entity.steering.followPathWaypointDistance = 50;
+		entity.steering.followPathWaypointDistance = 10;
+		entity.steering.followPathWeight = 10;
 
 		entity.steering.drawBehaviour = true;
 		world.addVehicle(entity);

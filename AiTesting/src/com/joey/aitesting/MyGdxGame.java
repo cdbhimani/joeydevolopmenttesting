@@ -52,8 +52,7 @@ import com.joey.aitesting.game.shapes.Vector2D;
 import com.me.mygdxgame.Gestures.OrthoCamController;
 
 public class MyGdxGame implements ApplicationListener {
-	public static float MAX_VEL = 300f;
-	public static float MAX_FORCE = 10000f;
+	
 
 	Skin skin;
 	Stage stage;
@@ -86,7 +85,7 @@ public class MyGdxGame implements ApplicationListener {
 				false);
 		batch = new SpriteBatch();
 
-		float scale = 5;
+		float scale = 10;
 		float sizeX = scale*Gdx.graphics.getWidth()/2;
 		float sizeY = scale*Gdx.graphics.getHeight()/2;
 		Rectangle2D bounds = new Rectangle2D(-sizeX, -sizeY, sizeX, sizeY);
@@ -237,7 +236,7 @@ public class MyGdxGame implements ApplicationListener {
 			public void click(Actor actor, float x, float y) {
 				try {
 					GameWorldCreator.addEntity(world,
-							Integer.parseInt(toAddEntityCount.getText()), MAX_VEL, MAX_FORCE);
+							Integer.parseInt(toAddEntityCount.getText()), GameWorldCreator.MAX_VEL, GameWorldCreator.MAX_FORCE);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
