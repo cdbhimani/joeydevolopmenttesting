@@ -4,7 +4,7 @@ import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.shapes.Vector2D;
 
 public class Arrive extends AbstractBehavior{
-	public static final float DecelerationTweaker = .3f;
+	public static final float DecelerationTweaker = .2f;
 	public Arrive(Vehicle veh) {
 		super(veh);
 		// TODO Auto-generated constructor stub
@@ -16,7 +16,7 @@ public class Arrive extends AbstractBehavior{
 		
 	}
 
-	public static void arrive(Vehicle veh,	Vector2D TargetPos, int deceleration, Vector2D rst) {
+	public static void arrive(Vehicle veh,	Vector2D TargetPos, int deceleration, float DecelerationTweaker, Vector2D rst) {
 		Vector2D.subtract(TargetPos, veh.pos, rst);
 		float dist = rst.length();
 		if (dist > 0) {

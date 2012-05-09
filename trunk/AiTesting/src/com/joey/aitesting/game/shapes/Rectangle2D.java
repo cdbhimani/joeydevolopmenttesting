@@ -119,4 +119,10 @@ public class Rectangle2D {
 		x2-=inset;
 		y2-=inset;
 	}
+
+	public Rectangle2D getInset(int i) {
+		Rectangle2D r = new Rectangle2D(this);
+		r.inset(i);
+		return r;
+	}
 }

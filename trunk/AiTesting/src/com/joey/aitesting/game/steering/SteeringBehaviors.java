@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import com.badlogic.gdx.scenes.scene2d.interpolators.DecelerateInterpolator;
+import com.joey.aitesting.game.Deceleration;
 import com.joey.aitesting.game.entities.BaseGameEntity;
 import com.joey.aitesting.game.entities.Obstacle;
 import com.joey.aitesting.game.entities.Vehicle;
@@ -244,7 +246,7 @@ public class SteeringBehaviors {
 			hold.setLocation(0,0);
 			WorldWrapper.moveToClosest(vehicle.pos, arrivePos, point,
 					vehicle.world.worldBounds);
-			Arrive.arrive(vehicle,point,1, hold);
+			Arrive.arrive(vehicle,point,Deceleration.FAST,Arrive.DecelerationTweaker,hold);
 			hold.scale(arriveWeight);
 			rst.add(hold);
 			
@@ -317,11 +319,12 @@ public class SteeringBehaviors {
 		
 		
 		if (rst.lengthSq() > vehicle.maxForce * vehicle.maxForce) {
+//			System.out.println("Rescale : "+rst);
 			rst.normalise();
 			rst.scale(vehicle.maxForce);
 		}
 		
-		//System.out.println("End : "+rst);
+//		System.out.println("End : "+rst);
 		return rst;
 	}
 
