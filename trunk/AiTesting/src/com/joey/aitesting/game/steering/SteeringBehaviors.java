@@ -1,18 +1,14 @@
 package com.joey.aitesting.game.steering;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import com.badlogic.gdx.scenes.scene2d.interpolators.DecelerateInterpolator;
 import com.joey.aitesting.game.Deceleration;
-import com.joey.aitesting.game.entities.BaseGameEntity;
-import com.joey.aitesting.game.entities.Obstacle;
 import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.entities.WaypointPath;
 import com.joey.aitesting.game.maths.Transformations;
-import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.shapes.Rectangle2D;
+import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.shapes.WorldWrapper;
 import com.joey.aitesting.game.steering.behaviors.Alignment;
 import com.joey.aitesting.game.steering.behaviors.Arrive;
@@ -20,6 +16,7 @@ import com.joey.aitesting.game.steering.behaviors.Cohesion;
 import com.joey.aitesting.game.steering.behaviors.Evade;
 import com.joey.aitesting.game.steering.behaviors.Flee;
 import com.joey.aitesting.game.steering.behaviors.FollowPath;
+import com.joey.aitesting.game.steering.behaviors.Hide;
 import com.joey.aitesting.game.steering.behaviors.Interpose;
 import com.joey.aitesting.game.steering.behaviors.ObstacleAvoidance;
 import com.joey.aitesting.game.steering.behaviors.OffsetPursuit;
@@ -34,6 +31,11 @@ public class SteeringBehaviors {
 	Vehicle vehicle;
 
 	public boolean drawBehaviour = false;
+	//Hide
+	public boolean useHide = false;
+	public float hideWeight = 1f;
+	public Vehicle hideVehicle;
+	
 	//Offset Pursuit
 	public boolean useOffsetPursuit = false;
 	public float offsetPursuitWeight = 1f;
@@ -196,6 +198,14 @@ public class SteeringBehaviors {
 				return hold;
 			}
 			//System.out.println("Cohesion : "+hold);
+		}
+		
+		
+		if(useHide){
+			hold.setLocation(0,0);
+			Hide.hide(vehicle, hideVehicle, vehicle.getWorld().getObstacles(), hold);
+			hold.scale(offsetPursuitWeight);
+			rst.add(hold);
 		}
 		
 		if(useOffsetPursuit){

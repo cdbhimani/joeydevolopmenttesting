@@ -11,7 +11,7 @@ import com.joey.aitesting.game.shapes.Rectangle2D;
 import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.steering.behaviors.FollowPath;
 
-public class GameWorldCreator {
+public class GameWorldTesterCreator {
 
 	public static float MAX_VEL = 300;
 	public static float MAX_FORCE = 10000f;
@@ -19,35 +19,80 @@ public class GameWorldCreator {
 	public static void CreateGameWorld(GameWorld world) {
 		// CreateWallAvoidanceWorld(world);
 		// CreatePathFollowWorld(world);
-		 CreateOffsetPursuitWorld(world);
-//		CreateInterposeWorld(world);
-
+		// CreateOffsetPursuitWorld(world);
+		// CreateInterposeWorld(world);
+		CreateHideWorld(world);
 	}
 
 	private static void CreateEntity(GameWorld world, float maxVel,
 			float maxForce) {
 		// CreateWallAvoidanceEntity(world, maxVel, maxForce);
 		// CratePathFollowEntity(world, maxVel, maxForce);
-		 CrateOffsetPursuitEntity(world, maxVel, maxForce);
-//		CreateInterposeEntity(world, maxVel, maxForce);
+		// CrateOffsetPursuitEntity(world, maxVel, maxForce);
+		// CreateInterposeEntity(world, maxVel, maxForce);
+		CreateHideEntity(world, maxVel, maxForce);
 	}
 
-	public static void CreateInterposeWorld(GameWorld world){
-		addEntity(world, 3, GameWorldCreator.MAX_VEL,
-				GameWorldCreator.MAX_FORCE);
+	public static void CreateHideWorld(GameWorld world) {
+		addObstacles(world, 3, 100);
+		addEntity(world, 2, GameWorldTesterCreator.MAX_VEL,
+				GameWorldTesterCreator.MAX_FORCE);
 	}
-	
-	public static void CreateInterposeEntity(GameWorld world, float maxVel, float maxForce){
+
+	public static void CreateHideEntity(GameWorld world, float maxVel,
+			float maxForce) {
 		Vehicle entity = new Vehicle(world);
 		entity.pos.setLocation(world.worldBounds.getInset(100).getRandomPos());
 		entity.maxSpeed = maxVel;
 		entity.maxForce = maxForce;
-		
+
 		entity.mass = 1;
 		entity.scale = new Vector2D(1, 1);
 
 		int entityCount = world.vehicles.size();
-		switch (entityCount%3) {
+		if(entityCount == 0){
+			entity.steering.useObstacleAvoidance = true;
+			entity.steering.obstacleSearchBoxDistance = 10;
+			entity.steering.obstacleAvoidanceWeight = 20;
+			
+			entity.steering.useWander = true;
+			entity.steering.wanderDistance = 100;
+			entity.steering.wanderRadius = 60;
+			entity.steering.wanderJitter = 30;
+			entity.steering.drawBehaviour = true;
+		} else{
+			entity.steering.useObstacleAvoidance = false;
+			entity.steering.obstacleSearchBoxDistance = 50;
+			entity.steering.obstacleAvoidanceWeight = 20;
+			
+			entity.steering.useHide = true;
+			entity.steering.hideVehicle = world.getVehicles().get(0);
+			entity.steering.hideWeight = 100;
+		}
+
+		entity.vel.setLocation(
+				(float) (entity.maxSpeed * (1 - 2 * Math.random())),
+				(float) (entity.maxSpeed * (1 - 2 * Math.random())));
+		world.addVehicle(entity);
+	}
+
+	public static void CreateInterposeWorld(GameWorld world) {
+		addEntity(world, 3, GameWorldTesterCreator.MAX_VEL,
+				GameWorldTesterCreator.MAX_FORCE);
+	}
+
+	public static void CreateInterposeEntity(GameWorld world, float maxVel,
+			float maxForce) {
+		Vehicle entity = new Vehicle(world);
+		entity.pos.setLocation(world.worldBounds.getInset(100).getRandomPos());
+		entity.maxSpeed = maxVel;
+		entity.maxForce = maxForce;
+
+		entity.mass = 1;
+		entity.scale = new Vector2D(1, 1);
+
+		int entityCount = world.vehicles.size();
+		switch (entityCount % 3) {
 		case 0:
 			entity.steering.useWander = true;
 			entity.steering.wanderDistance = 100;
@@ -56,12 +101,13 @@ public class GameWorldCreator {
 			entity.steering.drawBehaviour = true;
 			break;
 		case 1:
-//			entity.steering.useOffsetPursuit = true;
-//			entity.steering.offsetPursuitWeight = 10f;
-//			entity.steering.offsetPursuitVehicle = world.vehicles.get(entityCount - 1);
-//			entity.steering.offsetPursuitOffset = new Vector2D(0,100);
-//			
-//			
+			// entity.steering.useOffsetPursuit = true;
+			// entity.steering.offsetPursuitWeight = 10f;
+			// entity.steering.offsetPursuitVehicle =
+			// world.vehicles.get(entityCount - 1);
+			// entity.steering.offsetPursuitOffset = new Vector2D(0,100);
+			//
+			//
 			entity.steering.useWander = true;
 			entity.steering.wanderDistance = 100;
 			entity.steering.wanderRadius = 60;
@@ -76,17 +122,16 @@ public class GameWorldCreator {
 			break;
 
 		}
-		
+
 		entity.vel.setLocation(
 				(float) (entity.maxSpeed * (1 - 2 * Math.random())),
 				(float) (entity.maxSpeed * (1 - 2 * Math.random())));
 		world.addVehicle(entity);
 	}
-	
-	
+
 	public static void CreateOffsetPursuitWorld(GameWorld world) {
-		addEntity(world, 2, GameWorldCreator.MAX_VEL,
-				GameWorldCreator.MAX_FORCE);
+		addEntity(world, 2, GameWorldTesterCreator.MAX_VEL,
+				GameWorldTesterCreator.MAX_FORCE);
 	}
 
 	public static void CrateOffsetPursuitEntity(GameWorld world, float maxVel,
@@ -95,7 +140,7 @@ public class GameWorldCreator {
 		entity.pos.setLocation(world.worldBounds.getInset(100).getRandomPos());
 		entity.maxSpeed = maxVel;
 		entity.maxForce = maxForce;
-		
+
 		entity.mass = 1;
 		entity.scale = new Vector2D(1, 1);
 
@@ -127,8 +172,7 @@ public class GameWorldCreator {
 			float box = 50;
 			entity.steering.offsetPursuitOffset = new Vector2D(-box, 0);
 		}
-		
-		
+
 		entity.vel.setLocation(
 				(float) (entity.maxSpeed * (1 - 2 * Math.random())),
 				(float) (entity.maxSpeed * (1 - 2 * Math.random())));
@@ -137,8 +181,8 @@ public class GameWorldCreator {
 	}
 
 	public static void CreatePathFollowWorld(GameWorld world) {
-		addEntity(world, 1, GameWorldCreator.MAX_VEL,
-				GameWorldCreator.MAX_FORCE);
+		addEntity(world, 1, GameWorldTesterCreator.MAX_VEL,
+				GameWorldTesterCreator.MAX_FORCE);
 	}
 
 	public static void CratePathFollowEntity(GameWorld world, float maxVel,

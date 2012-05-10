@@ -1,5 +1,6 @@
 package com.joey.aitesting.game.steering.behaviors;
 
+import com.joey.aitesting.game.Deceleration;
 import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.shapes.Vector2D;
 
@@ -16,6 +17,9 @@ public class Arrive extends AbstractBehavior{
 		
 	}
 
+	public static void arrive(Vehicle veh,	Vector2D TargetPos, int deceleration, Vector2D rst) {
+		arrive(veh, TargetPos, Deceleration.FAST, Arrive.DecelerationTweaker, rst);
+	}
 	public static void arrive(Vehicle veh,	Vector2D TargetPos, int deceleration, float DecelerationTweaker, Vector2D rst) {
 		Vector2D.subtract(TargetPos, veh.pos, rst);
 		float dist = rst.length();

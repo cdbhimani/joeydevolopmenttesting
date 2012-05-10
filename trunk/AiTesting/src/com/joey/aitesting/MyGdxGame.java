@@ -42,7 +42,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.TableLayout;
 import com.joey.aitesting.game.ExitListner;
 import com.joey.aitesting.game.GameWorld;
-import com.joey.aitesting.game.GameWorldCreator;
+import com.joey.aitesting.game.GameWorldTesterCreator;
 import com.joey.aitesting.game.entities.Wall2D;
 import com.joey.aitesting.game.graphics.ConsoleLogger;
 import com.joey.aitesting.game.graphics.ConsoleViewer;
@@ -109,7 +109,7 @@ public class MyGdxGame implements ApplicationListener {
 		Gdx.input.setInputProcessor(multi);
 		
 
-		GameWorldCreator.CreateGameWorld(world);
+		GameWorldTesterCreator.CreateGameWorld(world);
 //		world.addObstacles(30, 60);
 	}
 
@@ -235,8 +235,8 @@ public class MyGdxGame implements ApplicationListener {
 			@Override
 			public void click(Actor actor, float x, float y) {
 				try {
-					GameWorldCreator.addEntity(world,
-							Integer.parseInt(toAddEntityCount.getText()), GameWorldCreator.MAX_VEL, GameWorldCreator.MAX_FORCE);
+					GameWorldTesterCreator.addEntity(world,
+							Integer.parseInt(toAddEntityCount.getText()), GameWorldTesterCreator.MAX_VEL, GameWorldTesterCreator.MAX_FORCE);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -249,7 +249,7 @@ public class MyGdxGame implements ApplicationListener {
 			@Override
 			public void click(Actor actor, float x, float y) {
 				try {
-					GameWorldCreator.removeVehicles(world,Integer.parseInt(toAddEntityCount
+					GameWorldTesterCreator.removeVehicles(world,Integer.parseInt(toAddEntityCount
 							.getText()));
 				} catch (Exception e) {
 					e.printStackTrace();
