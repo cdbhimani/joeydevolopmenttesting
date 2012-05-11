@@ -3,22 +3,27 @@ package com.joey.aitesting.game.steering.behaviors;
 import com.joey.aitesting.game.Deceleration;
 import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.shapes.Vector2D;
+import com.joey.aitesting.game.steering.SteeringBehaviors;
+import com.joey.aitesting.game.steering.SteeringControler;
 
 public class Arrive extends AbstractBehavior{
 	public static final float DecelerationTweaker = .2f;
-	public Arrive(Vehicle veh) {
-		super(veh);
-		// TODO Auto-generated constructor stub
+	
+	public Vector2D arrivePos;
+	public int deceleration = Deceleration.FAST;
+	public float decelerationTweaker = DecelerationTweaker;
+	
+	public Arrive(SteeringControler steering) {
+		super(steering);
 	}
 
 	@Override
 	public void calculate(Vector2D force) {
-		// TODO Auto-generated method stub
-		
+		arrive(vehicle, arrivePos, deceleration,decelerationTweaker, force);
 	}
 
 	public static void arrive(Vehicle veh,	Vector2D TargetPos, int deceleration, Vector2D rst) {
-		arrive(veh, TargetPos, Deceleration.FAST, Arrive.DecelerationTweaker, rst);
+		arrive(veh, TargetPos, Deceleration.FAST, deceleration, rst);
 	}
 	public static void arrive(Vehicle veh,	Vector2D TargetPos, int deceleration, float DecelerationTweaker, Vector2D rst) {
 		Vector2D.subtract(TargetPos, veh.pos, rst);

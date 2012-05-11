@@ -6,12 +6,26 @@ import com.joey.aitesting.game.Deceleration;
 import com.joey.aitesting.game.entities.Obstacle;
 import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.shapes.Vector2D;
+import com.joey.aitesting.game.steering.SteeringControler;
 
-public class Hide {
+public class Hide extends AbstractBehavior{
 	public static final float DistanceFromBoundary = 30.0f;
+	
+	public Vehicle hideVehicle;
+	
+	public Hide(SteeringControler steering) {
+		super(steering);	
+	}
 
-	public static void GetHidingPosition(Vector2D target, Obstacle obj,
-			Vector2D rst) {
+
+	@Override
+	protected void calculate(Vector2D force) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+
+	public static void GetHidingPosition(Vector2D target, Obstacle obj,Vector2D rst) {
 		// calculate how far away the agent is to be from the chosen obstacle’s
 		// bounding radius
 
@@ -27,8 +41,7 @@ public class Hide {
 		rst.y = (ToOb.y * DistAway) + obj.pos.y;
 	}
 
-	public static void hide(Vehicle vehicle, Vehicle target,
-			List<Obstacle> obstacles, Vector2D rst) {
+	public static void hide(Vehicle vehicle, Vehicle target,List<Obstacle> obstacles, Vector2D rst) {
 		float DistToClosest = Float.MAX_VALUE;
 		boolean spotFound = false;
 
@@ -55,4 +68,5 @@ public class Hide {
 			Arrive.arrive(vehicle, BestHidingSpot, Deceleration.FAST, rst);
 		}
 	}
+
 }

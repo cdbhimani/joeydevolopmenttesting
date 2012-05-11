@@ -4,18 +4,18 @@ import java.util.HashSet;
 
 import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.shapes.Vector2D;
+import com.joey.aitesting.game.steering.SteeringControler;
 
 public class Cohesion extends AbstractBehavior{
 
-	public Cohesion(Vehicle veh) {
-		super(veh);
+	public Cohesion(SteeringControler steering) {
+		super(steering);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void calculate(Vector2D force) {
-		// TODO Auto-generated method stub
-		
+		cohesion(vehicle, steering.getVisibleVehicles(), force);
 	}
 
 	public static void cohesion(Vehicle vehicle, HashSet<Vehicle> neighbors, Vector2D rst){

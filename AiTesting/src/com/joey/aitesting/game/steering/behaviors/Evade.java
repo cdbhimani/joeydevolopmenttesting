@@ -3,17 +3,26 @@ package com.joey.aitesting.game.steering.behaviors;
 import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.shapes.WorldWrapper;
+import com.joey.aitesting.game.steering.SteeringControler;
 
 public class Evade extends AbstractBehavior{
 
-	public Evade(Vehicle veh) {
-		super(veh);
+	public Vehicle evadeVehicle;
+	public boolean useEvadePanic = false;
+	public float evadePanicDistance = 30;
+	
+	public Evade(SteeringControler steering) {
+		super(steering);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void calculate(Vector2D force) {
-		// TODO Auto-generated method stub
+		if(useEvadePanic){
+			evade(vehicle, evadeVehicle,evadePanicDistance,force);
+		}else{
+			evade(vehicle, evadeVehicle, force);
+		}
 		
 	}
 
