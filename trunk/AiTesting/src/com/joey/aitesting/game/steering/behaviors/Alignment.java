@@ -4,11 +4,12 @@ import java.util.HashSet;
 
 import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.shapes.Vector2D;
+import com.joey.aitesting.game.steering.SteeringControler;
 
 public class Alignment extends AbstractBehavior{
 
-	public Alignment(Vehicle veh) {
-		super(veh);
+	public Alignment(SteeringControler steering) {
+		super(steering);
 		// TODO Auto-generated constructor stub
 	}
 

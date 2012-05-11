@@ -5,17 +5,21 @@ import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.entities.WaypointPath;
 import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.steering.SteeringBehaviors;
+import com.joey.aitesting.game.steering.SteeringControler;
 
 public class FollowPath extends AbstractBehavior {
 
-	public FollowPath(Vehicle vehicle) {
-		super(vehicle);
+	public float waypointDistance = 10;
+	public WaypointPath path;
+	
+	public FollowPath(SteeringControler steering) {
+		super(steering);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void calculate(Vector2D force) {
-		// TODO Auto-generated method stub
+		PathFollow(vehicle, path, waypointDistance, force);
 		
 	}
 
