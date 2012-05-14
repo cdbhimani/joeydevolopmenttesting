@@ -8,8 +8,18 @@ import com.joey.aitesting.game.entities.Wall2D;
 import com.joey.aitesting.game.maths.Geometry;
 import com.joey.aitesting.game.maths.Transformations;
 import com.joey.aitesting.game.shapes.Vector2D;
+import com.joey.aitesting.game.steering.SteeringControler;
 
-public class WallAvoidance {
+public class WallAvoidance extends AbstractBehavior{
+
+	public WallAvoidance(SteeringControler steering) {
+		super("WallAvoidance",steering);
+	}
+
+	@Override
+	public void calculate(Vector2D force) {
+		WallAvoidance(vehicle, steering.getFeelers(), steering.getVisibleWalls(), force);
+	}
 
 	public static ArrayList<Vector2D> createFeelers(int feelerCount, float feelerLength, float feelerFOV){
 		ArrayList<Vector2D> feelers= new ArrayList<Vector2D>(feelerCount);
@@ -28,7 +38,7 @@ public class WallAvoidance {
 	
 	public static void WallAvoidance(Vehicle m_pVehicle,List<Vector2D> m_Feelers,List<Wall2D> walls, Vector2D rst)
 	{
-	  
+//	  System.out.println("\n\n");
 	  float DistToThisIP[]    = new float[]{0.0f};
 	  float DistToClosestIP = Float.MAX_VALUE;
 
@@ -85,7 +95,9 @@ public class WallAvoidance {
 	    }
 
 	  }//next feeler
-	  if(count != 0)
-	  rst.scale(1f/count);
+//	  System.out.println("Count"+count);
+	  if(count != 0){
+		  rst.scale(1f/count);
+	  }
 	}
 }

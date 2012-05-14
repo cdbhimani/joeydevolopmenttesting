@@ -5,10 +5,23 @@ import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.maths.Transformations;
 import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.shapes.WorldWrapper;
+import com.joey.aitesting.game.steering.SteeringControler;
 
-public class OffsetPursuit {
+public class OffsetPursuit extends AbstractBehavior {
 
-	public static void OffsetPursuit(Vehicle vehicle, Vehicle leader,
+	public Vehicle leader;
+	public Vector2D offset;
+	
+	public OffsetPursuit(SteeringControler steering) {
+		super("OffsetPursuit",steering);
+	}
+
+	@Override
+	protected void calculate(Vector2D force) {
+		offsetPursuit(vehicle, leader, offset, force);
+	}
+
+	public static void offsetPursuit(Vehicle vehicle, Vehicle leader,
 			Vector2D offset, Vector2D rst) {
 		// calculate the offset’s position in world space
 		Vector2D WorldOffsetPos = new Vector2D();

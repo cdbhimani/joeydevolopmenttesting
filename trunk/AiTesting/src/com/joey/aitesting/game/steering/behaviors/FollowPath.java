@@ -13,7 +13,7 @@ public class FollowPath extends AbstractBehavior {
 	public WaypointPath path;
 	
 	public FollowPath(SteeringControler steering) {
-		super(steering);
+		super("FollowPath",steering);
 		// TODO Auto-generated constructor stub
 	}
 

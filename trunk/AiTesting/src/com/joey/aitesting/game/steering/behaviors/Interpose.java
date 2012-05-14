@@ -4,22 +4,23 @@ import com.joey.aitesting.game.Deceleration;
 import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.shapes.WorldWrapper;
+import com.joey.aitesting.game.steering.SteeringControler;
 
 public class Interpose extends AbstractBehavior {
 
-	public Interpose(Vehicle veh) {
-		super(veh);
-		// TODO Auto-generated constructor stub
+	public Vehicle interposeVehicleA;
+	public Vehicle interposeVehicleB;
+	
+	public Interpose(SteeringControler steering) {
+		super("Interpose",steering);
 	}
 
 	@Override
 	public void calculate(Vector2D force) {
-		// TODO Auto-generated method stub
-
+		interpose(vehicle, interposeVehicleA, interposeVehicleB, force);
 	}
 
-	public static void interpose(Vehicle m_pVehicle, Vehicle AgentA, Vehicle AgentB,
-			Vector2D rst) {
+	public static void interpose(Vehicle m_pVehicle, Vehicle AgentA, Vehicle AgentB,Vector2D rst) {
 		Vector2D posA = new Vector2D();
 		Vector2D posB = new Vector2D();
 		

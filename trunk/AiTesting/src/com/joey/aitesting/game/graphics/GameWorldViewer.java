@@ -45,7 +45,7 @@ public class GameWorldViewer {
 	float wallNormSize = 30f;
 	public boolean drawBorders = true;
 	public boolean drawEntities = true;
-	public boolean drawQuadTree = false;
+	public boolean drawQuadTree = true;
 	public boolean drawBehaviour = false;
 	public boolean drawObstacles = true;
 	public boolean drawWalls = true;
@@ -99,9 +99,10 @@ public class GameWorldViewer {
 
 		
 		
-		if (vehicle.steering.drawBehaviour) {
-			if(vehicle.steering.useFollowPath){
-				WaypointPath path = vehicle.steering.path;
+		if (vehicle.steering.drawBehaviors) {
+			
+			if(vehicle.steering.followPath.enabled){
+				WaypointPath path = vehicle.steering.followPath.path;
 				
 				for(int i = 0; i < path.points.size(); i++){
 					Vector2D p1 = path.points.get(i);
@@ -123,14 +124,14 @@ public class GameWorldViewer {
 					
 					gridRender.setColor(Color.RED);
 					gridRender.begin(ShapeType.Circle);
-					gridRender.circle(p1.x, p1.y, vehicle.steering.followPathWaypointDistance);
+					gridRender.circle(p1.x, p1.y, vehicle.steering.followPath.waypointDistance);
 					gridRender.end();
 				}
 			}
 			
 			
-			if(vehicle.steering.worldFeelers != null){
-				for(Vector2D f : vehicle.steering.worldFeelers){
+			if(vehicle.steering.wallAvoidance.enabled && vehicle.steering.getFeelers() != null){
+				for(Vector2D f : vehicle.steering.getFeelers()){
 					gridRender.setColor(Color.RED);
 					gridRender.begin(ShapeType.Line);
 					gridRender.line(vehicle.pos.x, vehicle.pos.y,f.x, f.y);
@@ -138,12 +139,13 @@ public class GameWorldViewer {
 					gridRender.end();
 				}
 			}
-			if (vehicle.steering.useObstacleAvoidance) {
+			
+			if (vehicle.steering.obstacleAvoidance.enabled) {
 				// the detection box length is proportional to the agent's
 				// velocity
-				float box = vehicle.steering.obstacleSearchBoxDistance
+				float box = vehicle.steering.obstacleAvoidance.obstacleSearchBoxDistance
 						+ (vehicle.getVel().length() / vehicle.maxSpeed)
-						* vehicle.steering.obstacleSearchBoxDistance;
+						* vehicle.steering.obstacleAvoidance.obstacleSearchBoxDistance;
 
 				Vector2D p1 = new Vector2D(0, -vehicle.radius);
 				Vector2D p2 = new Vector2D(box, -vehicle.radius);
@@ -166,7 +168,7 @@ public class GameWorldViewer {
 				gridRender.end();
 			}
 
-			if (vehicle.steering.useFlee) {
+			if (vehicle.steering.flee.enabled) {
 				Vector2D rst = new Vector2D(vehicle.pos);
 
 				gridRender.setColor(Color.RED);
@@ -174,32 +176,18 @@ public class GameWorldViewer {
 				gridRender.filledCircle(rst.x, rst.y, entitySize);
 				gridRender.end();
 
-				if (vehicle.steering.useFleePanic) {
+				if (vehicle.steering.flee.useFleePanic) {
 					gridRender.setColor(Color.RED);
 					gridRender.begin(ShapeType.FilledCircle);
 					gridRender.filledCircle(rst.x, rst.y,
-							vehicle.steering.fleePanicDistance);
+							vehicle.steering.flee.fleePanicDistance);
 					gridRender.end();
 				}
 			}
 
-			if (vehicle.steering.useSeperation || vehicle.steering.useCohesion
-					|| vehicle.steering.useAlignment) {
-				Vector2D rst = new Vector2D(vehicle.pos);
-
-				Rectangle2D reg = new Rectangle2D(vehicle.pos.x
-						- vehicle.steering.neighborRadius, vehicle.pos.y
-						- vehicle.steering.neighborRadius, vehicle.pos.x
-						+ vehicle.steering.neighborRadius, vehicle.pos.y
-						+ vehicle.steering.neighborRadius);
-
-				reg.ensureOrder();
-
-				HashSet<Vehicle> neighbors = new HashSet<Vehicle>();
-				vehicle.steering.calculateNeighbobors(vehicle, neighbors, reg);
-				neighbors.remove(vehicle);
-
-				for (Vehicle v : neighbors) {
+			if (vehicle.steering.seperation.enabled|| vehicle.steering.cohesion.enabled|| vehicle.steering.alignment.enabled) {
+				
+				for (Vehicle v : vehicle.steering.getVisibleVehicles()) {
 					gridRender.setColor(Color.RED);
 					gridRender.begin(ShapeType.Circle);
 					gridRender.circle(v.pos.x, v.pos.y, 10);
@@ -209,37 +197,38 @@ public class GameWorldViewer {
 				gridRender.setColor(Color.RED);
 				gridRender.begin(ShapeType.Rectangle);
 				gridRender
-						.rect(reg.x1, reg.y1, reg.getWidth(), reg.getHeight());
+						.rect(vehicle.steering.neighborDetectionRegion.x1, vehicle.steering.neighborDetectionRegion.y1, 
+								vehicle.steering.neighborDetectionRegion.getWidth(), vehicle.steering.neighborDetectionRegion.getHeight());
 				gridRender.end();
 			}
 
-			if (vehicle.steering.useWander) {
+			if (vehicle.steering.wander.enabled) {
 				Vector2D rst = new Vector2D(vehicle.pos);
 
 				// Draw Render Circle
 				Vector2D circle = new Vector2D(vehicle.vel);
 				circle.normalise();
-				circle.scale(vehicle.steering.wanderDistance);
+				circle.scale(vehicle.steering.wander.wanderDistance);
 				circle.add(vehicle.pos);
 
 				gridRender.setColor(Color.BLUE);
 				gridRender.begin(ShapeType.Circle);
 				gridRender.circle(circle.x, circle.y,
-						vehicle.steering.wanderRadius);
+						vehicle.steering.wander.wanderRadius);
 				gridRender.end();
 
 				gridRender.setColor(Color.GREEN);
 				gridRender.begin(ShapeType.Line);
 				gridRender.line(circle.x, circle.y, circle.x
-						+ vehicle.steering.wanderVector.x, circle.y
-						+ vehicle.steering.wanderVector.y);
+						+ vehicle.steering.wander.wanderVector.x, circle.y
+						+ vehicle.steering.wander.wanderVector.y);
 				gridRender.end();
 
 				gridRender.setColor(Color.RED);
 				gridRender.begin(ShapeType.Circle);
-				gridRender.circle(circle.x + vehicle.steering.wanderVector.x,
-						circle.y + vehicle.steering.wanderVector.y,
-						vehicle.steering.wanderJitter);
+				gridRender.circle(circle.x + vehicle.steering.wander.wanderVector.x,
+						circle.y + vehicle.steering.wander.wanderVector.y,
+						vehicle.steering.wander.wanderJitter);
 				gridRender.end();
 			}
 		}

@@ -7,18 +7,19 @@ import com.joey.aitesting.game.entities.Obstacle;
 import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.maths.Transformations;
 import com.joey.aitesting.game.shapes.Vector2D;
+import com.joey.aitesting.game.steering.SteeringControler;
 
 public class ObstacleAvoidance extends AbstractBehavior {
 
-	public ObstacleAvoidance(Vehicle veh) {
-		super(veh);
-		// TODO Auto-generated constructor stub
+	public float obstacleSearchBoxDistance = 100;
+	
+	public ObstacleAvoidance(SteeringControler steering) {
+		super("ObstacleAvoidance",steering);
 	}
 
 	@Override
 	public void calculate(Vector2D force) {
-		// TODO Auto-generated method stub
-
+		obstacleAvoidance(vehicle, steering.getVisibleObstacles(), obstacleSearchBoxDistance, force);
 	}
 
 	// ---------------------- ObstacleAvoidance -------------------------------

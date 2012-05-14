@@ -2,18 +2,23 @@ package com.joey.aitesting.game.steering.behaviors;
 
 import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.shapes.Vector2D;
+import com.joey.aitesting.game.steering.SteeringControler;
 
 public class Wander extends AbstractBehavior{
 
-	public Wander(Vehicle veh) {
-		super(veh);
-		// TODO Auto-generated constructor stub
+	public float wanderRadius;
+	public float wanderDistance;
+	public float wanderJitter;
+	public Vector2D wanderVector;
+	
+	public Wander(SteeringControler steering) {
+		super("Wander",steering);
+		wanderVector = new Vector2D();
 	}
 
 	@Override
 	public void calculate(Vector2D force) {
-		// TODO Auto-generated method stub
-		
+		wander(vehicle, 1, wanderJitter, wanderRadius, wanderDistance, wanderVector, force);
 	}
 
 	public static void wander(Vehicle vehicle,float updateTime, float wanderJitter, 

@@ -14,7 +14,7 @@ public class Hide extends AbstractBehavior{
 	public Vehicle hideVehicle;
 	
 	public Hide(SteeringControler steering) {
-		super(steering);	
+		super("Hide",steering);	
 	}
 
 
