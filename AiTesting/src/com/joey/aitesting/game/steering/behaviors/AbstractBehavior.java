@@ -5,22 +5,24 @@ import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.steering.SteeringControler;
 
 public abstract class AbstractBehavior {
+	public final String name;
 	protected SteeringControler steering;
 	protected Vehicle vehicle;
-	protected long lastUpdate;
+	protected long lastUpdate = System.currentTimeMillis();
 	
-	public long requiredUpdateTime;
+	public long requiredUpdateTime = 500;
 	public float forceWeight = 1f;
 	public Vector2D force = new Vector2D();
 	public boolean enabled = false;
 	
-	public AbstractBehavior(SteeringControler steering){
+	public AbstractBehavior(String name,SteeringControler steering){
 		this.steering = steering;
 		this.vehicle = steering.vehicle;
+		this.name = name;
 	}
 	
 	public void updateUsingTime(){
-		if(lastUpdate+requiredUpdateTime > System.currentTimeMillis()){
+		if(lastUpdate+requiredUpdateTime < System.currentTimeMillis()){
 			update();
 		}
 	}
@@ -28,6 +30,7 @@ public abstract class AbstractBehavior {
 	public void update(){
 		lastUpdate = System.currentTimeMillis();
 		if(enabled){
+			resetForce();
 			calculate(force);
 			force.scale(forceWeight);
 		}else{

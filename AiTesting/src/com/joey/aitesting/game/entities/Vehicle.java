@@ -7,10 +7,12 @@ import com.joey.aitesting.game.HeadingSmoother;
 import com.joey.aitesting.game.maths.Transformations;
 import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.steering.SteeringBehaviors;
+import com.joey.aitesting.game.steering.SteeringControler;
 
 public class Vehicle extends MovingEntity {
 	public GameWorld world;
-	public SteeringBehaviors steering;
+	//public SteeringBehaviors steeringOld;
+	public SteeringControler steering;
 	public Vector2D smoothedHeading;
 	public HeadingSmoother headingSmoother;
 	public boolean smoothingOn;
@@ -34,8 +36,8 @@ public class Vehicle extends MovingEntity {
 		this.smoothedHeading = new Vector2D(0, 0);
 		this.smoothingOn = false;
 		this.timeElapsed = 0;
-		this.steering = new SteeringBehaviors(this);
-		
+		//this.steeringOld = new SteeringBehaviors(this);
+		this.steering = new SteeringControler(this);
 		setupShape(5f);
 	}
 
@@ -52,24 +54,19 @@ public class Vehicle extends MovingEntity {
 
 	@Override
 	public void update(float time_elapsed) {
-		
-		//System.out.println("\n\nEntity : "+id);
 		// update the time elapsed
 		this.timeElapsed = time_elapsed;
 
-		// keep a record of its old position so we can update its cell later
-		// in this method
-		Vector2D OldPos = (Vector2D) pos.clone();
-
-		Vector2D steeringForce;
 		Vector2D acceleration = new Vector2D();
 		// calculate the combined force from each steering behavior in the
 		// vehicle's list
-		steeringForce = steering.calculate(time_elapsed);
+//		steeringForce = steeringOld.calculate(time_elapsed);
 		
+		
+		steering.calculate(acceleration);
 		// Acceleration = Force/Mass
-		acceleration.x = steeringForce.x / mass;
-		acceleration.y = steeringForce.y / mass;
+		acceleration.x = acceleration.x / mass;
+		acceleration.y = acceleration.y / mass;
 
 		// update velocity
 		vel.x += acceleration.x * time_elapsed;
@@ -78,11 +75,10 @@ public class Vehicle extends MovingEntity {
 		// make sure vehicle does not exceed maximum velocity
 		vel.truncate(maxSpeed);
 
-		// update the position
+//		 update the position
 		pos.x += vel.x * time_elapsed;
 		pos.y += vel.y * time_elapsed;
 		
-//		System.out.println("Steering Force : "+steeringForce);
 //		System.out.println("Time : "+time_elapsed);
 //		System.out.println("Pos : "+pos);
 //		System.out.println("Vel : "+vel);
@@ -105,6 +101,7 @@ public class Vehicle extends MovingEntity {
 		}
 
 		Transformations.WorldTransform(localVehicleShape, pos, velHead,velSide, transformedVehicleShape);
+
 	}
 
 	public GameWorld getWorld() {
@@ -123,7 +120,7 @@ public class Vehicle extends MovingEntity {
 		this.smoothingOn = smoothingOn;
 	}
 
-	public SteeringBehaviors getSteering() {
+	public SteeringControler getSteering() {
 		return steering;
 	}
 

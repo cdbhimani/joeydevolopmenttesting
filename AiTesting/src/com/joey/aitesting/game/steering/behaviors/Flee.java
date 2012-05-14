@@ -10,7 +10,7 @@ public class Flee extends AbstractBehavior{
 	public Vector2D fleePos;
 	
 	public Flee(SteeringControler steering) {
-		super(steering);
+		super("Flee",steering);
 	}
 
 	@Override

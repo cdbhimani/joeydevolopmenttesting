@@ -3,18 +3,19 @@ package com.joey.aitesting.game.steering.behaviors;
 import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.shapes.Vector2D;
 import com.joey.aitesting.game.shapes.WorldWrapper;
+import com.joey.aitesting.game.steering.SteeringControler;
 
 public class Persuit extends AbstractBehavior{
 
-	public Persuit(Vehicle veh) {
-		super(veh);
-		// TODO Auto-generated constructor stub
+	public Vehicle persuit;
+	
+	public Persuit(SteeringControler steering) {
+		super("Persuit",steering);
 	}
 
 	@Override
 	public void calculate(Vector2D force) {
-		// TODO Auto-generated method stub
-		
+		persuit(vehicle, persuit, force);
 	}
 
 	public static void persuit(Vehicle vehicle, Vehicle persuit, Vector2D rst) {

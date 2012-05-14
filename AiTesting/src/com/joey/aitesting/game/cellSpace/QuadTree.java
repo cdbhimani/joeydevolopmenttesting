@@ -23,7 +23,7 @@ public class QuadTree<T extends BaseGameEntity> {
 	ArrayList<T> entities = new ArrayList<T>();
 	Rectangle2D worldBounds;
 
-	float minDivision = 0.01f;
+	float minDivision = 0.1f;
 	
 	public QuadTree(Rectangle2D r, int maxCount) {
 		setWorldSize(r, maxCount);

@@ -210,7 +210,7 @@ public class SteeringBehaviors {
 		
 		if(useOffsetPursuit){
 			hold.setLocation(0,0);
-			OffsetPursuit.OffsetPursuit(vehicle, offsetPursuitVehicle, offsetPursuitOffset, hold);
+			OffsetPursuit.offsetPursuit(vehicle, offsetPursuitVehicle, offsetPursuitOffset, hold);
 			hold.scale(offsetPursuitWeight);
 			rst.add(hold);
 		}

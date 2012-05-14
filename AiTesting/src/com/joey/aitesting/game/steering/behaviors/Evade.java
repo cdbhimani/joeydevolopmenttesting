@@ -12,7 +12,7 @@ public class Evade extends AbstractBehavior{
 	public float evadePanicDistance = 30;
 	
 	public Evade(SteeringControler steering) {
-		super(steering);
+		super("Evade",steering);
 		// TODO Auto-generated constructor stub
 	}
 

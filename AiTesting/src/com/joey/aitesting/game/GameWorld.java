@@ -9,7 +9,7 @@ import com.joey.aitesting.game.entities.Wall2D;
 import com.joey.aitesting.game.shapes.Rectangle2D;
 
 public class GameWorld {
-	public static final int MAX_CELL_COUNT = 2;
+	public static final int MAX_CELL_COUNT = 10;
 	ArrayList<Vehicle> vehicles;
 	ArrayList<Obstacle> obstacles;
 	ArrayList<Wall2D> walls;
@@ -29,10 +29,12 @@ public class GameWorld {
 		if (paused) {
 			return;
 		}
+		
 		for (int i = 0; i < vehicles.size(); i++) {	
 			Vehicle v = vehicles.get(i);
 			v.update(updateTime);
 		}
+		
 		updateQuadTree();
 	}
 

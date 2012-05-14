@@ -4,12 +4,13 @@ import java.util.HashSet;
 
 import com.joey.aitesting.game.entities.Vehicle;
 import com.joey.aitesting.game.shapes.Vector2D;
+import com.joey.aitesting.game.shapes.WorldWrapper;
 import com.joey.aitesting.game.steering.SteeringControler;
 
 public class Cohesion extends AbstractBehavior{
 
 	public Cohesion(SteeringControler steering) {
-		super(steering);
+		super("Cohesion",steering);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -24,8 +25,13 @@ public class Cohesion extends AbstractBehavior{
 		int NeighborCount = 0;
 		//iterate through the neighbors and sum up all the position vectors
 		for(Vehicle other : neighbors){
-			hold.add(other.pos);
-			NeighborCount++;
+			if(other != vehicle){
+				
+				WorldWrapper.moveToClosest(vehicle.pos, other.pos, rst,vehicle.world.worldBounds);
+				
+				hold.add(rst);
+				NeighborCount++;
+			}
 		}
 		
 		if (NeighborCount > 0)

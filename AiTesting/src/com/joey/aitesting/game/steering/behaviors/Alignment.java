@@ -9,14 +9,13 @@ import com.joey.aitesting.game.steering.SteeringControler;
 public class Alignment extends AbstractBehavior{
 
 	public Alignment(SteeringControler steering) {
-		super(steering);
+		super("Alignment",steering);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void calculate(Vector2D force) {
-		// TODO Auto-generated method stub
-		
+		alignment(vehicle, vehicle.steering.getVisibleVehicles(), force);
 	}
 
 	public static void alignment(Vehicle vehicle, HashSet<Vehicle> neighbors, Vector2D rst){
@@ -27,6 +26,7 @@ public class Alignment extends AbstractBehavior{
 		
 		for(Vehicle other : neighbors){
 			rst.add(other.vel);
+			
 			count++;
 		}
 		

@@ -16,6 +16,7 @@ public class QuadTreeNode<T extends BaseGameEntity>{
 	public QuadTreeNode NE;
 	public QuadTreeNode SE;
 	QuadTree owner;
+	
 	public QuadTreeNode(QuadTree owner,Rectangle2D Location, int divisionLimit) {
 		this.owner = owner;
 		this.region = Location;
@@ -52,10 +53,10 @@ public class QuadTreeNode<T extends BaseGameEntity>{
 		float midY = region.y1+(region.y2-region.y1)/2;
 
 		//Create Regions
-		if(NW == null)NW = new QuadTreeNode(owner, new Rectangle2D(region.x1,region.y1, midX, midY), divisionLimit);
-		if(NE == null)NE = new QuadTreeNode(owner, new Rectangle2D(midX,region.y1, region.x2, midY), divisionLimit);
-		if(SW == null)SW = new QuadTreeNode(owner, new Rectangle2D(region.x1, midY,midX,region.y2), divisionLimit);
-		if(SE == null)SE = new QuadTreeNode(owner, new Rectangle2D(midX, midY,region.x2,region.y2), divisionLimit);
+		if(NW == null)NW = new QuadTreeNode(owner,new Rectangle2D(region.x1,region.y1, midX, midY), divisionLimit);
+		if(NE == null)NE = new QuadTreeNode(owner,new Rectangle2D(midX,region.y1, region.x2, midY), divisionLimit);
+		if(SW == null)SW = new QuadTreeNode(owner,new Rectangle2D(region.x1, midY,midX,region.y2), divisionLimit);
+		if(SE == null)SE = new QuadTreeNode(owner,new Rectangle2D(midX, midY,region.x2,region.y2), divisionLimit);
 
 		//Add Points to region
 		for(T p : points){
@@ -81,7 +82,6 @@ public class QuadTreeNode<T extends BaseGameEntity>{
 		}
 		isLeaf = true;
 		points.clear();
-				
 	}
 
 	public void getAllPoints(HashSet<T> rst){
@@ -97,8 +97,7 @@ public class QuadTreeNode<T extends BaseGameEntity>{
 	
 	public void getPointsInRegion(Rectangle2D searchArea, HashSet<T> rst) {
 		if(searchArea.intersects(region)){
-			if(isLeaf || searchArea.contains(region)){
-				//getAllPoints(rst);
+			if(isLeaf){
 				for(T p : points){
 					if(searchArea.contains(p.pos)){
 						rst.add(p);
