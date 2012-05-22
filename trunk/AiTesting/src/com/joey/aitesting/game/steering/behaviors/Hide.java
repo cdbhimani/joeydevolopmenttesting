@@ -20,8 +20,7 @@ public class Hide extends AbstractBehavior{
 
 	@Override
 	protected void calculate(Vector2D force) {
-		// TODO Auto-generated method stub
-		
+		hide(vehicle, hideVehicle, steering.getVisibleObstacles(), force);
 	}
 	
 
@@ -61,10 +60,13 @@ public class Hide extends AbstractBehavior{
 
 		}// end while
 			// if no suitable obstacles found then evade the target
+		
 		if (!spotFound) {
+			System.out.println("Evading");
 			Evade.evade(vehicle, target, rst);
 		}
 		else{		// else use Arrive on the hiding spot
+			System.out.println("Arriving");
 			Arrive.arrive(vehicle, BestHidingSpot, Deceleration.FAST, rst);
 		}
 	}
