@@ -33,6 +33,7 @@ public abstract class AbstractBehavior {
 			resetForce();
 			calculate(force);
 			force.scale(forceWeight);
+			System.out.println("hello"+forceWeight);
 		}else{
 			resetForce();
 		}

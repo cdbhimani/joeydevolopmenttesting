@@ -207,16 +207,16 @@ public class SteeringControler {
 
 	private void updateBehavior(AbstractBehavior behave) {
 		behave.update();
-//		if(vehicle.getId() == 0){
-//			System.out.println(behave+" : "+behave.force);
-//		}
-//		
+		if(vehicle.getId() != 0){
+			System.out.println(vehicle.getId()+" : "+behave.name+" : "+behave.force);
+		}
+		
 	}
 
 	public void calculate(Vector2D steeringForce) {
-		if(Math.random() < 0.6){
+		//if(Math.random() < 0.6){
 			update();
-		}
+		//}
 		
 		steeringForce.setLocation(force);
 	}

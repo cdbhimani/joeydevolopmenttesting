@@ -13,32 +13,35 @@ import com.joey.aitesting.game.steering.behaviors.FollowPath;
 
 public class GameWorldTesterCreator {
 
-	public static float MAX_VEL = 450;
-	public static float MAX_FORCE = 10000f;
+	public static float MAX_VEL = 300;
+	public static float MAX_FORCE = 1000f;
 
 	public static void CreateGameWorld(GameWorld world) {
 //		 CreateTestWorld(world);
-		// CreatePathFollowWorld(world);
-		// CreateOffsetPursuitWorld(world);
-		// CreateInterposeWorld(world);
-//		CreateHideWorld(world);
-		CreateWallAvoidanceWorld(world);
+//		 CreatePathFollowWorld(world);
+//		 CreateOffsetPursuitWorld(world);
+//		 CreateInterposeWorld(world);
+		CreateHideWorld(world);
+//		CreateWallAvoidanceWorld(world);
 	}
 
 	private static void CreateEntity(GameWorld world, float maxVel,
 			float maxForce) {
 //		 CreateTestEntity(world, maxVel, maxForce);
-		// CratePathFollowEntity(world, maxVel, maxForce);
-		// CrateOffsetPursuitEntity(world, maxVel, maxForce);
-		// CreateInterposeEntity(world, maxVel, maxForce);
-//		CreateHideEntity(world, maxVel, maxForce);
-		CreateWallAvoidanceEntity(world, maxVel, maxForce);
+//		 CratePathFollowEntity(world, maxVel, maxForce);
+//		 CrateOffsetPursuitEntity(world, maxVel, maxForce);
+//		 CreateInterposeEntity(world, maxVel, maxForce);
+		CreateHideEntity(world, maxVel, maxForce);
+//		CreateWallAvoidanceEntity(world, maxVel, maxForce);
 	}
 
 	public static void CreateHideWorld(GameWorld world) {
-		addObstacles(world, 3, 100);
+		
+		Wall2D.addRectangle(world, world.worldBounds, 20f, true);
 		addEntity(world, 2, GameWorldTesterCreator.MAX_VEL,
 				GameWorldTesterCreator.MAX_FORCE);
+		
+		addObstacles(world, 3, 100);
 	}
 
 	public static void CreateHideEntity(GameWorld world, float maxVel,
@@ -51,13 +54,20 @@ public class GameWorldTesterCreator {
 		entity.mass = 1;
 		entity.scale = new Vector2D(1, 1);
 
+		entity.steering.feelerCount = 3;
+		entity.steering.feelerFOV = (float)(Math.PI/2);
+		entity.steering.feelerLength = 100;
+		
+		entity.steering.wallAvoidance.enabled = true;
+		entity.steering.wallAvoidance.forceWeight = 100;
+		
 		int entityCount = world.vehicles.size();
 		if(entityCount == 0){
 			entity.steering.drawBehaviors = true;
 			
 			entity.steering.obstacleAvoidance.enabled= true;
 			entity.steering.obstacleAvoidance.obstacleSearchBoxDistance = 10;
-			entity.steering.obstacleAvoidance.forceWeight = 20;
+			entity.steering.obstacleAvoidance.forceWeight = 2000;
 			
 			entity.steering.wander.enabled = true;
 			entity.steering.wander.wanderDistance = 100;
@@ -70,8 +80,8 @@ public class GameWorldTesterCreator {
 			entity.steering.obstacleAvoidance.forceWeight = 20;
 			
 			entity.steering.hide.enabled = true;
+			entity.steering.hide.forceWeight = 1000;
 			entity.steering.hide.hideVehicle = world.getVehicles().get(0);
-			entity.steering.hide.forceWeight = 100;
 		}
 
 		entity.vel.setLocation(
