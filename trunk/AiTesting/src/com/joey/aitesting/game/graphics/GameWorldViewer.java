@@ -45,7 +45,7 @@ public class GameWorldViewer {
 	float wallNormSize = 30f;
 	public boolean drawBorders = true;
 	public boolean drawEntities = true;
-	public boolean drawQuadTree = true;
+	public boolean drawQuadTree = false;
 	public boolean drawBehaviour = false;
 	public boolean drawObstacles = true;
 	public boolean drawWalls = true;
