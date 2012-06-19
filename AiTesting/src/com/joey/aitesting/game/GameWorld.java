@@ -9,7 +9,7 @@ import com.joey.aitesting.game.entities.Wall2D;
 import com.joey.aitesting.game.shapes.Rectangle2D;
 
 public class GameWorld {
-	public static final int MAX_CELL_COUNT = 10;
+	public static final int MAX_CELL_COUNT = 2;
 	ArrayList<Vehicle> vehicles;
 	ArrayList<Obstacle> obstacles;
 	ArrayList<Wall2D> walls;
