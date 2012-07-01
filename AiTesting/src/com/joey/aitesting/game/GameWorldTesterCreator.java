@@ -21,8 +21,8 @@ public class GameWorldTesterCreator {
 //		 CreatePathFollowWorld(world);
 //		 CreateOffsetPursuitWorld(world);
 //		 CreateInterposeWorld(world);
-		CreateHideWorld(world);
-//		CreateWallAvoidanceWorld(world);
+//		CreateHideWorld(world);
+		CreateWallAvoidanceWorld(world);
 	}
 
 	private static void CreateEntity(GameWorld world, float maxVel,
@@ -31,8 +31,8 @@ public class GameWorldTesterCreator {
 //		 CratePathFollowEntity(world, maxVel, maxForce);
 //		 CrateOffsetPursuitEntity(world, maxVel, maxForce);
 //		 CreateInterposeEntity(world, maxVel, maxForce);
-		CreateHideEntity(world, maxVel, maxForce);
-//		CreateWallAvoidanceEntity(world, maxVel, maxForce);
+//		CreateHideEntity(world, maxVel, maxForce);
+		CreateWallAvoidanceEntity(world, maxVel, maxForce);
 	}
 
 	public static void CreateHideWorld(GameWorld world) {
@@ -266,7 +266,7 @@ public class GameWorldTesterCreator {
 
 	public static void CreateWallAvoidanceWorld(GameWorld world) {
 		// Add outer Boundary
-		//Wall2D.addRectangle(world, world.worldBounds, 20, true);
+		Wall2D.addRectangle(world, world.worldBounds, 20, true);
 
 		// Add random walls and ensure they dont overlap
 		ArrayList<Rectangle2D> hold = new ArrayList<Rectangle2D>();
