@@ -42,11 +42,10 @@ public class MenuScreen extends AbstractScreen {
         stage.addActor(table);
         
         
-        exitButton.setClickListener(new ClickListener() {
-			
+        exitButton.setClickListener(new ClickListener() {	
 			@Override
 			public void click(Actor actor, float x, float y) {
-				Gdx.app.exit();
+				game.setScreen(game.getExitScreen());
 			}
 		});
         
