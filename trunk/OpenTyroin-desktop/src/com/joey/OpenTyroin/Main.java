@@ -13,8 +13,8 @@ public class Main {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "OpenTyroin";
 		cfg.useGL20 = false;
-		cfg.width = 512;
-		cfg.height = 400;
+		cfg.width = 600;
+		cfg.height = 480;
 		
 		cfg.fullscreen = false;
 		if(cfg.fullscreen){

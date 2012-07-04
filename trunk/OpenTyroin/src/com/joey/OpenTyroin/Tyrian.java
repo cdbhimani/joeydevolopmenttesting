@@ -3,6 +3,7 @@ package com.joey.OpenTyroin;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.FPSLogger;
+import com.joey.OpenTyroin.screens.ExitScreen;
 import com.joey.OpenTyroin.screens.HighScoreScreen;
 import com.joey.OpenTyroin.screens.LevelScreen;
 import com.joey.OpenTyroin.screens.LoadSavedGameScreen;
@@ -25,6 +26,7 @@ public class Tyrian extends Game {
 	ProfileScreen profileScreen;
 	LoadSavedGameScreen loadSavedGameScreen;
 	LevelScreen levelScreen;
+	ExitScreen exitScreen;
 	
 	public Tyrian(){
 	}
@@ -34,7 +36,9 @@ public class Tyrian extends Game {
 	public void create() {
 		Gdx.app.log(Tyrian.LOG, "Creating Game");
 		fpsLogger = new FPSLogger();
-		setScreen( getSplashScreen());
+		
+		//setScreen( getSplashScreen());
+		setScreen(getMenuScreen());
 	}
 	
 	@Override
@@ -57,6 +61,12 @@ public class Tyrian extends Game {
 		return menuScreen;
 	}
 	
+	public ExitScreen getExitScreen(){
+		if(exitScreen == null){
+			exitScreen = new ExitScreen(this);
+		}
+		return exitScreen;
+	}
 
 	public StartGameScreen getStartGameScreen() {
 		if(startGameScreen != null){
