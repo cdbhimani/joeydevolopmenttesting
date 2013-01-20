@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/Pong"/>
+	<classpathentry exported="true" kind="lib" path="/Pong/libs/bodyeditor-loader.jar" sourcepath="/Pong/libs/bodyeditor-loader-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Pong/libs/gdx.jar" sourcepath="/Pong/libs/gdx-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gdx-backend-android.jar" sourcepath="libs/gdx-backend-android-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Pong/libs/tween-engine-api.jar" sourcepath="/Pong/libs/tween-engine-api-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Pong/libs/box2dlights.jar" sourcepath="C:/Users/joey.enfield/programming/Java Plugins/box2dlights/box2dlights-1.15/box2dlights-sources.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/LibgdxToolkit"/>
+	<classpathentry kind="output" path="bin/classes"/>
+</classpath>

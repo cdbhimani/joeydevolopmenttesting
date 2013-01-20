@@ -93,7 +93,7 @@ public class CellSpacePartition<T extends BaseGameEntity> {
 	
 	/**
 	 * For getting the entities
-	 * @param shape
+	 * @param circle
 	 * @param c
 	 * @param result
 	 */
