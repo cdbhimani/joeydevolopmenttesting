@@ -38,7 +38,8 @@ public class Tyrian extends Game {
 		fpsLogger = new FPSLogger();
 		
 		//setScreen( getSplashScreen());
-		setScreen(getMenuScreen());
+		//setScreen(getMenuScreen());
+		setScreen(getLevelScreen());
 	}
 	
 	@Override
@@ -69,41 +70,44 @@ public class Tyrian extends Game {
 	}
 
 	public StartGameScreen getStartGameScreen() {
-		if(startGameScreen != null){
+		if(startGameScreen == null){
 			startGameScreen = new StartGameScreen(this);
 		}
 		return startGameScreen;
 	}
 
 	public OptionsScreen getOptionsScreen() {
-		if(optionsScreen != null){
+		if(optionsScreen == null){
 			optionsScreen = new OptionsScreen(this);
 		}
 		return optionsScreen;
 	}
 
 	public HighScoreScreen getHighScoreScreen() {
-		if(highScoreScreen != null){
+		if(highScoreScreen == null){
 			highScoreScreen = new HighScoreScreen(this);
 		}
 		return highScoreScreen;
 	}
 
 	public ProfileScreen getProfileScreen() {
-		if(profileScreen != null){
+		if(profileScreen == null){
 			profileScreen = new ProfileScreen(this);
 		}
 		return profileScreen;
 	}
 
 	public LoadSavedGameScreen getLoadSavedGameScreen() {
-		if(loadSavedGameScreen != null){
+		if(loadSavedGameScreen == null){
 			loadSavedGameScreen = new LoadSavedGameScreen(this);
 		}
 		return loadSavedGameScreen;
 	}
 
 	public LevelScreen getLevelScreen() {
+		if(levelScreen == null){
+			levelScreen = new LevelScreen(this);
+		}
 		return levelScreen;
 	}
 

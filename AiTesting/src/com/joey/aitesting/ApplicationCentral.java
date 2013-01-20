@@ -6,9 +6,10 @@ public class ApplicationCentral {
 	public static ApplicationListener getApplication() {
 //		return new ShapeFlipThingGame();
 //		 return new RenderSpeedTest();
-//		return new TestingCellSpacePartition();
+//		 return new TestingCellSpacePartition();
+
 		 return new MyGdxGame();
-		// return new ShapeViewer();
+//		 return new ShapeViewer();
 //		 return new SpeedTests();
 	}
 }

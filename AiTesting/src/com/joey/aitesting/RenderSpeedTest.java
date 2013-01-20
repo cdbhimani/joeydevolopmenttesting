@@ -43,7 +43,7 @@ public class RenderSpeedTest implements ApplicationListener{
 	    batch.begin();
 
 	    mesh.render(GL10.GL_TRIANGLES, 0, 3);
-	   // batch.draw(texture, 10, 10);
+//	    batch.draw(texture, 10, 10);
 
 	    batch.end();
 
