@@ -35,16 +35,16 @@ public class Reactor {
 		for(int x = 0; x < sizeX; x++){
 			for(int y = 0; y < sizeY; y++){
 				if(x < sizeX-1)
-					board[x][y].setUp(board[x+1][y]);
+					board[x][y].setRight(board[x+1][y]);
 				
 				if(x > 0)
-					board[x][y].setDown(board[x-1][y]);
+					board[x][y].setLeft(board[x-1][y]);
 				
 				if(y > 0)
-					board[x][y].setLeft(board[x][y-1]);
+					board[x][y].setDown(board[x][y-1]);
 				
 				if(y < sizeY-1)
-					board[x][y].setRight(board[x][y+1]);
+					board[x][y].setUp(board[x][y+1]);
 			}
 		}
 	}
@@ -61,7 +61,7 @@ public class Reactor {
 	public void updateBoradAnimationRunning(float progress){
 		for(int x = 0; x < board.length; x++){
 			for(int y = 0; y < board[x].length; y++){
-				//board[x][y].updateProgressRunning(progress);
+				board[x][y].updateProgressRunning(progress);
 			}
 		}
 	}
@@ -101,7 +101,6 @@ public class Reactor {
 	public void update(){
 		switch (state) {
 			case active:
-				System.out.println("\n\n");
 				updateBoardNextStep();
 				animationStart=System.currentTimeMillis();
 				break;
