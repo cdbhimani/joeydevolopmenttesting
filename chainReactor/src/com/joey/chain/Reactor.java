@@ -3,6 +3,7 @@ package com.joey.chain;
 import java.util.Random;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.joey.chain.Chain.ChainState;
 
 public class Reactor {
 	enum ReactorState{
@@ -37,12 +38,45 @@ public class Reactor {
 		}
 	}
 	
+	public void updateBoradAnimationRunning(float progress){
+		for(int x = 0; x < board.length; x++){
+			for(int y = 0; y < board[x].length; y++){
+				board[x][y].updateProgressRunning(progress);
+			}
+		}
+	}
+	
+	public void updateBoardNextStep(){
+		int activeCount = 0;
+		
+		for(int x = 0; x < board.length; x++){
+			for(int y = 0; y < board[x].length; y++){
+				board[x][y].updateProgressComplete();
+			}
+		}
+				
+		
+		Chain chain;
+		for(int x = 0; x < board.length; x++){
+			for(int y = 0; y < board[x].length; y++){
+				chain = board[x][y]; 
+				if(chain.getState() == ChainState.complete){
+					activeCount += chain.notifyNeighbours();
+				}
+			}
+		}
+		
+	}
+	
 	public void update(){
 		switch (state) {
-		case ReactorState.:
+		case active:
 			
 			break;
-
+		case running:
+			break;
+		case finished:
+			break;
 		default:
 			break;
 		}
