@@ -2,6 +2,7 @@ package com.joey.chain;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -10,8 +11,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.joey.chain.old.ChainReaction;
 
-public class ReactorApp implements ApplicationListener{
+public class ReactorApp implements ApplicationListener, InputProcessor{
 
+	float RADIUT = 15;
+	float DIAMTER = 2*RADIUT;
 	OrthographicCamera cam = new OrthographicCamera();
 	Reactor reactor;
 	ShapeRenderer circle;
@@ -20,25 +23,17 @@ public class ReactorApp implements ApplicationListener{
 	
 	@Override
 	public void create() {
+		int sizeX = 15;
+		int sizeY = 15;
+		
 		circle = new ShapeRenderer();
 		line1 = new ShapeRenderer();
 		line2 = new ShapeRenderer();
 		reactor = new Reactor();
-		reactor.createBoard(3, 3);
+		reactor.createBoard(sizeX, sizeY);
 		reactor.resetBorad(1);
 		
-		reactor.board[0][0].setAngle(0);
-		reactor.board[0][1].setAngle(90);
-		reactor.board[0][2].setAngle(180);
-		
-		reactor.board[0][0].setAngle(0);
-		reactor.board[0][1].setAngle(90);
-		reactor.board[0][2].setAngle(180);
-		
-		reactor.board[0][0].setAngle(0);
-		reactor.board[0][1].setAngle(90);
-		reactor.board[0][2].setAngle(180);
-		
+		reactor.board[MathUtils.random(sizeX-1)][MathUtils.random(sizeY-1)].activate();
 	}
 
 	@Override
@@ -57,8 +52,7 @@ public class ReactorApp implements ApplicationListener{
 		circle.setProjectionMatrix(cam.combined);
 		line1.setProjectionMatrix(cam.combined);
 		line2.setProjectionMatrix(cam.combined);
-		float rad = 15;
-		float dia = 2*rad+1;
+		
 		circle.setColor(Color.WHITE);
 		line1.setColor(Color.RED);
 		line2.setColor(Color.GREEN);
@@ -67,22 +61,22 @@ public class ReactorApp implements ApplicationListener{
 		Chain[][] board = reactor.getBoard();
 		for(int x= 0; x  < board.length; x++){
 			for(int y = 0; y  < board[x].length; y++){
-				x1 = (x+1)*dia;
-				y1 =(y+1)*dia;
+				x1 = (x+1)*DIAMTER;
+				y1 =(y+1)*DIAMTER;
 				
 				circle.begin(ShapeType.FilledCircle);
-				circle.filledCircle(x1,y1, rad);
+				circle.filledCircle(x1,y1, RADIUT);
 				circle.end();
 				
 
-				x2 = x1+rad*MathUtils.cosDeg(board[x][y].getAngle());
-				y2 = y1+rad*MathUtils.sinDeg(board[x][y].getAngle());
+				x2 = x1+RADIUT*MathUtils.cosDeg(board[x][y].getAngle());
+				y2 = y1+RADIUT*MathUtils.sinDeg(board[x][y].getAngle());
 				line1.begin(ShapeType.Line);
 				line1.line(x1, y1, x2, y2);
 				line1.end();
 				
-				x2 = x1+rad*MathUtils.cosDeg(board[x][y].getAngle()+90);
-				y2 = y1+rad*MathUtils.sinDeg(board[x][y].getAngle()+90);
+				x2 = x1+RADIUT*MathUtils.cosDeg(board[x][y].getAngle()+90);
+				y2 = y1+RADIUT*MathUtils.sinDeg(board[x][y].getAngle()+90);
 				line2.begin(ShapeType.Line);
 				line2.line(x1, y1, x2, y2);
 				line2.end();
@@ -107,6 +101,54 @@ public class ReactorApp implements ApplicationListener{
 	public void dispose() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(int x, int y, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int x, int y, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int x, int y, int pointer) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchMoved(int x, int y) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

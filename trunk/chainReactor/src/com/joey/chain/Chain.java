@@ -36,7 +36,6 @@ public class Chain {
 	}
 
 	public void activate(){
-		System.out.println("Activate");
 		state = ChainState.running;
 	}
 	
@@ -88,50 +87,37 @@ public class Chain {
 			return 0;
 		}
 		
-		System.out.println("Notify Neigh : "+state);
-		System.out.println("Angle : "+getAngle());
-		System.out.println("Dir : "+getDirection());
-		
 		int activeCount = 0;
 		int dir = getDirection();
 		int otherDir;
-		System.out.println("Angle : "+getAngle());
 		if(up != null ){
 			otherDir = up.getDirection();
-			System.out.println("Up : ["+dir+" : "+otherDir+"]");
 			if((otherDir == 2 || otherDir ==3) && (dir==0 || dir ==1)){
-				//up.activate();
+				up.activate();
 				activeCount++;
 			}
 		}
 		if(down!=null){
 			otherDir = down.getDirection();
-			System.out.println("Down : ["+dir+" : "+otherDir+"]");
 			if((otherDir == 0 || otherDir ==1) && (dir==2 || dir ==3)){
-				//down.activate();
+				down.activate();
 				activeCount++;
 			}
 		}
 		if(left!=null){
 			otherDir = left.getDirection();
-			System.out.println("Left : ["+dir+" : "+otherDir+"]");
 			if((otherDir == 0 || otherDir ==3) && (dir==1 || dir ==2)){
-				//left.activate();
+				left.activate();
 				activeCount++;
 			}
 		}
 		if(right!=null){
 			otherDir = right.getDirection();
-			System.out.println("Right : ["+dir+" : "+otherDir+"]");
 			if((otherDir == 1 || otherDir ==2) && (dir==0 || dir ==3)){
-				//right.activate();
+				right.activate();
 				activeCount++;
 			}
 		}		
-		
-	
-		
-		System.out.println("Active Count:"+activeCount);
 		return activeCount;
 	}
 
