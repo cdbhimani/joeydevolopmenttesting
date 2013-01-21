@@ -1,4 +1,4 @@
-package com.joey.chain;
+package com.joey.chain.old;
 
 import java.util.Random;
 
