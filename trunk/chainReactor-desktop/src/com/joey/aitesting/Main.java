@@ -2,6 +2,7 @@ package com.joey.aitesting;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.joey.chain.ReactorApp;
 import com.joey.chain.old.ChainReactionApp;
 
 public class Main {
@@ -11,7 +12,7 @@ public class Main {
 		cfg.useGL20 = false;
 		cfg.width = 800;
 		cfg.height = 600;
-
-		LwjglApplication app = new LwjglApplication(new ChainReactionApp(), cfg);
+		
+		LwjglApplication app = new LwjglApplication(new ReactorApp(), cfg);
 	}
 }

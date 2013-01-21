@@ -56,7 +56,7 @@ public class ChainReactionApp implements ApplicationListener  {
 				circle.filledCircle(x1,y1, rad);
 				circle.end();
 				
-
+				//Main Line
 				x2 = x1+rad*MathUtils.cosDeg(chain.cell[x][y].angle);
 				y2 = y1+rad*MathUtils.sinDeg(chain.cell[x][y].angle);
 				line.begin(ShapeType.Line);

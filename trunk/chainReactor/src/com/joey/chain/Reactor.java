@@ -12,9 +12,12 @@ public class Reactor {
 		active //Finished between rotations but not complete
 	}
 	
+	long animationTime = 1000;
+	long animationStart = 0;
+	
 	Chain[][] board;
 	Random rand;
-	ReactorState state = ReactorState.finished;
+	ReactorState state = ReactorState.active;
 	
 	public Reactor(){
 		rand = new Random();
@@ -25,6 +28,23 @@ public class Reactor {
 		for(int x = 0; x < sizeX; x++){
 			for(int y = 0; y < sizeY; y++){
 				board[x][y] = new Chain();
+			}
+		}
+		
+		//set Neighbours
+		for(int x = 0; x < sizeX; x++){
+			for(int y = 0; y < sizeY; y++){
+				if(x < sizeX-1)
+					board[x][y].setUp(board[x+1][y]);
+				
+				if(x > 0)
+					board[x][y].setDown(board[x-1][y]);
+				
+				if(y > 0)
+					board[x][y].setLeft(board[x][y-1]);
+				
+				if(y < sizeY-1)
+					board[x][y].setRight(board[x][y+1]);
 			}
 		}
 	}
@@ -41,44 +61,62 @@ public class Reactor {
 	public void updateBoradAnimationRunning(float progress){
 		for(int x = 0; x < board.length; x++){
 			for(int y = 0; y < board[x].length; y++){
-				board[x][y].updateProgressRunning(progress);
+				//board[x][y].updateProgressRunning(progress);
 			}
 		}
 	}
 	
 	public void updateBoardNextStep(){
-		int activeCount = 0;
+		int activeCount = 1;
 		
+		Chain chain;
+		board[1][1].activate();
+		for(int x = 0; x < board.length; x++){
+			for(int y = 0; y < board[x].length; y++){
+				chain = board[x][y]; 
+				activeCount += chain.notifyNeighbours();
+			}
+		}
+		
+		if(activeCount > 0){
+			state = ReactorState.running;
+		} else {
+			state = ReactorState.finished;
+		}
+	}
+	
+	public void updateBoardProgressComplete(){
 		for(int x = 0; x < board.length; x++){
 			for(int y = 0; y < board[x].length; y++){
 				board[x][y].updateProgressComplete();
 			}
 		}
 				
-		
-		Chain chain;
-		for(int x = 0; x < board.length; x++){
-			for(int y = 0; y < board[x].length; y++){
-				chain = board[x][y]; 
-				if(chain.getState() == ChainState.complete){
-					activeCount += chain.notifyNeighbours();
-				}
-			}
-		}
-		
 	}
 	
+	public Chain[][] getBoard() {
+		return board;
+	}
+
 	public void update(){
 		switch (state) {
-		case active:
-			
-			break;
-		case running:
-			break;
-		case finished:
-			break;
-		default:
-			break;
+			case active:
+				System.out.println("\n\n");
+				updateBoardNextStep();
+				animationStart=System.currentTimeMillis();
+				break;
+			case running:
+				float time = (System.currentTimeMillis()-animationStart)/(float)animationTime;
+				if(time >= 1){
+					updateBoardProgressComplete();
+					state = ReactorState.active;
+				}else{
+					updateBoradAnimationRunning(time);
+				}
+				
+				break;
+			case finished:
+				break;
 		}
 	}
 	
