@@ -2,6 +2,7 @@ package com.joey.chain;
 
 import java.util.Random;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.joey.chain.Chain.ChainState;
 
@@ -12,13 +13,22 @@ public class Reactor {
 		active //Finished between rotations but not complete
 	}
 	
-	long animationTime = 1000;
+	long animationTime = 300;
 	long animationStart = 0;
 	
 	Chain[][] board;
 	Random rand;
-	ReactorState state = ReactorState.active;
+	private ReactorState state = ReactorState.active;
+	long score = 0;
 	
+	public long getScore() {
+		return score;
+	}
+
+	public void setScore(long score) {
+		this.score = score;
+	}
+
 	public Reactor(){
 		rand = new Random();
 	}
@@ -66,11 +76,10 @@ public class Reactor {
 		}
 	}
 	
-	public void updateBoardNextStep(){
-		int activeCount = 1;
+	public int updateBoardNextStep(){
+		int activeCount = 0;
 		
 		Chain chain;
-		board[1][1].activate();
 		for(int x = 0; x < board.length; x++){
 			for(int y = 0; y < board[x].length; y++){
 				chain = board[x][y]; 
@@ -78,11 +87,12 @@ public class Reactor {
 			}
 		}
 		
-		if(activeCount > 0){
-			state = ReactorState.running;
-		} else {
-			state = ReactorState.finished;
+		for(int x = 0; x < board.length; x++){
+			for(int y = 0; y < board[x].length; y++){
+				board[x][y].updateStepComplete();
+			}
 		}
+		return activeCount;
 	}
 	
 	public void updateBoardProgressComplete(){
@@ -99,9 +109,20 @@ public class Reactor {
 	}
 
 	public void update(){
+		//Gdx.app.debug(this.getClass().getName(), "State : "+state);
+		
 		switch (state) {
 			case active:
-				updateBoardNextStep();
+				int activeCount = updateBoardNextStep();
+				score+=activeCount;
+				
+				if(activeCount > 0){
+					state = ReactorState.running;
+				} else {
+					Gdx.app.debug(getClass().getName(), "Final Score : "+score);
+					state = ReactorState.finished;
+				}
+				
 				animationStart=System.currentTimeMillis();
 				break;
 			case running:
@@ -117,6 +138,12 @@ public class Reactor {
 			case finished:
 				break;
 		}
+	}
+	
+	public void activate(){
+		state = ReactorState.running;
+		animationStart=System.currentTimeMillis();
+		score = 0;
 	}
 	
 }
