@@ -2,13 +2,13 @@ package com.joey.chain;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.input.GestureDetector;
@@ -17,7 +17,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.joey.chain.Chain.ChainState;
-import com.joey.chain.Reactor.ReactorState;
 
 public class ReactorApp implements ApplicationListener, GestureListener{
 
@@ -31,10 +30,10 @@ public class ReactorApp implements ApplicationListener, GestureListener{
 	
 	OrthographicCamera cam = new OrthographicCamera();
 	Reactor reactor;
-	ShapeRenderer staticCircle;
-	ShapeRenderer movingCircle;
-	ShapeRenderer line1;
-	ShapeRenderer line2;
+	
+	Texture texture;
+	TextureRegion activeRegion;
+	TextureRegion disabledRegion;
 	
 	SpriteBatch batch;
 	BitmapFont font;
@@ -44,10 +43,10 @@ public class ReactorApp implements ApplicationListener, GestureListener{
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		
-		staticCircle = new ShapeRenderer();
-		movingCircle = new ShapeRenderer();
-		line1 = new ShapeRenderer();
-		line2 = new ShapeRenderer();
+		texture = new Texture(Gdx.files.internal("data/cell.png"));
+		activeRegion  = new TextureRegion(texture, 0,0,256,256);
+		disabledRegion  = new TextureRegion(texture, 0,256,256,256);
+		
 		reactor = new Reactor();
 		reactor.createBoard(sizeX, sizeY);
 		reactor.resetBorad(1);
@@ -78,46 +77,21 @@ public class ReactorApp implements ApplicationListener, GestureListener{
 	}
 	
 	public void renderApp(){
-		staticCircle.setProjectionMatrix(cam.combined);
-		movingCircle.setProjectionMatrix(cam.combined);
-		line1.setProjectionMatrix(cam.combined);
-		line2.setProjectionMatrix(cam.combined);
-		
-		staticCircle.setColor(Color.WHITE);
-		movingCircle.setColor(Color.GRAY);
-		line1.setColor(Color.RED);
-		line2.setColor(Color.GREEN);
 		
 		float x1,y1,x2,y2;
 		Chain[][] board = reactor.getBoard();
+		
 		for(int x= 0; x  < board.length; x++){
 			for(int y = 0; y  < board[x].length; y++){
 				x1 = (x+1)*diameter;
 				y1 =(y+1)*diameter;
-				
-				if(board[x][y].getState() == ChainState.stopped){
-					staticCircle.begin(ShapeType.FilledCircle);
-					staticCircle.filledCircle(x1,y1, radius);
-					staticCircle.end();
+				batch.begin();
+				if(board[x][y].getState()!=ChainState.stopped){
+					batch.draw(activeRegion,x1-radius,y1-radius, radius,radius, diameter,diameter,1,1,board[x][y].getAngle());
 				}else{
-					movingCircle.begin(ShapeType.FilledCircle);
-					movingCircle.filledCircle(x1,y1, radius);
-					movingCircle.end();	
+					batch.draw(disabledRegion,x1-radius,y1-radius, radius,radius, diameter,diameter,1,1,board[x][y].getAngle());
 				}
-				
-				
-
-				x2 = x1+radius*MathUtils.cosDeg(board[x][y].getAngle());
-				y2 = y1+radius*MathUtils.sinDeg(board[x][y].getAngle());
-				line1.begin(ShapeType.Line);
-				line1.line(x1, y1, x2, y2);
-				line1.end();
-				
-				x2 = x1+radius*MathUtils.cosDeg(board[x][y].getAngle()+90);
-				y2 = y1+radius*MathUtils.sinDeg(board[x][y].getAngle()+90);
-				line2.begin(ShapeType.Line);
-				line2.line(x1, y1, x2, y2);
-				line2.end();
+				batch.end();
 			}
 		}
 	}
@@ -132,6 +106,7 @@ public class ReactorApp implements ApplicationListener, GestureListener{
 		start = System.currentTimeMillis();
 		cam.update();
 		cam.apply(Gdx.gl10);
+		Gdx.gl.glClearColor(1, 1,1,1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT); // #14
 		
 		renderApp();

@@ -13,7 +13,7 @@ public class Reactor {
 		active //Finished between rotations but not complete
 	}
 	
-	long animationTime = 300;
+	long animationTime = 500;
 	long animationStart = 0;
 	
 	Chain[][] board;
