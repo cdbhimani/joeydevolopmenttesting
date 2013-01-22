@@ -24,6 +24,12 @@ public class Chain {
 		}
 	}
 	
+	public void updateStepComplete() {
+		if(state==ChainState.complete){
+			state =ChainState.stopped;
+		}
+	}
+	
 	public void updateProgressComplete(){
 		if(state == ChainState.running){
 			lastAngleDeg=MathUtils.floor(lastAngleDeg+90);
@@ -152,4 +158,6 @@ public class Chain {
 	public void setRight(Chain right) {
 		this.right = right;
 	}
+
+	
 }
