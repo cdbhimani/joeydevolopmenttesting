@@ -10,4 +10,12 @@ public class MenuScreen extends GameScreen {
 		// TODO Auto-generated constructor stub
 	}
 
+	
+	@Override
+	public void render(float delta) {
+		// TODO Auto-generated method stub
+		super.render(delta);
+		
+		
+	}
 }

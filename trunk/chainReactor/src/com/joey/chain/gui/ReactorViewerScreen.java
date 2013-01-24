@@ -28,7 +28,6 @@ public class ReactorViewerScreen extends GameScreen {
 	
 	Vector3 click = new Vector3();
 	
-	OrthographicCamera cam = new OrthographicCamera();
 	Reactor reactor;
 	
 	Texture texture;
@@ -45,16 +44,14 @@ public class ReactorViewerScreen extends GameScreen {
 
 	@Override
 	public void render(float delta) {
+		super.render(delta);
+		
 		long start = 0;
 		start = System.currentTimeMillis();
 		updateApp();
 		long update = System.currentTimeMillis()-start;
 		
 		start = System.currentTimeMillis();
-		cam.update();
-		cam.apply(Gdx.gl10);
-		Gdx.gl.glClearColor(1, 1,1,1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT); // #14
 		
 		renderGame();
 		long render = System.currentTimeMillis()-start;
@@ -63,13 +60,6 @@ public class ReactorViewerScreen extends GameScreen {
 
 	public void updateApp(){
 		reactor.update();
-	}
-	
-	public void initializeRender(){
-		cam.update();
-		cam.apply(Gdx.gl10);
-		Gdx.gl.glClearColor(1, 1,1,1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT); // #14
 	}
 	
 	public void renderGame(){		
@@ -104,12 +94,6 @@ public class ReactorViewerScreen extends GameScreen {
 	
 	}	
 	
-	@Override
-	public void resize(int width, int height) {
-		cam = new OrthographicCamera(width, height);
-		cam.translate(width / 2, height / 2, 0);
-	}
-
 	@Override
 	public void show() {
 		batch = new SpriteBatch();
