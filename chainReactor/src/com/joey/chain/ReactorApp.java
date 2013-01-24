@@ -38,20 +38,24 @@ public class ReactorApp extends Game{
 		
 		// TODO Auto-generated method stub
 		screen = new ReactorViewerScreen(this);
-		setScreen(new SplashScreen(this));
+//		setScreen(new SplashScreen(this));
+		setScreen(screen);
 	}
 	
 	@Override
 	public void setScreen(Screen screen) {
 		//Remove old input processor
 		if(getScreen() != null){
-			if(getScreen() instanceof InputProcessor){
+			if(getScreen() instanceof GameScreen){
 				inputProcessor.removeProcessor((InputProcessor)getScreen());
+				inputProcessor.removeProcessor(((GameScreen)screen).getGesture());
 			}
 		}
+		
 		//Add new input processor
-		if(screen != null && screen instanceof InputProcessor){
+		if(screen != null && screen instanceof GameScreen){
 			inputProcessor.addProcessor((InputProcessor)screen);
+			inputProcessor.addProcessor(((GameScreen)screen).getGesture());
 		}
 		super.setScreen(screen);
 	}

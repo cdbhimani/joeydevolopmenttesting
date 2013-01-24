@@ -1,31 +1,59 @@
 package com.joey.chain.gui;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
 import com.joey.chain.ReactorApp;
 
-public abstract class GameScreen implements Screen, GestureListener{
+public abstract class GameScreen implements Screen, GestureListener, InputProcessor{
 
+	OrthographicCamera cam = new OrthographicCamera();
 	ReactorApp game;
+	GestureDetector gesture;
+	Color clearColor = new Color(1,1,1,1);
 	public GameScreen(ReactorApp game){
 		this.game= game;
+		this.gesture = new GestureDetector(this);
 	}
+	
+	public void initializeRender(){
+		cam.position.set(-10, 200,0);
+		cam.update();
+		
+		if(Gdx.gl10 !=null)cam.apply(Gdx.gl10);
+		
+		Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT); // #14
+	}
+	
+	public GestureDetector getGesture() {
+		return gesture;
+	}
+
+	public void setGesture(GestureDetector gesture) {
+		this.gesture = gesture;
+	}
+
 	@Override
 	public void render(float delta) {
-		// TODO Auto-generated method stub
-		
+		initializeRender();
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
+		cam = new OrthographicCamera(width, height);
+		cam.translate(width / 2, height / 2, 0);
 	}
+
 
 	@Override
 	public void show() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -91,6 +119,62 @@ public abstract class GameScreen implements Screen, GestureListener{
 	public boolean tap(int x, int y, int count) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(int x, int y, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int x, int y, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int x, int y, int pointer) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchMoved(int x, int y) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public Color getClearColor() {
+		return clearColor;
+	}
+
+	public void setClearColor(Color clearColor) {
+		this.clearColor = clearColor;
 	}
 
 }

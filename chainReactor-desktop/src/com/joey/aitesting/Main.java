@@ -10,9 +10,9 @@ public class Main {
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "AiTesting";
-		cfg.useGL20 = false;
-		cfg.width = 100;
-		cfg.height = 100;
+		cfg.useGL20 = true;
+		cfg.width = 600;
+		cfg.height = 480;
 		
 		LwjglApplication app = new LwjglApplication(new ReactorApp(), cfg);
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
