@@ -1,6 +1,7 @@
 package com.joey.chain.gui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -9,6 +10,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.joey.chain.ReactorApp;
 
 public abstract class GameScreen implements Screen, GestureListener, InputProcessor{
@@ -17,21 +20,46 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	ReactorApp game;
 	GestureDetector gesture;
 	Color clearColor = new Color(1,1,1,1);
+	Stage stage;
+	Skin skin;
+	
 	public GameScreen(ReactorApp game){
 		this.game= game;
 		this.gesture = new GestureDetector(this);
+		stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getWidth(), true);
 	}
 	
 	public void initializeRender(){
-		cam.position.set(-10, 200,0);
 		cam.update();
-		
 		if(Gdx.gl10 !=null)cam.apply(Gdx.gl10);
 		
 		Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT); // #14
 	}
 	
+	public void addInputMultiplexer(InputMultiplexer input){
+		input.addProcessor(this);
+		input.addProcessor(gesture);
+		input.addProcessor(stage);
+	}
+	
+
+	public Skin getSkin(){
+		if( skin == null ) {
+            skin = new Skin( Gdx.files.internal( "ui/uiskin.json" ), Gdx.files.internal( "ui/uiskin.png" ) );
+        }
+        return skin;
+	}
+	
+	public void removeInputMultiplexer(InputMultiplexer input){
+//		input.removeProcessor(this);
+//		input.removeProcessor(gesture);
+//		input.removeProcessor(stage);
+	}
+	
+	public void createStage(Stage stage){
+		
+	}
 	public GestureDetector getGesture() {
 		return gesture;
 	}
@@ -43,24 +71,29 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	@Override
 	public void render(float delta) {
 		initializeRender();
+		
+		stage.act(delta);
+		stage.draw();
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		cam = new OrthographicCamera(width, height);
 		cam.translate(width / 2, height / 2, 0);
+		stage.setViewport(width, height, false);
 	}
 
 
 	@Override
 	public void show() {
-		
+		addInputMultiplexer(game.getInputProcessor());
+		createStage(stage);
 	}
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
-		
+		removeInputMultiplexer(game.getInputProcessor());
+		stage.clear();
 	}
 
 	@Override
