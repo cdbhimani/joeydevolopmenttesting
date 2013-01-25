@@ -20,14 +20,19 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.joey.chain.ReactorApp;
 
-public class SplashScreen extends GameScreen {
+public class FrameBufferScreen extends GameScreen {
 
 	SpriteBatch batch;
 	BitmapFont font;
-	long displayStart = 0;
-	long displayTime = 1000;
+
+	FrameBuffer frmBuff;
+	TextureRegion frm;
+	OrthographicCamera frmCam;
 	
-	public SplashScreen(ReactorApp game) {
+	int frmSizeX = 256;
+	int frmSizeY = 256;
+	
+	public FrameBufferScreen(ReactorApp game) {
 		super(game);
 		setClearColor(new Color(1,1,1,1));
 	}
@@ -38,7 +43,11 @@ public class SplashScreen extends GameScreen {
 		super.show();
 		batch = new SpriteBatch();
 		font = new BitmapFont();
-		displayStart = System.currentTimeMillis();
+		
+		frmBuff = new FrameBuffer(Format.RGBA8888, frmSizeX, frmSizeY, false);
+		frm = new TextureRegion(frmBuff.getColorBufferTexture());
+		frmCam= new OrthographicCamera(frmSizeX, frmSizeY);
+		frmCam.translate(frmSizeX/2, frmSizeY/2);
 	}
 
 	@Override
@@ -47,28 +56,45 @@ public class SplashScreen extends GameScreen {
 		super.dispose();
 	}
 	
+
+	public void drawToTexture(){
+		frmCam.update();
+		ShapeRenderer shape = new ShapeRenderer();
+		shape.setProjectionMatrix(frmCam.combined);
+		frmBuff.begin();
+	
+		Gdx.gl.glClearColor(0, 0, 0, 0);
+		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		shape.begin(ShapeType.FilledRectangle);
+		shape.setColor(Color.BLACK);
+		shape.filledRect(0,0,frmSizeX/2, frmSizeY/2);
+		shape.end();
+	
+		shape.begin(ShapeType.FilledCircle);
+		shape.setColor(Color.GREEN);
+		shape.filledCircle(MathUtils.random(frmSizeX), MathUtils.random(frmSizeY), 20);
+		shape.end();
+		
+		frmBuff.end();
+	}
+	
+	int pos = 0;
+	
 	@Override
 	public void render(float delta) {
 		super.render(delta);
-	
-		
+		drawToTexture();
+
 		batch.setProjectionMatrix(cam.combined);
 		
 		batch.begin();
-	
+		batch.draw(frm, pos++, 30,frmSizeX,frmSizeY);
+		if(pos>Gdx.graphics.getWidth()-frmSizeX)pos=0;
 		font.setColor(Color.RED);
 		StringBuilder message = new StringBuilder();
-		message.append("Welcome To The Game");
-		font.drawMultiLine(batch, message.toString(), Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
+		message.append("Time :"+(int)(delta*1000)+"\n");
+		font.drawMultiLine(batch, message.toString(), 10, Gdx.graphics.getHeight());
 		batch.end();
-		
-		if(displayStart+displayTime<System.currentTimeMillis()){
-			game.screenTransistion(this, game.getMenuScreen());
-		}
-	}
-
-	public void setDisplayTime(long displayTime) {
-		this.displayTime = displayTime;
 	}
 
 }
