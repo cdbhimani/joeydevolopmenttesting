@@ -26,7 +26,7 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	public GameScreen(ReactorApp game){
 		this.game= game;
 		this.gesture = new GestureDetector(this);
-		stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getWidth(), true);
+		stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getWidth(), false);
 	}
 	
 	public void initializeRender(){

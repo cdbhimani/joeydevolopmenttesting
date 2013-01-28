@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
@@ -21,11 +23,11 @@ import com.joey.chain.model.Reactor;
 public class ReactorViewerScreen extends GameScreen {
 
 	long lastScore = 0;
-	int sizeX = 15;
-	int sizeY = 15;
+	int sizeX = 13;
+	int sizeY = 11;
 	float radius =0;
 	float diameter = 2*radius;
-	
+	Color bg = new Color();
 	Vector3 click = new Vector3();
 	
 	Reactor reactor;
@@ -33,13 +35,18 @@ public class ReactorViewerScreen extends GameScreen {
 	Texture texture;
 	TextureRegion activeRegion;
 	TextureRegion disabledRegion;
+	ShapeRenderer shape;
 	
 	SpriteBatch batch;
 	BitmapFont font;
 
 	public ReactorViewerScreen(ReactorApp game) {
 		super(game);
-		// TODO Auto-generated constructor stub
+		bg.a = 1;
+		bg.r = 215/255f;
+		bg.g = 238/255f;
+		bg.b = 244/255f;
+		setClearColor(bg);
 	}
 
 	@Override
@@ -63,9 +70,22 @@ public class ReactorViewerScreen extends GameScreen {
 	}
 	
 	public void renderGame(){		
-		float x1,y1,x2,y2;
+		float x1,y1,wide,high;
 		Chain[][] board = reactor.getBoard();
 		
+		x1 = radius/2;
+		y1 = radius/2;
+		wide = diameter*(board.length+.5f);
+		high = diameter*(board[0].length+.5f);
+		
+		
+		shape.setProjectionMatrix(cam.combined);
+		shape.setColor(bg);
+		shape.begin(ShapeType.FilledRectangle);
+		shape.filledRect(x1, y1, wide, high);
+		shape.end();
+		
+		batch.setProjectionMatrix(cam.combined);
 		for(int x= 0; x  < board.length; x++){
 			for(int y = 0; y  < board[x].length; y++){
 				x1 = (x+1)*diameter;
@@ -102,7 +122,7 @@ public class ReactorViewerScreen extends GameScreen {
 		texture = new Texture(Gdx.files.internal("data/cell.png"));
 		activeRegion  = new TextureRegion(texture, 0,0,256,256);
 		disabledRegion  = new TextureRegion(texture, 0,256,256,256);
-		
+		shape = new ShapeRenderer();
 		reactor = new Reactor();
 		reactor.setSize(sizeX, sizeY);
 		reactor.resetBorad(1);
