@@ -12,7 +12,7 @@ import com.joey.chain.gui.SplashScreen;
 
 public class ReactorApp extends Game{
 	
-	ReactorScreen gameScreen;
+	ReactorViewerScreen gameScreen;
 	SplashScreen splashScreen;
 	MenuScreen menuScreen;
 	HighScoreScreen scoreScreen;
@@ -25,7 +25,7 @@ public class ReactorApp extends Game{
 		Gdx.input.setInputProcessor(inputProcessor);
 		
 		// TODO Auto-generated method stub
-		gameScreen = new ReactorScreen(this);
+		gameScreen = new ReactorViewerScreen(this);
 		splashScreen = new SplashScreen(this);
 		menuScreen = new MenuScreen(this);
 		scoreScreen = new HighScoreScreen(this);
@@ -44,7 +44,7 @@ public class ReactorApp extends Game{
 		}
 	}
 
-	public ReactorScreen getGameScreen() {
+	public ReactorViewerScreen getGameScreen() {
 		return gameScreen;
 	}
 
