@@ -52,7 +52,7 @@ public class SplashScreen extends GameScreen {
 		super.render(delta);
 	
 		
-		batch.setProjectionMatrix(cam.combined);
+		batch.setProjectionMatrix(stageCamera.combined);
 		
 		batch.begin();
 	

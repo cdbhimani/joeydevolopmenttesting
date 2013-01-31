@@ -16,7 +16,7 @@ import com.joey.chain.ReactorApp;
 
 public abstract class GameScreen implements Screen, GestureListener, InputProcessor{
 
-	OrthographicCamera cam = new OrthographicCamera();
+	OrthographicCamera stageCamera = new OrthographicCamera();
 	ReactorApp game;
 	GestureDetector gesture;
 	Color clearColor = new Color(1,1,1,1);
@@ -30,8 +30,8 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	}
 	
 	public void initializeRender(){
-		cam.update();
-		if(Gdx.gl10 !=null)cam.apply(Gdx.gl10);
+		stageCamera.update();
+		if(Gdx.gl10 !=null)stageCamera.apply(Gdx.gl10);
 		
 		Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT); // #14
@@ -71,15 +71,18 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	@Override
 	public void render(float delta) {
 		initializeRender();
-		
+	}
+	
+	public void drawStage(float delta){
 		stage.act(delta);
+		stage.setCamera(stageCamera);
 		stage.draw();
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		cam = new OrthographicCamera(width, height);
-		cam.translate(width / 2, height / 2, 0);
+		stageCamera = new OrthographicCamera(width, height);
+		stageCamera.translate(width / 2, height / 2, 0);
 		stage.setViewport(width, height, false);
 	}
 
