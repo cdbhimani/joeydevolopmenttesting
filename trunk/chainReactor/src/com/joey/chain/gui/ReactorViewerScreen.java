@@ -79,13 +79,13 @@ public class ReactorViewerScreen extends GameScreen {
 		high = diameter*(board[0].length+.5f);
 		
 		
-		shape.setProjectionMatrix(cam.combined);
+		shape.setProjectionMatrix(stageCamera.combined);
 		shape.setColor(bg);
 		shape.begin(ShapeType.FilledRectangle);
 		shape.filledRect(x1, y1, wide, high);
 		shape.end();
 		
-		batch.setProjectionMatrix(cam.combined);
+		batch.setProjectionMatrix(stageCamera.combined);
 		for(int x= 0; x  < board.length; x++){
 			for(int y = 0; y  < board[x].length; y++){
 				x1 = (x+1)*diameter;
@@ -102,7 +102,7 @@ public class ReactorViewerScreen extends GameScreen {
 	}
 	
 	public void renderOverlay(long update, long render){
-		batch.setProjectionMatrix(cam.combined);
+		batch.setProjectionMatrix(stageCamera.combined);
 		batch.begin();
 		font.setColor(Color.RED);
 		
@@ -177,7 +177,7 @@ public class ReactorViewerScreen extends GameScreen {
 		}
 		click.x = x;
 		click.y = y;
-		cam.unproject(click);
+		stageCamera.unproject(click);
 		Chain chain = getSelectedChain(click);
 		if(chain != null){
 			chain.activate();
