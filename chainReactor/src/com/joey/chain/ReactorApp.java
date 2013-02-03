@@ -31,7 +31,8 @@ public class ReactorApp extends Game{
 		menuScreen = new MenuScreen(this);
 		scoreScreen = new HighScoreScreen(this);
 		
-		setScreen(new FrameBufferScreen(this));
+//		setScreen(new FrameBufferScreen(this));
+		setScreen(gameScreen);
 	}
 	
 	public void screenTransistion(GameScreen source, GameScreen dest){

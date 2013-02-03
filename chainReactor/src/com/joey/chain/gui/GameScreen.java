@@ -38,9 +38,11 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	}
 	
 	public void addInputMultiplexer(InputMultiplexer input){
+	
+	
+		input.addProcessor(stage);
 		input.addProcessor(this);
 		input.addProcessor(gesture);
-		input.addProcessor(stage);
 	}
 	
 

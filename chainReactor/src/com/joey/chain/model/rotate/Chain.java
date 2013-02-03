@@ -1,4 +1,4 @@
-package com.joey.chain.model;
+package com.joey.chain.model.rotate;
 
 import com.badlogic.gdx.math.MathUtils;
 
