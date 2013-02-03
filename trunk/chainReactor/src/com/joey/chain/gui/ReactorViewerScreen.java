@@ -16,9 +16,9 @@ import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.joey.chain.ReactorApp;
-import com.joey.chain.model.Chain;
-import com.joey.chain.model.Chain.ChainState;
-import com.joey.chain.model.Reactor;
+import com.joey.chain.model.rotate.Chain;
+import com.joey.chain.model.rotate.Reactor;
+import com.joey.chain.model.rotate.Chain.ChainState;
 
 public class ReactorViewerScreen extends GameScreen {
 

@@ -15,6 +15,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.FlickScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.joey.chain.ReactorApp;
@@ -27,15 +31,28 @@ public class FrameBufferScreen extends GameScreen {
 	FrameBuffer frmBuff;
 	TextureRegion frm;
 	OrthographicCamera frmCam;
+	Window win = new Window(getSkin());
 	
-	int frmSizeX = 100;
-	int frmSizeY = 100;
+	int frmSizeX = 2048;
+	int frmSizeY = 2048;
 	FrameBufferActor actor;
 	public FrameBufferScreen(ReactorApp game) {
 		super(game);
 		setClearColor(new Color(1,1,1,1));
 	}
 	
+	@Override
+	public boolean touchDown(int x, int y, int pointer) {
+		// TODO Auto-generated method stub
+		super.touchDown(x, y, pointer);
+		win.width++;
+		win.height++;
+		win.invalidate();
+		win.invalidateHierarchy();
+		win.validate();
+		
+		return true;
+	}
 	@Override
 	public void show() {
 		
@@ -50,10 +67,19 @@ public class FrameBufferScreen extends GameScreen {
 		actor = new FrameBufferActor(frmBuff);
 		
 		actor.setFillParent(true);
-		Window win = new Window(getSkin());
 		
-		win.setMovable(true);
-		win.add(actor);
+		Image i = new Image(frmBuff.getColorBufferTexture());
+
+
+		FlickScrollPane scroll = new FlickScrollPane(i,"");
+		
+
+		
+		win.row().fill().expandX();
+		win.add(scroll).fill().expand().maxSize(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
+		win.row();
+		win.pack();
+
 		
 		stage.addActor(win);
 	}
@@ -70,19 +96,20 @@ public class FrameBufferScreen extends GameScreen {
 		ShapeRenderer shape = new ShapeRenderer();
 		shape.setProjectionMatrix(frmCam.combined);
 		frmBuff.begin();
-	
+
 		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		shape.begin(ShapeType.FilledRectangle);
-		shape.setColor(Color.WHITE);
-		shape.filledRect(0,0,50, 50);
-		shape.end();
-	
-//		shape.begin(ShapeType.FilledCircle);
-//		shape.setColor(Color.GREEN);
-//		shape.filledCircle(MathUtils.random(frmSizeX), MathUtils.random(frmSizeY), 20);
-//		shape.end();
+		for(int x = 0; x < 10; x++){
+			Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+			shape.begin(ShapeType.FilledRectangle);
+			shape.setColor(Color.WHITE);
+			shape.filledRect(MathUtils.random(frmSizeX), MathUtils.random(frmSizeY),50, 50);
+			shape.end();
 		
+			shape.begin(ShapeType.FilledCircle);
+			shape.setColor(Color.GREEN);
+			shape.filledCircle(MathUtils.random(frmSizeX), MathUtils.random(frmSizeY), 20);
+			shape.end();
+		}
 		frmBuff.end();
 	}
 	
@@ -107,7 +134,6 @@ class FrameBufferActor extends Widget{
 	public FrameBufferActor(FrameBuffer buf){
 		this.buffer = buf;
 		this.bufferTexture = buf.getColorBufferTexture();
-		this.bufferTexture.get
 		this.width = bufferTexture.getWidth();
 		this.height = bufferTexture.getHeight();
 	}

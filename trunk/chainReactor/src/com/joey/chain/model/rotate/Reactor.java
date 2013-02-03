@@ -1,10 +1,10 @@
-package com.joey.chain.model;
+package com.joey.chain.model.rotate;
 
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
-import com.joey.chain.model.Chain.ChainState;
+import com.joey.chain.model.rotate.Chain.ChainState;
 
 public class Reactor {
 	enum ReactorState{
