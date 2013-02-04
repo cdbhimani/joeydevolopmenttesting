@@ -4,15 +4,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 public class Cell {
-	public enum CellDirection{
-		none,
-		up,
-		down,
-		left,
-		right;
-	}
-	
-	public CellDirection dir = CellDirection.none;
 	boolean alive = false;
 	
     Vector2 currentPos;
@@ -36,8 +27,27 @@ public class Cell {
 		lastPos.y = MathUtils.round(lastPos.y+desiredDir.y);
 	}
 	
+	public float getPx(){
+		return currentPos.x;
+	}
+	public float getPy(){
+		return currentPos.y;
+	}
+	
+	public void setCurrentPos(float x, float y){
+		currentPos.set(x,y);
+		lastPos.set
+	}
 	public void setDirection(int x, int y){
 		desiredDir.x = x;
 		desiredDir.y = y;
+	}
+
+	public boolean isAlive() {
+		return alive;
+	}
+
+	public void setAlive(boolean alive) {
+		this.alive = alive;
 	}
 }
