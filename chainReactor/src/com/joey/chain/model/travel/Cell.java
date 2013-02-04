@@ -4,50 +4,66 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 public class Cell {
-	boolean alive = false;
+	public boolean alive = false;
 	
-    Vector2 currentPos;
+    public Vector2 currentPos;
+    
+    Vector2 lastDir;
+    Vector2 lastPos;
 	
-	Vector2 lastPos;
-	Vector2 desiredDir;
+	public Vector2 desiredPos;
 	
 	public Cell(){
-		currentPos = new Vector2();
 		lastPos = new Vector2();
-		desiredDir = new Vector2();
+		lastDir = new Vector2();
+		currentPos = new Vector2();
+		desiredPos = new Vector2();
 	}
 	
 	public void update(float progress){
-		currentPos.x = (lastPos.x+desiredDir.x*progress);
-		currentPos.y = (lastPos.y+desiredDir.y*progress);
+		currentPos.x = (lastPos.x+lastDir.x*progress);
+		currentPos.y = (lastPos.y+lastDir.y*progress);
 	}
 	
-	public void updateFinished(){
-		lastPos.x = MathUtils.round(lastPos.x+desiredDir.x);
-		lastPos.y = MathUtils.round(lastPos.y+desiredDir.y);
+	public boolean updateFinished(){
+		update(1);
+		lastPos.set(currentPos);
+		
+		lastPos.x = MathUtils.round(lastPos.x);
+		lastPos.y = MathUtils.round(lastPos.y);
+		
+		float dx = Math.round(desiredPos.x-lastPos.x);
+		float dy = Math.round(desiredPos.y-lastPos.y);
+		
+		if(dx == 0){
+			lastDir.x = 0;
+		} else if(dx > 0){
+			lastDir.x = 1;
+		} else if(dx < 0){
+			lastDir.x = -1;
+		}
+		
+		if(dy == 0){
+			lastDir.y = 0;
+		} else if(dy > 0){
+			lastDir.y = 1;
+		} else if(dy < 0){
+			lastDir.y = -1;
+		}
+		
+		System.out.println(lastDir);
+		if(lastDir.len2() == 0){
+			return true;
+		}else{
+			return false;
+		}
 	}
-	
-	public float getPx(){
-		return currentPos.x;
-	}
-	public float getPy(){
-		return currentPos.y;
-	}
-	
-	public void setCurrentPos(float x, float y){
+
+	public void setPos(float x, float y) {
+		lastPos.set(x,y);
 		currentPos.set(x,y);
-		lastPos.set
-	}
-	public void setDirection(int x, int y){
-		desiredDir.x = x;
-		desiredDir.y = y;
+		desiredPos.set(x,y);
+		updateFinished();
 	}
 
-	public boolean isAlive() {
-		return alive;
-	}
-
-	public void setAlive(boolean alive) {
-		this.alive = alive;
-	}
 }
