@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.joey.chain.gui.FrameBufferScreen;
+import com.joey.chain.gui.GameGridViewer;
 import com.joey.chain.gui.GameScreen;
 import com.joey.chain.gui.HighScoreScreen;
 import com.joey.chain.gui.MenuScreen;
@@ -32,7 +33,8 @@ public class ReactorApp extends Game{
 		scoreScreen = new HighScoreScreen(this);
 		
 //		setScreen(new FrameBufferScreen(this));
-		setScreen(gameScreen);
+		setScreen(new GameGridViewer(this));
+//		setScreen(gameScreen);
 	}
 	
 	public void screenTransistion(GameScreen source, GameScreen dest){

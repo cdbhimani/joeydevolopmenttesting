@@ -7,8 +7,12 @@ import com.badlogic.gdx.math.MathUtils;
 
 public class GameGrid {
 
-	Walker walk;
-	Cell[][] grid;
+	public enum GridState{
+		waiting,
+		animating, 
+		calculating;
+	}
+	
 	Comparator<Cell> sort = new Comparator<Cell>() {
 		@Override
 		public int compare(Cell o1, Cell o2) {
@@ -24,6 +28,13 @@ public class GameGrid {
 			return 0;
 		}
 	};
+	
+	
+	Walker walk;
+	public Cell[][] grid;
+	GridState state = GridState.waiting;
+	long animationStart = 0;
+	float animationTime = 1000f;
 	
 	public int getWidth(){
 		return grid.length;
@@ -43,51 +54,88 @@ public class GameGrid {
 			for(int y = 0;y < sizeY; y++){
 				grid[x][y] = new Cell();
 				grid[x][y].alive = MathUtils.randomBoolean();
+				grid[x][y].setPos(x,y);
 			}
 		}
 	}
-	private void updateStep(float prog){
-		
+	
+	public void activate(){
+		animationStart = System.currentTimeMillis();
+		state = GridState.animating;
 	}
 	
-	private void computeStep(){
-		
+	public void update(){
+		switch(state){
+			case waiting:{
+				break;
+			}
+			case calculating:{
+				if(computeRelayoutStep()==true){
+					state = GridState.waiting;
+				}else{
+					state = GridState.animating;
+					animationStart = System.currentTimeMillis();
+				}
+				break;
+			}
+			case animating:{
+				float time = (System.currentTimeMillis()-animationStart)/animationTime;
+				if(time >= 1){
+					if(computeUpdateStepComplete() == true){
+						state = GridState.calculating;
+					}else{
+						state = GridState.animating;
+					}
+				}else{
+					computeUpdateStep(time);
+				}
+				break;
+			}
+		}
 	}
 	
-	private void computeRelayout(){
+	private void computeUpdateStep(float prog){
+		for(int x = 0; x <grid.length; x++){
+			for(int y = 0; y < grid[x].length; y++){
+				grid[x][y].update(prog);
+			}
+		}
+	}
+	
+	private boolean computeUpdateStepComplete(){
+		boolean alive = false;
+		for(int x = 0; x <grid.length; x++){
+			for(int y = 0; y < grid[x].length; y++){
+				alive = alive || grid[x][y].updateFinished();
+			}
+		}
+		return alive;
+	}
+	
+	private boolean computeRelayoutStep(){
+		int invalidCount=0;
+		int deadCount = 0;
 		for(int x = 0; x < grid.length; x++){
 			sortColumn(grid[x]);
 			
+			deadCount = 0;
 			for(int y = 0; y < grid[x].length; y++){
-				if(grid[x][y].alive){
-					g
+				if(!grid[x][y].alive){
+					grid[x][y].alive = true;
+					grid[x][y].currentPos.set(x, getHeight()+deadCount++);
+				}
+				grid[x][y].desiredPos.set(x, y);
+				
+				if(grid[x][y].desiredPos.epsilonEquals(grid[x][y].currentPos, 0.5f)){
+					invalidCount++;
 				}
 			}
 		}
+		return invalidCount==0;
 	}
 	
 	public void sortColumn(Cell[] data){
 		Arrays.sort(data, this.sort);
-		
-	}
-	public void update(){
-		computeRelayout();
-	}
-	
-	public static void main(String input[]){
-		
-		GameGrid grid = new GameGrid(10,10);
-		grid.update();
-			
-		
-		for(int y = 0; y < grid.getHeight(); y++){
-			for(int x = 0; x < grid.getWidth(); x++){
-				System.out.print(grid.grid[x][y].alive?'O':'X');
-			}
-			System.out.println();
-		}
-		
-		
 		
 	}
 }
