@@ -1,5 +1,6 @@
 package com.joey.chain.model.travel;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
@@ -10,6 +11,8 @@ public class Cell {
     
     Vector2 lastDir;
     Vector2 lastPos;
+    
+    public Color c = Color.BLUE;
 	
 	public Vector2 desiredPos;
 	
@@ -20,20 +23,9 @@ public class Cell {
 		desiredPos = new Vector2();
 	}
 	
-	public void update(float progress){
-		currentPos.x = (lastPos.x+lastDir.x*progress);
-		currentPos.y = (lastPos.y+lastDir.y*progress);
-	}
-	
-	public boolean updateFinished(){
-		update(1);
-		lastPos.set(currentPos);
-		
-		lastPos.x = MathUtils.round(lastPos.x);
-		lastPos.y = MathUtils.round(lastPos.y);
-		
-		float dx = Math.round(desiredPos.x-lastPos.x);
-		float dy = Math.round(desiredPos.y-lastPos.y);
+	public boolean calculateMovementRequired(){
+		int dx = Math.round(2*(desiredPos.x-currentPos.x));
+		int dy = Math.round(2*(desiredPos.y-currentPos.y));
 		
 		if(dx == 0){
 			lastDir.x = 0;
@@ -50,16 +42,30 @@ public class Cell {
 		} else if(dy < 0){
 			lastDir.y = -1;
 		}
-		
-		System.out.println(lastDir);
 		if(lastDir.len2() == 0){
 			return true;
 		}else{
 			return false;
 		}
 	}
+	
+	public void update(float progress){
+		currentPos.x = (lastPos.x+lastDir.x*progress);
+		currentPos.y = (lastPos.y+lastDir.y*progress);
+	}
+	
+	public boolean updateFinished(){
+		update(1);
+		lastPos.set(currentPos);
+		
+		lastPos.x = MathUtils.round(lastPos.x);
+		lastPos.y = MathUtils.round(lastPos.y);
+		
+		return calculateMovementRequired();
+	}
 
 	public void setPos(float x, float y) {
+		lastDir.set(0,0);
 		lastPos.set(x,y);
 		currentPos.set(x,y);
 		desiredPos.set(x,y);
