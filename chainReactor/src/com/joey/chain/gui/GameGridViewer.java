@@ -9,25 +9,23 @@ import com.joey.chain.model.travel.GameGrid;
 
 public class GameGridViewer extends GameScreen{
 
+	int sizeX = 20;
+	int sizeY = 20;
+	
 	float radius;
 	float diameter;
 	GameGrid gameGrid;
 	ShapeRenderer shape;
-	boolean first = true;
 	
 	public GameGridViewer(ReactorApp game) {
 		super(game);
-		gameGrid = new GameGrid(2, 1);
+		gameGrid = new GameGrid(sizeX, sizeY);
 		shape = new ShapeRenderer();
-		setRadius(20);
+		setRadius(10);
 	}
 
 	@Override
 	public void render(float delta) {
-		if(first){
-			gameGrid.activate();
-			first = false;
-		}
 		// TODO Auto-generated method stub
 		super.render(delta);
 		gameGrid.update();
@@ -43,24 +41,19 @@ public class GameGridViewer extends GameScreen{
 				xPos = (c.currentPos.x+1)*diameter;
 				yPos = (c.currentPos.y+1)*diameter;
 				
-				shape.begin(ShapeType.FilledCircle);
 				if(c.alive){
-					shape.setColor(Color.BLUE);
-				}else{
-					shape.setColor(Color.RED);
+					shape.begin(ShapeType.FilledCircle);
+					shape.setColor(c.c);
+					shape.filledCircle(xPos,yPos, radius);
+					shape.end();
 				}
-				shape.filledCircle(xPos,yPos, radius);
-				shape.end();
 				
-				
-				xPos = (c.desiredPos.x+1)*diameter;
-				yPos = (c.desiredPos.y+1)*diameter;
 				
 				shape.begin(ShapeType.Circle);
 				if(c.alive){
 					shape.setColor(Color.RED);
 				}else{
-					shape.setColor(Color.BLUE);
+					shape.setColor(Color.GREEN);
 				}
 				shape.circle(xPos,yPos, radius-1);
 				shape.end();
@@ -69,6 +62,15 @@ public class GameGridViewer extends GameScreen{
 		
 	}
 
+	@Override
+	public boolean tap(int x, int y, int count) {
+		if(count == 1){
+			gameGrid.activate();
+		}else{
+			gameGrid.createGrid(sizeX,sizeY);
+		}
+		return super.tap(x, y, count);
+	}
 	public float getRadius() {
 		return radius;
 	}
