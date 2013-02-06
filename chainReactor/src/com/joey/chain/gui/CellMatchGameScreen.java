@@ -114,8 +114,9 @@ public class CellMatchGameScreen extends GameScreen{
 		batch.begin();
 		font.draw(batch, "lives : "+gameEngine.getLives(), 10, Gdx.graphics.getHeight()-20);
 		font.draw(batch, "Score  : "+gameEngine.getScore(), 10, Gdx.graphics.getHeight()-40);
-		font.draw(batch, "Update : "+updateTime, 10, Gdx.graphics.getHeight()-60);
-		font.draw(batch, "Render : "+drawTime, 10, Gdx.graphics.getHeight()-80);
+		font.draw(batch, "State  : "+(gameEngine.isFinished()?"Game Over":"Running"), 10, Gdx.graphics.getHeight()-60);
+		font.draw(batch, "Update : "+updateTime, 10, Gdx.graphics.getHeight()-80);
+		font.draw(batch, "Render : "+drawTime, 10, Gdx.graphics.getHeight()-100);
 		batch.end();
 	}
 
