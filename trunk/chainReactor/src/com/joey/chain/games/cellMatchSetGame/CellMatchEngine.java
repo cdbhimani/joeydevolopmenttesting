@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.MathUtils;
 public class CellMatchEngine {
 
 	public enum CellEngineState{
+		finshed,
 		waiting,
 		animating,
 		animatingFinished,
@@ -34,9 +35,13 @@ public class CellMatchEngine {
 	private CellEngineState state = CellEngineState.waiting;
 	private long animationStart = 0;
 	private float animationTime = 200f;
+	
 	private long score = 0;
 	private long lives = 10;
+	private long minDestroy = 3;
+	private long difficulty = 4;
 	private boolean contineous = false;
+	
 	public CellMatchEngine(int sizeX, int sizeY){
 		createGrid(sizeX, sizeY);
 	}
@@ -162,6 +167,19 @@ public class CellMatchEngine {
 		return alive;
 	}
 	
+	private boolean hasValidMovesRemain(){
+		
+		for(int x=0;x < getWidth(); x++){
+			for(int y = 0; y < getHeight(); y++){
+				int count = kill(x, y);
+				undoKill(x, y);
+				if(count > minDestroy){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	private boolean computeRelayoutStep(){
 		int movementNeededCount=0;
 		int deadCount = 0;
@@ -199,12 +217,19 @@ public class CellMatchEngine {
 	
 	public synchronized void update(){
 		switch(state){
+			case finshed:{
+				break;
+			}
 			case waiting:{
 				break;
 			}
 			case calculating:{
 				if(computeRelayoutStep()==true){
-					state = CellEngineState.waiting;
+					if(hasValidMovesRemain()){
+						state = CellEngineState.waiting;
+					}else{
+						state = CellEngineState.finshed;
+					}
 				}else{
 					state = CellEngineState.animating;
 				}
@@ -255,6 +280,12 @@ public class CellMatchEngine {
 
 	public void setLives(long lives) {
 		this.lives = lives;
+	}
+
+
+	public boolean isFinished() {
+		// TODO Auto-generated method stub
+		return state == CellEngineState.finshed;
 	}
 }
 
