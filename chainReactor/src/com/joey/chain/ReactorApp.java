@@ -3,18 +3,17 @@ package com.joey.chain;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.joey.chain.gui.FrameBufferScreen;
-import com.joey.chain.gui.GameGridViewer;
+import com.joey.chain.gui.CellMatchGameScreen;
 import com.joey.chain.gui.GameScreen;
 import com.joey.chain.gui.HighScoreScreen;
 import com.joey.chain.gui.MenuScreen;
-import com.joey.chain.gui.ReactorScreen;
-import com.joey.chain.gui.ReactorViewerScreen;
+import com.joey.chain.gui.CellRotateChainScreen;
 import com.joey.chain.gui.SplashScreen;
 
 public class ReactorApp extends Game{
 	
-	ReactorViewerScreen gameScreen;
+	CellRotateChainScreen cellRotateScreen;
+	CellMatchGameScreen cellMatchScreen;
 	SplashScreen splashScreen;
 	MenuScreen menuScreen;
 	HighScoreScreen scoreScreen;
@@ -27,14 +26,15 @@ public class ReactorApp extends Game{
 		Gdx.input.setInputProcessor(inputProcessor);
 		
 		// TODO Auto-generated method stub
-		gameScreen = new ReactorViewerScreen(this);
+		cellRotateScreen = new CellRotateChainScreen(this);
+		cellMatchScreen = new CellMatchGameScreen(this);
 		splashScreen = new SplashScreen(this);
 		menuScreen = new MenuScreen(this);
 		scoreScreen = new HighScoreScreen(this);
 		
 //		setScreen(new FrameBufferScreen(this));
-		setScreen(new GameGridViewer(this));
-//		setScreen(gameScreen);
+//		setScreen(new CellMatchGameViewer(this));
+		setScreen(splashScreen);
 	}
 	
 	public void screenTransistion(GameScreen source, GameScreen dest){
@@ -47,11 +47,6 @@ public class ReactorApp extends Game{
 			setScreen(dest);
 		}
 	}
-
-	public ReactorViewerScreen getGameScreen() {
-		return gameScreen;
-	}
-
 
 
 	public SplashScreen getSplashScreen() {
@@ -76,6 +71,14 @@ public class ReactorApp extends Game{
 
 	public void setInputProcessor(InputMultiplexer inputProcessor) {
 		this.inputProcessor = inputProcessor;
+	}
+
+	public CellRotateChainScreen getCellRotateScreen() {
+		return cellRotateScreen;
+	}
+
+	public CellMatchGameScreen getCellMatchScreen() {
+		return cellMatchScreen;
 	}
 
 

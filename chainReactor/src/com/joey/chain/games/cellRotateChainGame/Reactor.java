@@ -1,10 +1,6 @@
-package com.joey.chain;
+package com.joey.chain.games.cellRotateChainGame;
 
 import java.util.Random;
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.MathUtils;
-import com.joey.chain.Chain.ChainState;
 
 public class Reactor {
 	enum ReactorState{
@@ -33,7 +29,11 @@ public class Reactor {
 		rand = new Random();
 	}
 	
-	public void createBoard(int sizeX, int sizeY){
+	public void setSize(int sizeX, int sizeY){
+		createBoard(sizeX, sizeY);
+	}
+	
+	private void createBoard(int sizeX, int sizeY){
 		board = new Chain[sizeX][sizeY];
 		for(int x = 0; x < sizeX; x++){
 			for(int y = 0; y < sizeY; y++){
@@ -68,7 +68,14 @@ public class Reactor {
 		}
 	}
 	
-	public void updateBoradAnimationRunning(float progress){
+	public int getSizeY(){
+		return (board == null?0:board[0].length);
+	}
+
+	public int getSizeX(){
+		return (board == null?0:board.length);
+	}
+	private void updateBoradAnimationRunning(float progress){
 		for(int x = 0; x < board.length; x++){
 			for(int y = 0; y < board[x].length; y++){
 				board[x][y].updateProgressRunning(progress);
@@ -76,7 +83,7 @@ public class Reactor {
 		}
 	}
 	
-	public int updateBoardNextStep(){
+	private int updateBoardNextStep(){
 		int activeCount = 0;
 		
 		Chain chain;
@@ -95,7 +102,7 @@ public class Reactor {
 		return activeCount;
 	}
 	
-	public void updateBoardProgressComplete(){
+	private void updateBoardProgressComplete(){
 		for(int x = 0; x < board.length; x++){
 			for(int y = 0; y < board[x].length; y++){
 				board[x][y].updateProgressComplete();
@@ -108,9 +115,13 @@ public class Reactor {
 		return board;
 	}
 
+	/**
+	 * The following is the update state machine of the game. 
+	 * The active state is when the animations have complete and it is doing calculation
+	 * The running state is when it is animating between (i.e. rotating) 
+	 * The finished state is when the engine has finished running
+	 */
 	public void update(){
-		//Gdx.app.debug(this.getClass().getName(), "State : "+state);
-		
 		switch (state) {
 			case active:
 				int activeCount = updateBoardNextStep();
@@ -119,10 +130,8 @@ public class Reactor {
 				if(activeCount > 0){
 					state = ReactorState.running;
 				} else {
-					Gdx.app.debug(getClass().getName(), "Final Score : "+score);
 					state = ReactorState.finished;
-				}
-				
+				}			
 				animationStart=System.currentTimeMillis();
 				break;
 			case running:
@@ -144,6 +153,22 @@ public class Reactor {
 		state = ReactorState.running;
 		animationStart=System.currentTimeMillis();
 		score = 0;
+	}
+
+	public ReactorState getState() {
+		return state;
+	}
+
+	public long getAnimationTime() {
+		return animationTime;
+	}
+
+	public void setAnimationTime(long animationTime) {
+		this.animationTime = animationTime;
+	}
+
+	public void dispose() {
+		board = null;
 	}
 	
 }
