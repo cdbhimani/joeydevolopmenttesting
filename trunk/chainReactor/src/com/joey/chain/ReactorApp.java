@@ -23,7 +23,9 @@ public class ReactorApp extends Game{
 	@Override
 	public void create() {
 		inputProcessor = new InputMultiplexer();
+		Gdx.input.setCatchBackKey(true);
 		Gdx.input.setInputProcessor(inputProcessor);
+
 		
 		// TODO Auto-generated method stub
 		cellRotateScreen = new CellRotateChainScreen(this);
