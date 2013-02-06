@@ -50,16 +50,20 @@ public class MenuScreen extends GameScreen{
 		int wideNum = 2;
 		int highNum = 5;
 		
+		int buttonWide = Gdx.graphics.getWidth()/wideNum;
+		int buttonHigh = Gdx.graphics.getHeight()/highNum;
+		
+		buttonHigh = Math.min(buttonHigh, 50);
 		table.setFillParent(true);
-		table.add(rotateGameButton).width(Gdx.graphics.getWidth()/wideNum).height(Gdx.graphics.getHeight()/highNum);
+		table.add(rotateGameButton).width(buttonWide).height(buttonHigh);
 		table.row();
-		table.add(matchGameButton).width(Gdx.graphics.getWidth()/wideNum).height(Gdx.graphics.getHeight()/highNum);
+		table.add(matchGameButton).width(buttonWide).height(buttonHigh);
 		table.row();
-		table.add(highScoreButton).width(Gdx.graphics.getWidth()/wideNum).height(Gdx.graphics.getHeight()/highNum);
+		table.add(highScoreButton).width(buttonWide).height(buttonHigh);
 		table.row();
-		table.add(settingButton).width(Gdx.graphics.getWidth()/wideNum).height(Gdx.graphics.getHeight()/highNum);
+		table.add(settingButton).width(buttonWide).height(buttonHigh);
 		table.row();
-		table.add(exitButton).width(Gdx.graphics.getWidth()/wideNum).height(Gdx.graphics.getHeight()/highNum);
+		table.add(exitButton).width(buttonWide).height(buttonHigh);
 		stage.addActor(table);
 		
 		rotateGameButton.setClickListener(new ClickListener() {

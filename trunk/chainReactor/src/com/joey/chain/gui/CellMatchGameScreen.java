@@ -15,12 +15,12 @@ import com.joey.chain.games.cellMatchSetGame.CellMatchEngine;
 public class CellMatchGameScreen extends GameScreen{
 
 	int sizeX = 11;
-	int sizeY = 8
+	int sizeY = 16
 			;
 	
 	float radius;
 	float diameter;
-	CellMatchEngine gameGrid;
+	CellMatchEngine gameEngine;
 	ShapeRenderer shape;
 	BitmapFont font;
 	SpriteBatch batch;
@@ -31,7 +31,7 @@ public class CellMatchGameScreen extends GameScreen{
 	
 	public void show() {
 		super.show();
-		gameGrid = new CellMatchEngine(sizeX, sizeY);
+		gameEngine = new CellMatchEngine(sizeX, sizeY);
 		shape = new ShapeRenderer();
 		font = new BitmapFont();
 		batch = new SpriteBatch();
@@ -45,7 +45,7 @@ public class CellMatchGameScreen extends GameScreen{
 	public void hide() {
 		// TODO Auto-generated method stub
 		super.hide();
-		gameGrid = null;
+		gameEngine = null;
 		shape.dispose();
 		font.dispose();
 		batch.disableBlending();
@@ -58,9 +58,9 @@ public class CellMatchGameScreen extends GameScreen{
 		int xP = MathUtils.round(v.x/diameter-1f);
 		int yP = MathUtils.round(v.y/diameter-1f);
 		
-		if(xP >= 0 && yP >= 0 && xP < gameGrid.getWidth() && yP < gameGrid.getHeight()){
+		if(xP >= 0 && yP >= 0 && xP < gameEngine.getWidth() && yP < gameEngine.getHeight()){
 			System.out.println(x+" | "+y);
-			gameGrid.touch(xP, yP);
+			gameEngine.touch(xP, yP);
 		}
 		System.out.println(xP+" : "+yP);
 		return super.tap(x, y, count);
@@ -89,9 +89,9 @@ public class CellMatchGameScreen extends GameScreen{
 
 		shape.begin(ShapeType.FilledCircle);
 		
-		for (int x = 0; x < gameGrid.getWidth(); x++) {
-			for (int y = 0; y < gameGrid.getHeight(); y++) {
-				c = gameGrid.grid[x][y];
+		for (int x = 0; x < gameEngine.getWidth(); x++) {
+			for (int y = 0; y < gameEngine.getHeight(); y++) {
+				c = gameEngine.getBoard()[x][y];
 
 				xPos = (c.currentPos.x + 1) * diameter;
 				yPos = (c.currentPos.y + 1) * diameter;
@@ -112,13 +112,15 @@ public class CellMatchGameScreen extends GameScreen{
 		font.setColor(Color.RED);
 		batch.setProjectionMatrix(stageCamera.combined);
 		batch.begin();
-		font.draw(batch, "Update : "+updateTime, 10, Gdx.graphics.getHeight()-20);
-		font.draw(batch, "Render : "+drawTime, 10, Gdx.graphics.getHeight()-40);
+		font.draw(batch, "lives : "+gameEngine.getLives(), 10, Gdx.graphics.getHeight()-20);
+		font.draw(batch, "Score  : "+gameEngine.getScore(), 10, Gdx.graphics.getHeight()-40);
+		font.draw(batch, "Update : "+updateTime, 10, Gdx.graphics.getHeight()-60);
+		font.draw(batch, "Render : "+drawTime, 10, Gdx.graphics.getHeight()-80);
 		batch.end();
 	}
 
 	@Override
 	public void updateLogic(float delta) {
-		gameGrid.update();
+		gameEngine.update();
 	}
 }
