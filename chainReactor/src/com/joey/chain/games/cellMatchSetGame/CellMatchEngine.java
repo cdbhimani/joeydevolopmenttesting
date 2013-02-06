@@ -3,6 +3,8 @@ package com.joey.chain.games.cellMatchSetGame;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import com.badlogic.gdx.math.MathUtils;
+
 public class CellMatchEngine {
 
 	public enum CellEngineState{
@@ -28,98 +30,107 @@ public class CellMatchEngine {
 		}
 	};
 	
-	public Cell[][] grid;
-	CellEngineState state = CellEngineState.waiting;
-	long animationStart = 0;
-	float animationTime = 200f;
-	
+	private Cell[][] board;
+	private CellEngineState state = CellEngineState.waiting;
+	private long animationStart = 0;
+	private float animationTime = 200f;
+	private long score = 0;
+	private long lives = 10;
+	private boolean contineous = false;
 	public CellMatchEngine(int sizeX, int sizeY){
 		createGrid(sizeX, sizeY);
 	}
 	
 
 	public int getWidth(){
-		return grid.length;
+		return board.length;
 	}
 	
 	public int getHeight(){
-		return grid[0].length;
+		return board[0].length;
 	}
 	
 	public synchronized void touch(int x, int y){
 		if(state == CellEngineState.waiting){
-			if(kill(x,y) < 3){
-				undoKill(x, y);
+			int killCount = kill(x,y);
+			if(killCount < 3){
+				
+				if(getLives() > 0){
+					setLives(getLives() - 1);
+				}else{
+					undoKill(x, y);
+				}
 			}
+			score+=Math.pow(3,killCount);
 			activate();
 		}
 	}
 	
 	public void undoKill(int x, int y){
-		if(grid[x][y].isAlive() == true){
+		if(board[x][y].isAlive() == true){
 			return;
 		}
 		
-		grid[x][y].activate();
+		board[x][y].activate();
 		
 		if(x > 0){
-			if(grid[x][y].equals(grid[x-1][y])){
+			if(board[x][y].equals(board[x-1][y])){
 				undoKill(x-1,y);
 			}
 		}
 		if(x < getWidth()-1){
-			if(grid[x][y].equals(grid[x+1][y])){
+			if(board[x][y].equals(board[x+1][y])){
 				undoKill(x+1,y);
 			}
 		}
 		if(y > 0){
-			if(grid[x][y].equals(grid[x][y-1])){
+			if(board[x][y].equals(board[x][y-1])){
 				undoKill(x,y-1);
 			}
 		}
 		if(y < getHeight()-1){
-			if(grid[x][y].equals(grid[x][y+1])){
+			if(board[x][y].equals(board[x][y+1])){
 				undoKill(x,y+1);
 			}
 		}
 	}
 	public int kill(int x, int y){
-		if(grid[x][y].isAlive() == false){
+		if(board[x][y].isAlive() == false){
 			return 0;
 		}
 		
 		int killCount = 1;
-		grid[x][y].kill();
+		board[x][y].kill();
 		
 		if(x > 0){
-			if(grid[x][y].equals(grid[x-1][y])){
+			if(board[x][y].equals(board[x-1][y])){
 				killCount+=kill(x-1,y);
 			}
 		}
 		if(x < getWidth()-1){
-			if(grid[x][y].equals(grid[x+1][y])){
+			if(board[x][y].equals(board[x+1][y])){
 				killCount+=kill(x+1,y);
 			}
 		}
 		if(y > 0){
-			if(grid[x][y].equals(grid[x][y-1])){
+			if(board[x][y].equals(board[x][y-1])){
 				killCount+=kill(x,y-1);
 			}
 		}
 		if(y < getHeight()-1){
-			if(grid[x][y].equals(grid[x][y+1])){
+			if(board[x][y].equals(board[x][y+1])){
 				killCount+=kill(x,y+1);
 			}
 		}
 		return killCount;
 	}
 	public void createGrid(int sizeX, int sizeY){
-		grid = new Cell[sizeX][sizeY];
+		board = new Cell[sizeX][sizeY];
 		for(int x = 0; x < sizeX; x++){
 			for(int y = 0;y < sizeY; y++){
-				grid[x][y] = new Cell();
-				grid[x][y].setPos(x,y);
-				grid[x][y].random();
+				board[x][y] = new Cell();
+				board[x][y].setPos(x,y);
+				board[x][y].random();
 			}
 		}
 	}
@@ -134,18 +145,18 @@ public class CellMatchEngine {
 	
 	
 	private void computeUpdateStep(float prog){
-		for(int x = 0; x <grid.length; x++){
-			for(int y = 0; y < grid[x].length; y++){
-				grid[x][y].update(prog);
+		for(int x = 0; x <board.length; x++){
+			for(int y = 0; y < board[x].length; y++){
+				board[x][y].update(prog);
 			}
 		}
 	}
 	
 	private boolean computeUpdateStepComplete(){
 		boolean alive = false;
-		for(int x = 0; x <grid.length; x++){
-			for(int y = 0; y < grid[x].length; y++){
-				alive = grid[x][y].updateFinished()||alive;
+		for(int x = 0; x <board.length; x++){
+			for(int y = 0; y < board[x].length; y++){
+				alive = board[x][y].updateFinished()||alive;
 			}
 		}
 		return alive;
@@ -154,20 +165,26 @@ public class CellMatchEngine {
 	private boolean computeRelayoutStep(){
 		int movementNeededCount=0;
 		int deadCount = 0;
-		for(int x = 0; x < grid.length; x++){
-			sortColumn(grid[x]);
+		for(int x = 0; x < board.length; x++){
+			sortColumn(board[x]);
 			
 			deadCount = 0;
-			for(int y = 0; y < grid[x].length; y++){
-				if(!grid[x][y].isAlive()){
-					grid[x][y].random();
-					grid[x][y].lastPos.set(x, getHeight()+deadCount);
-					grid[x][y].currentPos.set(x, getHeight()+deadCount);
+			for(int y = 0; y < board[x].length; y++){
+				if(!board[x][y].isAlive()){
+					if(contineous){
+						board[x][y].random();
+						board[x][y].lastPos.set(x, getHeight()+deadCount);
+						board[x][y].currentPos.set(x, getHeight()+deadCount);
+					}
+					else{
+						board[x][y].lastPos.set(x, y);
+						board[x][y].currentPos.set(x, y);
+					}
 					deadCount++;
 				}
-				grid[x][y].desiredPos.set(x, y);
+				board[x][y].desiredPos.set(x, y);
 				
-				if(!grid[x][y].calculateMovementRequired()){
+				if(!board[x][y].calculateMovementRequired()){
 					movementNeededCount++;
 				}
 			}
@@ -213,6 +230,31 @@ public class CellMatchEngine {
 				break;
 			}
 		}
+	}
+
+
+	public Cell[][] getBoard() {
+		return board;
+	}
+
+
+	public long getScore() {
+		return score;
+	}
+
+
+	public void setScore(long score) {
+		this.score = score;
+	}
+
+
+	public long getLives() {
+		return lives;
+	}
+
+
+	public void setLives(long lives) {
+		this.lives = lives;
 	}
 }
 

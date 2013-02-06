@@ -2,30 +2,29 @@ package com.joey.chain.games.cellRotateChainGame;
 
 import java.util.Random;
 
-public class Reactor {
-	enum ReactorState{
-		finished, //Complete Full Run
-		running, //Propagating between rotations
-		active //Finished between rotations but not complete
+public class RotateCellEngine {
+	enum EngineState{
+		waiting, //Complete Full Run
+		animating, //Propagating between rotations
+		calculating //Finished between rotations but not complete
 	}
 	
-	long animationTime = 500;
-	long animationStart = 0;
-	
-	Chain[][] board;
-	Random rand;
-	private ReactorState state = ReactorState.active;
+	private long animationTime = 500;
+	private long animationStart = 0;	
+	private Chain[][] board;
+	private Random rand;
+	private EngineState state = EngineState.waiting;
 	long score = 0;
 	
 	public long getScore() {
 		return score;
 	}
 
-	public void setScore(long score) {
+	private void setScore(long score) {
 		this.score = score;
 	}
 
-	public Reactor(){
+	public RotateCellEngine(){
 		rand = new Random();
 	}
 	
@@ -115,6 +114,22 @@ public class Reactor {
 		return board;
 	}
 
+	public int getWidth(){
+		return board.length;
+	}
+	
+	public int getHeight(){
+		return board[0].length;
+		
+	}
+	public void tap(int x, int y){
+		if(state == EngineState.waiting){
+			if(x >= 0 && y >= 0 && x < getWidth() && y < getHeight()){
+				board[x][y].activate();
+				activate();
+			}
+		}
+	}
 	/**
 	 * The following is the update state machine of the game. 
 	 * The active state is when the animations have complete and it is doing calculation
@@ -123,39 +138,39 @@ public class Reactor {
 	 */
 	public void update(){
 		switch (state) {
-			case active:
+			case calculating:
 				int activeCount = updateBoardNextStep();
 				score+=activeCount;
 				
 				if(activeCount > 0){
-					state = ReactorState.running;
+					state = EngineState.animating;
 				} else {
-					state = ReactorState.finished;
+					state = EngineState.waiting;
 				}			
 				animationStart=System.currentTimeMillis();
 				break;
-			case running:
+			case animating:
 				float time = (System.currentTimeMillis()-animationStart)/(float)animationTime;
 				if(time >= 1){
 					updateBoardProgressComplete();
-					state = ReactorState.active;
+					state = EngineState.calculating;
 				}else{
 					updateBoradAnimationRunning(time);
 				}
 				
 				break;
-			case finished:
+			case waiting:
 				break;
 		}
 	}
 	
-	public void activate(){
-		state = ReactorState.running;
+	private void activate(){
+		state = EngineState.animating;
 		animationStart=System.currentTimeMillis();
 		score = 0;
 	}
 
-	public ReactorState getState() {
+	public EngineState getState() {
 		return state;
 	}
 

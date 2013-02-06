@@ -13,19 +13,19 @@ import com.badlogic.gdx.math.Vector3;
 import com.joey.chain.ReactorApp;
 import com.joey.chain.games.cellRotateChainGame.Chain;
 import com.joey.chain.games.cellRotateChainGame.Chain.ChainState;
-import com.joey.chain.games.cellRotateChainGame.Reactor;
+import com.joey.chain.games.cellRotateChainGame.RotateCellEngine;
 
 public class CellRotateChainScreen extends GameScreen {
 
 	long lastScore = 0;
-	int sizeX = 13;
-	int sizeY = 11;
+	int sizeX = 11;
+	int sizeY = 16;
 	float radius =0;
 	float diameter = 2*radius;
 	Color bg = new Color();
 	Vector3 click = new Vector3();
 	
-	Reactor reactor;
+	RotateCellEngine engine;
 	
 	Texture texture;
 	TextureRegion activeRegion;
@@ -61,12 +61,12 @@ public class CellRotateChainScreen extends GameScreen {
 	}
 
 	public void updateApp(){
-		reactor.update();
+		engine.update();
 	}
 	
 	public void renderGame(){		
 		float x1,y1,wide,high;
-		Chain[][] board = reactor.getBoard();
+		Chain[][] board = engine.getBoard();
 		
 		x1 = radius/2;
 		y1 = radius/2;
@@ -106,7 +106,7 @@ public class CellRotateChainScreen extends GameScreen {
 		float x = Gdx.graphics.getWidth()*.7f;
 		font.draw(batch, "Update : "+update, x, Gdx.graphics.getHeight()-10);
 		font.draw(batch, "Render : "+render, x, Gdx.graphics.getHeight()-30);
-		font.draw(batch, "Score  : "+reactor.getScore(), x, Gdx.graphics.getHeight()-50);
+		font.draw(batch, "Score  : "+engine.getScore(), x, Gdx.graphics.getHeight()-50);
 		batch.end();
 	
 	}	
@@ -130,9 +130,9 @@ public class CellRotateChainScreen extends GameScreen {
 		activeRegion  = new TextureRegion(texture, 0,0,256,256);
 		disabledRegion  = new TextureRegion(texture, 0,256,256,256);
 		shape = new ShapeRenderer();
-		reactor = new Reactor();
-		reactor.setSize(sizeX, sizeY);
-		reactor.resetBorad(1);
+		engine = new RotateCellEngine();
+		engine.setSize(sizeX, sizeY);
+		engine.resetBorad(1);
 	
 		float rx =Gdx.graphics.getWidth()/(2f*(sizeX+1));
 		float ry =Gdx.graphics.getHeight()/(2f*(sizeY+1)); 
@@ -155,33 +155,25 @@ public class CellRotateChainScreen extends GameScreen {
 		font.dispose();
 		font = null;
 		
-		reactor.dispose();
-		reactor = null;
-	}
-	
-	public Chain getSelectedChain(Vector3 click){
-		int x = Math.round((click.x-diameter)/diameter);
-		int y = Math.round((click.y-diameter)/diameter);
-		if(x < reactor.getBoard().length && y < reactor.getBoard()[x].length){
-			return reactor.getBoard()[x][y];
-		}
-		return null;
+		engine.dispose();
+		engine = null;
 	}
 
 	@Override
 	public boolean tap(int x, int y, int count) {
 		if(count > 1){
-			reactor.resetBorad(System.currentTimeMillis());
+			engine.resetBorad(System.currentTimeMillis());
 			return true;
 		}
 		click.x = x;
 		click.y = y;
 		stageCamera.unproject(click);
-		Chain chain = getSelectedChain(click);
-		if(chain != null){
-			chain.activate();
-			reactor.activate();
-		}
+		
+
+		int xPos = Math.round((click.x-diameter)/diameter);
+		int yPos = Math.round((click.y-diameter)/diameter);
+		
+		engine.tap(xPos, yPos);
 		return true;
 	}
 
