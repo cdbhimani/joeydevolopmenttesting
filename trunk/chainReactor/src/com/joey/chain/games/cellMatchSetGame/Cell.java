@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 public class Cell {
+	private boolean flag = false;
 	private boolean alive = false;
 	
     public Vector2 currentPos;
@@ -23,17 +24,17 @@ public class Cell {
 		desiredPos = new Vector2();
 	}
 	
-	public void touch(int x, int y){
-		
-	}
-	
 	public boolean isAlive(){
 		return alive;
 	}
 	
-	public void random(){
+	public boolean isFlaged(){
+		return flag;
+	}
+	
+	public void random(int difficulity){
 		Color c = null;
-		switch(MathUtils.random(3)){
+		switch(MathUtils.random(difficulity)){
 			case 0: c = Color.RED;break;
 			case 1: c = Color.GREEN;break;
 			case 2: c = Color.BLUE;break;
@@ -43,7 +44,14 @@ public class Cell {
 		alive = true;
 	}
 	
-	public void activate(){
+	public void flag(){
+		flag =true;
+	}
+	
+	public void unFlag(){
+		flag = false;
+	}
+	public void unKill(){
 		alive =true;
 	}
 	public void kill(){
@@ -51,7 +59,7 @@ public class Cell {
 	}
 	
 	public boolean equals(Cell c){
-		return c.getColor() == this.getColor();
+		return c.getColor() == this.getColor() && alive;
 	}
 	public Color getColor(){
 		return color;

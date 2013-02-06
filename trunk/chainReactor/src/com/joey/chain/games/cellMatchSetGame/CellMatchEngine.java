@@ -31,15 +31,19 @@ public class CellMatchEngine {
 		}
 	};
 	
+	private int[] horizontalRowSorter;
 	private Cell[][] board;
 	private CellEngineState state = CellEngineState.waiting;
 	private long animationStart = 0;
 	private float animationTime = 200f;
 	
+	private float scoreMultiplier = 1.6f;
 	private long score = 0;
-	private long lives = 10;
-	private long minDestroy = 3;
-	private long difficulty = 4;
+	private int lives = 10;
+	private int minDestroy = 3;
+	private int difficulty = 1;
+	
+	
 	private boolean contineous = false;
 	
 	public CellMatchEngine(int sizeX, int sizeY){
@@ -57,85 +61,91 @@ public class CellMatchEngine {
 	
 	public synchronized void touch(int x, int y){
 		if(state == CellEngineState.waiting){
-			int killCount = kill(x,y);
-			if(killCount < 3){
-				
-				if(getLives() > 0){
-					setLives(getLives() - 1);
+			boolean killValid = false;
+			if(getBoard()[x][y].isAlive()){
+				int killCount = kill(x,y, true);
+				if(killCount < minDestroy){
+					if(getLives() > 0){
+						killValid = true;
+						setLives(getLives() - 1);	
+					}
 				}else{
-					undoKill(x, y);
+					killValid = true;
 				}
+				
+				if(killValid){
+					kill(x,y, false);
+					score+=Math.pow(scoreMultiplier,killCount);
+				}
+				activate();
 			}
-			score+=Math.pow(3,killCount);
-			activate();
 		}
 	}
 	
-	public void undoKill(int x, int y){
-		if(board[x][y].isAlive() == true){
-			return;
-		}
+	public int kill(int x, int y, boolean onlyCount){
 		
-		board[x][y].activate();
-		
-		if(x > 0){
-			if(board[x][y].equals(board[x-1][y])){
-				undoKill(x-1,y);
-			}
+		int count = flag(x, y);
+		if(onlyCount){
+			unflagAll(false);
+		}else{
+			unflagAll(true);
 		}
-		if(x < getWidth()-1){
-			if(board[x][y].equals(board[x+1][y])){
-				undoKill(x+1,y);
-			}
-		}
-		if(y > 0){
-			if(board[x][y].equals(board[x][y-1])){
-				undoKill(x,y-1);
-			}
-		}
-		if(y < getHeight()-1){
-			if(board[x][y].equals(board[x][y+1])){
-				undoKill(x,y+1);
-			}
-		}
+		return count;
 	}
-	public int kill(int x, int y){
-		if(board[x][y].isAlive() == false){
+	
+	private void unflagAll(boolean kill){
+		for(int x = 0; x < getWidth(); x++){
+			for(int y = 0; y < getHeight(); y++){
+				if(board[x][y].isFlaged()){
+					if(kill){
+						board[x][y].kill();
+					}
+					board[x][y].unFlag();
+				}
+			}
+		}
+		
+	}
+	
+	public int flag(int x, int y){
+		Cell cell = board[x][y];
+		if(cell.isAlive() == false || cell.isFlaged()){
 			return 0;
 		}
 		
-		int killCount = 1;
-		board[x][y].kill();
+		int flagCount = 1;
+		cell.flag();
 		
 		if(x > 0){
-			if(board[x][y].equals(board[x-1][y])){
-				killCount+=kill(x-1,y);
+			if(cell.equals(board[x-1][y])){
+				flagCount+=flag(x-1,y);
 			}
 		}
 		if(x < getWidth()-1){
-			if(board[x][y].equals(board[x+1][y])){
-				killCount+=kill(x+1,y);
+			if(cell.equals(board[x+1][y])){
+				flagCount+=flag(x+1,y);
 			}
 		}
 		if(y > 0){
-			if(board[x][y].equals(board[x][y-1])){
-				killCount+=kill(x,y-1);
+			if(cell.equals(board[x][y-1])){
+				flagCount+=flag(x,y-1);
 			}
 		}
 		if(y < getHeight()-1){
-			if(board[x][y].equals(board[x][y+1])){
-				killCount+=kill(x,y+1);
+			if(cell.equals(board[x][y+1])){
+				flagCount+=flag(x,y+1);
 			}
 		}
-		return killCount;
+		return flagCount;
 	}
 	public void createGrid(int sizeX, int sizeY){
 		board = new Cell[sizeX][sizeY];
+		horizontalRowSorter = new int[sizeX];
 		for(int x = 0; x < sizeX; x++){
 			for(int y = 0;y < sizeY; y++){
 				board[x][y] = new Cell();
 				board[x][y].setPos(x,y);
-				board[x][y].random();
+				board[x][y].random(difficulty);
 			}
 		}
 	}
@@ -168,12 +178,10 @@ public class CellMatchEngine {
 	}
 	
 	private boolean hasValidMovesRemain(){
-		
 		for(int x=0;x < getWidth(); x++){
 			for(int y = 0; y < getHeight(); y++){
-				int count = kill(x, y);
-				undoKill(x, y);
-				if(count > minDestroy){
+				int count = kill(x, y, true);
+				if(count > minDestroy && lives > 0){
 					return true;
 				}
 			}
@@ -190,7 +198,7 @@ public class CellMatchEngine {
 			for(int y = 0; y < board[x].length; y++){
 				if(!board[x][y].isAlive()){
 					if(contineous){
-						board[x][y].random();
+						board[x][y].random(difficulty);
 						board[x][y].lastPos.set(x, getHeight()+deadCount);
 						board[x][y].currentPos.set(x, getHeight()+deadCount);
 					}
@@ -207,6 +215,41 @@ public class CellMatchEngine {
 				}
 			}
 		}
+		
+		if(movementNeededCount==0 && contineous == false){//Downward motion complete do right movement
+			boolean needsTest =  false;
+			boolean firstEmpty = false;
+			//Check order of rows
+			for(int x= getWidth()-1; x >= 0; x--){
+				horizontalRowSorter[x] = x+1;
+				//Check bottom row empty (should only need to do bottom row)
+				if(!board[x][0].isAlive()){
+					horizontalRowSorter[x] *= -1;
+					firstEmpty = true;
+				}else{//If it finds a full after the first empty grid must be sorted. 
+					if(firstEmpty){
+						needsTest=true;
+					}
+				}
+				
+			}
+			
+			if(needsTest){//Only sort array when needed
+				Arrays.sort(horizontalRowSorter);
+				
+				Cell[][] tmpBoard = new Cell[getWidth()][];
+				for(int x = 0; x < getWidth(); x++){
+					movementNeededCount++;
+					if(horizontalRowSorter[x] > 0){
+						tmpBoard[x] = board[horizontalRowSorter[x]-1];
+					}else{
+						tmpBoard[x] = board[(-horizontalRowSorter[x])-1];
+					}
+				}
+				board = tmpBoard;
+			}
+		}
+		
 		return movementNeededCount==0;
 	}
 	
@@ -273,12 +316,12 @@ public class CellMatchEngine {
 	}
 
 
-	public long getLives() {
+	public int getLives() {
 		return lives;
 	}
 
 
-	public void setLives(long lives) {
+	public void setLives(int lives) {
 		this.lives = lives;
 	}
 
