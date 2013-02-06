@@ -34,11 +34,19 @@ public class Cell {
 	
 	public void random(int difficulity){
 		Color c = null;
-		switch(MathUtils.random(difficulity)){
+		switch(MathUtils.random(difficulity-1)){
 			case 0: c = Color.RED;break;
 			case 1: c = Color.GREEN;break;
 			case 2: c = Color.BLUE;break;
 			case 3: c = Color.ORANGE;break;
+			case 4: c = Color.PINK;break;
+			case 5: c = Color.ORANGE;break;
+			case 6: c = Color.CYAN;break;
+			case 7: c = Color.YELLOW;break;
+			case 8: c = Color.MAGENTA;break;
+			case 9: c = Color.BLACK;break;
+			case 10: c = Color.MAGENTA;break;
+			case 11: c = Color.LIGHT_GRAY;break;
 		}
 		color = c;
 		alive = true;

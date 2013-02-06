@@ -1,6 +1,7 @@
 package com.joey.chain.gui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
@@ -40,8 +41,6 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	}
 	
 	public void addInputMultiplexer(InputMultiplexer input){
-	
-	
 		input.addProcessor(stage);
 		input.addProcessor(this);
 		input.addProcessor(gesture);
@@ -178,7 +177,10 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 	@Override
 	public boolean keyDown(int keycode) {
-		// TODO Auto-generated method stub
+		if(keycode == Keys.BACK){
+			game.setScreen(game.getMenuScreen());
+			return true; 
+		 }
 		return false;
 	}
 
@@ -190,7 +192,7 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 	@Override
 	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
+		 
 		return false;
 	}
 

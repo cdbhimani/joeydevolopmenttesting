@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
@@ -15,8 +16,7 @@ import com.joey.chain.games.cellMatchSetGame.CellMatchEngine;
 public class CellMatchGameScreen extends GameScreen{
 
 	int sizeX = 11;
-	int sizeY = 16
-			;
+	int sizeY = 16;
 	
 	float radius;
 	float diameter;
@@ -53,16 +53,18 @@ public class CellMatchGameScreen extends GameScreen{
 
 	@Override
 	public boolean tap(int x, int y, int count) {
-		Vector3 v = new Vector3(x,y,0);
-		stageCamera.unproject(v);
-		int xP = MathUtils.round(v.x/diameter-1f);
-		int yP = MathUtils.round(v.y/diameter-1f);
-		
-		if(xP >= 0 && yP >= 0 && xP < gameEngine.getWidth() && yP < gameEngine.getHeight()){
-			System.out.println(x+" | "+y);
-			gameEngine.touch(xP, yP);
+		if(gameEngine.isFinished() && count > 1){
+			gameEngine.reset();
+		}else{
+			Vector3 v = new Vector3(x,y,0);
+			stageCamera.unproject(v);
+			int xP = MathUtils.round(v.x/diameter-1f);
+			int yP = MathUtils.round(v.y/diameter-1f);
+			
+			if(xP >= 0 && yP >= 0 && xP < gameEngine.getWidth() && yP < gameEngine.getHeight()){
+				gameEngine.touch(xP, yP);
+			}
 		}
-		System.out.println(xP+" : "+yP);
 		return super.tap(x, y, count);
 	}
 	public float getRadius() {
@@ -81,6 +83,9 @@ public class CellMatchGameScreen extends GameScreen{
 	@Override
 	public void drawScreen(float delta) {
 
+		if(gameEngine.isFinished()){
+			return;
+		}
 		shape.setProjectionMatrix(stageCamera.combined);
 		Cell c;
 		float xPos = 0;
@@ -109,14 +114,26 @@ public class CellMatchGameScreen extends GameScreen{
 
 	@Override
 	public void drawOverlay(float delta) {
-		font.setColor(Color.RED);
 		batch.setProjectionMatrix(stageCamera.combined);
 		batch.begin();
-		font.draw(batch, "lives : "+gameEngine.getLives(), 10, Gdx.graphics.getHeight()-20);
-		font.draw(batch, "Score  : "+gameEngine.getScore(), 10, Gdx.graphics.getHeight()-40);
-		font.draw(batch, "State  : "+(gameEngine.isFinished()?"Game Over":"Running"), 10, Gdx.graphics.getHeight()-60);
-		font.draw(batch, "Update : "+updateTime, 10, Gdx.graphics.getHeight()-80);
-		font.draw(batch, "Render : "+drawTime, 10, Gdx.graphics.getHeight()-100);
+		if(gameEngine.isFinished()){
+			font.setColor(Color.RED);
+			String textA = 
+					"  Game Over\n" +
+					"Tap to Restart ";
+			TextBounds boundA = font.getMultiLineBounds(textA);
+			
+			String textB = "Score :"+gameEngine.getScore();
+			TextBounds boundB = font.getBounds(textB);
+			
+			font.draw(batch, textB, Gdx.graphics.getWidth()/2-boundB.width/2, Gdx.graphics.getHeight()/4+boundB.height/2);
+			font.drawMultiLine(batch, textA, Gdx.graphics.getWidth()/2-boundA.width/2, Gdx.graphics.getHeight()/2+boundA.height/2);
+		}else{
+			font.setColor(Color.RED);
+			font.draw(batch, "lives : "+gameEngine.getLives(), 10, Gdx.graphics.getHeight()-20);
+			font.draw(batch, "Score  : "+gameEngine.getScore(), 10, Gdx.graphics.getHeight()-40);
+			
+		}
 		batch.end();
 	}
 

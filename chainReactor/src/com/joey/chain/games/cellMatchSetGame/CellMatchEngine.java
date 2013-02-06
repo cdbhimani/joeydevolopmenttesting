@@ -33,23 +33,32 @@ public class CellMatchEngine {
 	
 	private int[] horizontalRowSorter;
 	private Cell[][] board;
-	private CellEngineState state = CellEngineState.waiting;
+	private CellEngineState state = CellEngineState.finshed;
 	private long animationStart = 0;
-	private float animationTime = 200f;
+	private float animationTime = 100f;
 	
-	private float scoreMultiplier = 1.6f;
+	private float scoreMultiplier = 1.2f;
 	private long score = 0;
-	private int lives = 10;
-	private int minDestroy = 3;
-	private int difficulty = 1;
+	private int lives = 1;
+	private int minDestroy = 2;
+	private int difficulty = 2;
 	
 	
 	private boolean contineous = false;
 	
 	public CellMatchEngine(int sizeX, int sizeY){
 		createGrid(sizeX, sizeY);
+		reset();
 	}
 	
+	public void reset(){
+		difficulty = 3;
+		lives = 10;
+		scoreMultiplier = 1.2f;
+		score=0;
+		randomize();
+		activate();
+	}
 
 	public int getWidth(){
 		return board.length;
@@ -141,24 +150,32 @@ public class CellMatchEngine {
 	public void createGrid(int sizeX, int sizeY){
 		board = new Cell[sizeX][sizeY];
 		horizontalRowSorter = new int[sizeX];
-		for(int x = 0; x < sizeX; x++){
-			for(int y = 0;y < sizeY; y++){
+
+		for(int x = 0; x < getWidth(); x++){
+			for(int y = 0;y < getHeight(); y++){
 				board[x][y] = new Cell();
+			}
+		}
+	}
+	
+	public void randomize(){
+		for(int x = 0; x < getWidth(); x++){
+			for(int y = 0;y < getHeight(); y++){
 				board[x][y].setPos(x,y);
 				board[x][y].random(difficulty);
 			}
 		}
 	}
 	
-	public void activate(){
-		if(state == CellEngineState.waiting){
+
+	
+	private void activate(){
+		if(state == CellEngineState.finshed || state == CellEngineState.waiting){
 			animationStart = System.currentTimeMillis();
 			state = CellEngineState.animating;
 		}
 	}
-	
-	
-	
+
 	private void computeUpdateStep(float prog){
 		for(int x = 0; x <board.length; x++){
 			for(int y = 0; y < board[x].length; y++){
@@ -181,7 +198,7 @@ public class CellMatchEngine {
 		for(int x=0;x < getWidth(); x++){
 			for(int y = 0; y < getHeight(); y++){
 				int count = kill(x, y, true);
-				if(count > minDestroy && lives > 0){
+				if((count > minDestroy)||(count > 0 && lives > 0)){
 					return true;
 				}
 			}
@@ -261,7 +278,12 @@ public class CellMatchEngine {
 	public synchronized void update(){
 		switch(state){
 			case finshed:{
-				break;
+				if(lives > 0){
+					difficulty++;
+					scoreMultiplier+=0.1;
+					randomize();
+					state = CellEngineState.waiting;
+				}
 			}
 			case waiting:{
 				break;
