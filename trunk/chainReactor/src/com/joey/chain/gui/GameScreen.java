@@ -22,6 +22,8 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	Color clearColor = new Color(1,1,1,1);
 	Stage stage;
 	Skin skin;
+	long updateTime = 0;
+	long drawTime = 0;
 	
 	public GameScreen(ReactorApp game){
 		this.game= game;
@@ -70,11 +72,26 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 		this.gesture = gesture;
 	}
 
+
 	@Override
 	public void render(float delta) {
+		long start;
+		start = System.currentTimeMillis();
+		updateLogic(delta);
+		updateTime= System.currentTimeMillis()-start;
+		
+		start = System.currentTimeMillis();
 		initializeRender();
+		drawScreen(delta);
+		drawTime = System.currentTimeMillis()-start;
+		drawOverlay(delta);
 	}
 	
+	public abstract void drawScreen(float delta);
+	
+	public abstract void drawOverlay(float delta);
+		
+	public abstract void updateLogic(float delta);
 	public void drawStage(float delta){
 		stage.act(delta);
 		stage.setCamera(stageCamera);

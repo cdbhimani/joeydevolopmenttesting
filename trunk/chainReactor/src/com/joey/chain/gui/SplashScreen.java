@@ -1,23 +1,9 @@
 package com.joey.chain.gui;
 
-import java.text.Normalizer.Form;
-
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Pixmap.Blending;
-import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.MathUtils;
 import com.joey.chain.ReactorApp;
 
 public class SplashScreen extends GameScreen {
@@ -69,6 +55,24 @@ public class SplashScreen extends GameScreen {
 
 	public void setDisplayTime(long displayTime) {
 		this.displayTime = displayTime;
+	}
+
+	@Override
+	public void drawScreen(float delta) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawOverlay(float delta) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateLogic(float delta) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

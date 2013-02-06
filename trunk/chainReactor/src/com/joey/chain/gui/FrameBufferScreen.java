@@ -14,11 +14,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.FlickScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.joey.chain.ReactorApp;
@@ -120,6 +117,24 @@ public class FrameBufferScreen extends GameScreen {
 		super.render(delta);		
 		drawToTexture();
 		drawStage(delta);
+	}
+
+	@Override
+	public void drawScreen(float delta) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawOverlay(float delta) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateLogic(float delta) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

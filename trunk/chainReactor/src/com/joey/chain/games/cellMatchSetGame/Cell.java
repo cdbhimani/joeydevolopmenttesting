@@ -1,18 +1,18 @@
-package com.joey.chain.model.travel;
+package com.joey.chain.games.cellMatchSetGame;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 public class Cell {
-	public boolean alive = false;
+	private boolean alive = false;
 	
     public Vector2 currentPos;
     
     Vector2 lastDir;
     Vector2 lastPos;
     
-    public Color c = Color.BLUE;
+    private Color color = Color.BLUE;
 	
 	public Vector2 desiredPos;
 	
@@ -23,6 +23,39 @@ public class Cell {
 		desiredPos = new Vector2();
 	}
 	
+	public void touch(int x, int y){
+		
+	}
+	
+	public boolean isAlive(){
+		return alive;
+	}
+	
+	public void random(){
+		Color c = null;
+		switch(MathUtils.random(3)){
+			case 0: c = Color.RED;break;
+			case 1: c = Color.GREEN;break;
+			case 2: c = Color.BLUE;break;
+			case 3: c = Color.ORANGE;break;
+		}
+		color = c;
+		alive = true;
+	}
+	
+	public void activate(){
+		alive =true;
+	}
+	public void kill(){
+		alive = false;
+	}
+	
+	public boolean equals(Cell c){
+		return c.getColor() == this.getColor();
+	}
+	public Color getColor(){
+		return color;
+	}
 	public boolean calculateMovementRequired(){
 		int dx = Math.round(2*(desiredPos.x-currentPos.x));
 		int dy = Math.round(2*(desiredPos.y-currentPos.y));

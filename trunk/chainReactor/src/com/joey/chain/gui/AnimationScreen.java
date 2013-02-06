@@ -8,8 +8,22 @@ public class AnimationScreen extends GameScreen{
 		super(game);
 		// TODO Auto-generated constructor stub
 	}
-	
-	public void test(){
+
+	@Override
+	public void drawScreen(float delta) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawOverlay(float delta) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateLogic(float delta) {
+		// TODO Auto-generated method stub
 		
 	}
 

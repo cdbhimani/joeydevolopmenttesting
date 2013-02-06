@@ -1,4 +1,4 @@
-package com.joey.chain.model.rotate;
+package com.joey.chain.games.cellRotateChainGame;
 
 import com.badlogic.gdx.math.MathUtils;
 

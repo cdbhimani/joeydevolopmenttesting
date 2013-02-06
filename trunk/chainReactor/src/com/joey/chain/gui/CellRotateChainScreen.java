@@ -1,10 +1,7 @@
 package com.joey.chain.gui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -12,15 +9,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.input.GestureDetector.GestureListener;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.joey.chain.ReactorApp;
-import com.joey.chain.model.rotate.Chain;
-import com.joey.chain.model.rotate.Reactor;
-import com.joey.chain.model.rotate.Chain.ChainState;
+import com.joey.chain.games.cellRotateChainGame.Chain;
+import com.joey.chain.games.cellRotateChainGame.Chain.ChainState;
+import com.joey.chain.games.cellRotateChainGame.Reactor;
 
-public class ReactorViewerScreen extends GameScreen {
+public class CellRotateChainScreen extends GameScreen {
 
 	long lastScore = 0;
 	int sizeX = 13;
@@ -40,7 +35,7 @@ public class ReactorViewerScreen extends GameScreen {
 	SpriteBatch batch;
 	BitmapFont font;
 
-	public ReactorViewerScreen(ReactorApp game) {
+	public CellRotateChainScreen(ReactorApp game) {
 		super(game);
 		bg.a = 1;
 		bg.r = 215/255f;
@@ -48,7 +43,7 @@ public class ReactorViewerScreen extends GameScreen {
 		bg.b = 244/255f;
 		setClearColor(bg);
 	}
-
+	
 	@Override
 	public void render(float delta) {
 		super.render(delta);
@@ -86,19 +81,21 @@ public class ReactorViewerScreen extends GameScreen {
 		shape.end();
 		
 		batch.setProjectionMatrix(stageCamera.combined);
+		batch.begin();
 		for(int x= 0; x  < board.length; x++){
 			for(int y = 0; y  < board[x].length; y++){
 				x1 = (x+1)*diameter;
 				y1 =(y+1)*diameter;
-				batch.begin();
+				
 				if(board[x][y].getState()!=ChainState.stopped){
 					batch.draw(activeRegion,x1-radius,y1-radius, radius,radius, diameter,diameter,1,1,board[x][y].getAngle());
 				}else{
 					batch.draw(disabledRegion,x1-radius,y1-radius, radius,radius, diameter,diameter,1,1,board[x][y].getAngle());
 				}
-				batch.end();
+				
 			}
 		}
+		batch.end();
 	}
 	
 	public void renderOverlay(long update, long render){
@@ -114,8 +111,18 @@ public class ReactorViewerScreen extends GameScreen {
 	
 	}	
 	
+	public float getRadius() {
+		return radius;
+	}
+
+	public void setRadius(float radius) {
+		this.radius = radius;
+		this.diameter = 2*radius;
+	}
+	
 	@Override
 	public void show() {
+		super.show();
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		
@@ -132,18 +139,10 @@ public class ReactorViewerScreen extends GameScreen {
 		setRadius(Math.min(rx, ry));
 		Gdx.input.setInputProcessor(new GestureDetector(this));
 	}
-
-	public float getRadius() {
-		return radius;
-	}
-
-	public void setRadius(float radius) {
-		this.radius = radius;
-		this.diameter = 2*radius;
-	}
 	
 	@Override
-	public void dispose() {
+	public void hide() {
+		super.hide();
 		activeRegion = null;
 		disabledRegion = null;
 		
@@ -184,6 +183,24 @@ public class ReactorViewerScreen extends GameScreen {
 			reactor.activate();
 		}
 		return true;
+	}
+
+	@Override
+	public void drawScreen(float delta) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawOverlay(float delta) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateLogic(float delta) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	
