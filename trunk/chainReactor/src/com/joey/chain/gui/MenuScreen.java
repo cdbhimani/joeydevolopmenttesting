@@ -1,6 +1,7 @@
 package com.joey.chain.gui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -16,19 +17,47 @@ import com.joey.chain.ReactorApp;
 
 public class MenuScreen extends GameScreen{
 
+	Stage stage;
+	Texture texUp;
+	Texture texDown;
+
 	public MenuScreen(ReactorApp game) {
 		super(game);
 		// TODO Auto-generated constructor stub
 	}
 	
 	@Override
-	public void createStage(Stage stage) {
+	public void show() {
+		stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getWidth(), false);
+		super.show();
+		texUp = new Texture(Gdx.files.internal("ui/button_a_down.png"));
+		texDown = new Texture(Gdx.files.internal("ui/button_a_up.png"));
+	
+		createStage(stage);
+	}
+	
+	public void hide() {
+		super.hide();
+		texUp.dispose();
+		texDown.dispose();
+		stage.dispose();
+	};
+	
+	@Override
+	public void addInputMultiplexer(InputMultiplexer input) {
 		// TODO Auto-generated method stub
-		super.createStage(stage);
-		
-		Texture texUp = new Texture(Gdx.files.internal("ui/button_a_down.png"));
-		Texture texDown = new Texture(Gdx.files.internal("ui/button_a_up.png"));
-		
+		super.addInputMultiplexer(input);
+		input.addProcessor(stage);
+	}
+	
+	@Override
+	public void removeInputMultiplexer(InputMultiplexer input) {
+		// TODO Auto-generated method stub
+		super.removeInputMultiplexer(input);
+		input.removeProcessor(stage);
+	}
+	
+	public void createStage(Stage stage) {
 		NinePatch patchUp = new NinePatch(texUp);
 		NinePatch patchDown = new NinePatch(texDown);
 		
@@ -88,12 +117,11 @@ public class MenuScreen extends GameScreen{
 	@Override
 	public void render(float delta) {
 		// TODO Auto-generated method stub
-				Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
-				Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
+		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
-				stage.act(delta);
-				stage.draw();
-//				Table.drawDebug(stage);
+		stage.act(delta);
+		stage.draw();
 	}
 
 	@Override
@@ -104,7 +132,6 @@ public class MenuScreen extends GameScreen{
 
 	@Override
 	public void drawOverlay(float delta) {
-		// TODO Auto-generated method stub
 		
 	}
 

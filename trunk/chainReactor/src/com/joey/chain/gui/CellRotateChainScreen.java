@@ -74,13 +74,13 @@ public class CellRotateChainScreen extends GameScreen {
 		high = diameter*(board[0].length+.5f);
 		
 		
-		shape.setProjectionMatrix(stageCamera.combined);
+		shape.setProjectionMatrix(cam.combined);
 		shape.setColor(bg);
 		shape.begin(ShapeType.FilledRectangle);
 		shape.filledRect(x1, y1, wide, high);
 		shape.end();
 		
-		batch.setProjectionMatrix(stageCamera.combined);
+		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
 		for(int x= 0; x  < board.length; x++){
 			for(int y = 0; y  < board[x].length; y++){
@@ -99,7 +99,7 @@ public class CellRotateChainScreen extends GameScreen {
 	}
 	
 	public void renderOverlay(long update, long render){
-		batch.setProjectionMatrix(stageCamera.combined);
+		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
 		font.setColor(Color.RED);
 		
@@ -167,7 +167,7 @@ public class CellRotateChainScreen extends GameScreen {
 		}
 		click.x = x;
 		click.y = y;
-		stageCamera.unproject(click);
+		cam.unproject(click);
 		
 
 		int xPos = Math.round((click.x-diameter)/diameter);
