@@ -1,4 +1,4 @@
-package com.joey.chain.gui;
+package com.joey.chain.gui.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.joey.chain.ReactorApp;
 import com.joey.chain.games.cellMatchSetGame.Cell;
 import com.joey.chain.games.cellMatchSetGame.CellMatchEngine;
+import com.joey.chain.gui.GameScreen;
 
 public class CellMatchGameScreen extends GameScreen{
 

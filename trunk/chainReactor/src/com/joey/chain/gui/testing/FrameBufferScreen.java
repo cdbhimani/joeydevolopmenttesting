@@ -1,4 +1,4 @@
-package com.joey.chain.gui;
+package com.joey.chain.gui.testing;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.joey.chain.ReactorApp;
+import com.joey.chain.gui.GameScreen;
 
 public class FrameBufferScreen extends GameScreen {
 
