@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.FlickScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
@@ -29,7 +30,7 @@ public class FrameBufferScreen extends GameScreen {
 	TextureRegion frm;
 	OrthographicCamera frmCam;
 	Window win = new Window(getSkin());
-	
+	Stage stage;
 	int frmSizeX = 2048;
 	int frmSizeY = 2048;
 	FrameBufferActor actor;
@@ -57,10 +58,12 @@ public class FrameBufferScreen extends GameScreen {
 		super.show();
 		batch = new SpriteBatch();
 		font = new BitmapFont();
+		stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getWidth(), false);
 		
 		frmBuff = new FrameBuffer(Format.RGBA8888, frmSizeX, frmSizeY, false);
 		frmCam= new OrthographicCamera(frmSizeX, frmSizeY);
 		frmCam.translate(frmSizeX/2, frmSizeY/2);
+
 		actor = new FrameBufferActor(frmBuff);
 		
 		actor.setFillParent(true);
@@ -109,32 +112,20 @@ public class FrameBufferScreen extends GameScreen {
 		}
 		frmBuff.end();
 	}
-	
-	int pos = 0;
-	
-	@Override
-	public void render(float delta) {
-		super.render(delta);		
-		drawToTexture();
-		drawStage(delta);
-	}
 
 	@Override
 	public void drawScreen(float delta) {
-		// TODO Auto-generated method stub
-		
+		drawToTexture();
 	}
 
 	@Override
 	public void drawOverlay(float delta) {
-		// TODO Auto-generated method stub
-		
+		stage.act(delta);
+		stage.draw();
 	}
 
 	@Override
 	public void updateLogic(float delta) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

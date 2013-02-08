@@ -57,7 +57,7 @@ public class CellMatchGameScreen extends GameScreen{
 			gameEngine.reset();
 		}else{
 			Vector3 v = new Vector3(x,y,0);
-			stageCamera.unproject(v);
+			cam.unproject(v);
 			int xP = MathUtils.round(v.x/diameter-1f);
 			int yP = MathUtils.round(v.y/diameter-1f);
 			
@@ -86,7 +86,7 @@ public class CellMatchGameScreen extends GameScreen{
 		if(gameEngine.isFinished()){
 			return;
 		}
-		shape.setProjectionMatrix(stageCamera.combined);
+		shape.setProjectionMatrix(cam.combined);
 		Cell c;
 		float xPos = 0;
 		float yPos = 0;
@@ -114,7 +114,7 @@ public class CellMatchGameScreen extends GameScreen{
 
 	@Override
 	public void drawOverlay(float delta) {
-		batch.setProjectionMatrix(stageCamera.combined);
+		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
 		if(gameEngine.isFinished()){
 			font.setColor(Color.RED);

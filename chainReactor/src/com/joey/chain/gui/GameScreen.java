@@ -17,11 +17,10 @@ import com.joey.chain.ReactorApp;
 
 public abstract class GameScreen implements Screen, GestureListener, InputProcessor{
 
-	OrthographicCamera stageCamera = new OrthographicCamera();
+	OrthographicCamera cam = new OrthographicCamera();
 	ReactorApp game;
 	GestureDetector gesture;
 	Color clearColor = new Color(1,1,1,1);
-	Stage stage;
 	Skin skin;
 	long updateTime = 0;
 	long drawTime = 0;
@@ -29,19 +28,17 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	public GameScreen(ReactorApp game){
 		this.game= game;
 		this.gesture = new GestureDetector(this);
-		stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getWidth(), false);
 	}
 	
 	public void initializeRender(){
-		stageCamera.update();
-		if(Gdx.gl10 !=null)stageCamera.apply(Gdx.gl10);
+		cam.update();
+		if(Gdx.gl10 !=null)cam.apply(Gdx.gl10);
 		
 		Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT); // #14
 	}
 	
 	public void addInputMultiplexer(InputMultiplexer input){
-		input.addProcessor(stage);
 		input.addProcessor(this);
 		input.addProcessor(gesture);
 	}
@@ -55,14 +52,10 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	}
 	
 	public void removeInputMultiplexer(InputMultiplexer input){
-//		input.removeProcessor(this);
-//		input.removeProcessor(gesture);
-//		input.removeProcessor(stage);
+		input.removeProcessor(this);
+		input.removeProcessor(gesture);
 	}
-	
-	public void createStage(Stage stage){
-		
-	}
+
 	public GestureDetector getGesture() {
 		return gesture;
 	}
@@ -91,30 +84,22 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	public abstract void drawOverlay(float delta);
 		
 	public abstract void updateLogic(float delta);
-	public void drawStage(float delta){
-		stage.act(delta);
-		stage.setCamera(stageCamera);
-		stage.draw();
-	}
 
 	@Override
 	public void resize(int width, int height) {
-		stageCamera = new OrthographicCamera(width, height);
-		stageCamera.translate(width / 2, height / 2, 0);
-		stage.setViewport(width, height, false);
+		cam = new OrthographicCamera(width, height);
+		cam.translate(width / 2, height / 2, 0);
 	}
 
 
 	@Override
 	public void show() {
 		addInputMultiplexer(game.getInputProcessor());
-		createStage(stage);
 	}
 
 	@Override
 	public void hide() {
 		removeInputMultiplexer(game.getInputProcessor());
-		stage.clear();
 	}
 
 	@Override
@@ -177,10 +162,6 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 	@Override
 	public boolean keyDown(int keycode) {
-		if(keycode == Keys.BACK){
-			game.setScreen(game.getMenuScreen());
-			return true; 
-		 }
 		return false;
 	}
 
