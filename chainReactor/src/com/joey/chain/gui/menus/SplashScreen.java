@@ -1,4 +1,4 @@
-package com.joey.chain.gui;
+package com.joey.chain.gui.menus;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.joey.chain.ReactorApp;
+import com.joey.chain.gui.GameScreen;
 
 public class SplashScreen extends GameScreen {
 
@@ -51,7 +52,7 @@ public class SplashScreen extends GameScreen {
 		batch.end();
 		
 		if(displayStart+displayTime<System.currentTimeMillis()){
-			game.screenTransistion(this, game.getMenuScreen());
+			getGame().screenTransistion(this, getGame().getMenuScreen());
 		}
 	}
 

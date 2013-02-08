@@ -3,12 +3,14 @@ package com.joey.chain;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.joey.chain.gui.CellMatchGameScreen;
 import com.joey.chain.gui.GameScreen;
-import com.joey.chain.gui.HighScoreScreen;
-import com.joey.chain.gui.MenuScreen;
-import com.joey.chain.gui.CellRotateChainScreen;
-import com.joey.chain.gui.SplashScreen;
+import com.joey.chain.gui.game.CellMatchGameScreen;
+import com.joey.chain.gui.game.CellRotateChainScreen;
+import com.joey.chain.gui.menus.HighScoreScreen;
+import com.joey.chain.gui.menus.MenuScreen;
+import com.joey.chain.gui.menus.SplashScreen;
+import com.joey.chain.gui.network.ClientScreen;
+import com.joey.chain.gui.network.ServerScreen;
 
 public class ReactorApp extends Game{
 	
@@ -17,6 +19,8 @@ public class ReactorApp extends Game{
 	SplashScreen splashScreen;
 	MenuScreen menuScreen;
 	HighScoreScreen scoreScreen;
+	ServerScreen serverScreen;
+	ClientScreen clientScreen;
 	
 	InputMultiplexer inputProcessor;
 	
@@ -26,16 +30,14 @@ public class ReactorApp extends Game{
 		Gdx.input.setCatchBackKey(true);
 		Gdx.input.setInputProcessor(inputProcessor);
 
-		
-		// TODO Auto-generated method stub
 		cellRotateScreen = new CellRotateChainScreen(this);
 		cellMatchScreen = new CellMatchGameScreen(this);
 		splashScreen = new SplashScreen(this);
 		menuScreen = new MenuScreen(this);
 		scoreScreen = new HighScoreScreen(this);
-		
+		serverScreen = new ServerScreen(this);
+		clientScreen = new ClientScreen(this);
 //		setScreen(new FrameBufferScreen(this));
-//		setScreen(new CellMatchGameViewer(this));
 		setScreen(splashScreen);
 	}
 	
@@ -50,18 +52,13 @@ public class ReactorApp extends Game{
 		}
 	}
 
-
 	public SplashScreen getSplashScreen() {
 		return splashScreen;
 	}
 
-
-
 	public MenuScreen getMenuScreen() {
 		return menuScreen;
 	}
-
-
 
 	public HighScoreScreen getScoreScreen() {
 		return scoreScreen;
@@ -82,6 +79,16 @@ public class ReactorApp extends Game{
 	public CellMatchGameScreen getCellMatchScreen() {
 		return cellMatchScreen;
 	}
+
+	public ServerScreen getServerScreen() {
+		return serverScreen;
+	}
+
+
+	public ClientScreen getClientScreen() {
+		return clientScreen;
+	}
+
 
 
 }

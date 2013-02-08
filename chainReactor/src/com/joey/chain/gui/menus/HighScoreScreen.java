@@ -1,10 +1,11 @@
-package com.joey.chain.gui;
+package com.joey.chain.gui.menus;
 
 import com.joey.chain.ReactorApp;
+import com.joey.chain.gui.GameScreen;
 
-public class AnimationScreen extends GameScreen{
+public class HighScoreScreen extends GameScreen {
 
-	public AnimationScreen(ReactorApp game) {
+	public HighScoreScreen(ReactorApp game) {
 		super(game);
 		// TODO Auto-generated constructor stub
 	}

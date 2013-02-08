@@ -17,8 +17,8 @@ import com.joey.chain.ReactorApp;
 
 public abstract class GameScreen implements Screen, GestureListener, InputProcessor{
 
-	OrthographicCamera cam = new OrthographicCamera();
-	ReactorApp game;
+	protected OrthographicCamera cam = new OrthographicCamera();
+	private ReactorApp game;
 	GestureDetector gesture;
 	Color clearColor = new Color(1,1,1,1);
 	Skin skin;
@@ -26,7 +26,7 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	long drawTime = 0;
 	
 	public GameScreen(ReactorApp game){
-		this.game= game;
+		this.setGame(game);
 		this.gesture = new GestureDetector(this);
 	}
 	
@@ -94,12 +94,12 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 	@Override
 	public void show() {
-		addInputMultiplexer(game.getInputProcessor());
+		addInputMultiplexer(getGame().getInputProcessor());
 	}
 
 	@Override
 	public void hide() {
-		removeInputMultiplexer(game.getInputProcessor());
+		removeInputMultiplexer(getGame().getInputProcessor());
 	}
 
 	@Override
@@ -213,6 +213,14 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 	public void setClearColor(Color clearColor) {
 		this.clearColor = clearColor;
+	}
+
+	public ReactorApp getGame() {
+		return game;
+	}
+
+	public void setGame(ReactorApp game) {
+		this.game = game;
 	}
 
 }

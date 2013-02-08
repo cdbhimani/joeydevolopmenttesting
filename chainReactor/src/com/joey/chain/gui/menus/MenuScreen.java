@@ -1,4 +1,4 @@
-package com.joey.chain.gui;
+package com.joey.chain.gui.menus;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -14,10 +14,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
 import com.joey.chain.ReactorApp;
+import com.joey.chain.gui.StageScreen;
 
-public class MenuScreen extends GameScreen{
+public class MenuScreen extends StageScreen{
 
-	Stage stage;
 	Texture texUp;
 	Texture texDown;
 
@@ -28,34 +28,16 @@ public class MenuScreen extends GameScreen{
 	
 	@Override
 	public void show() {
-		stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getWidth(), false);
-		super.show();
 		texUp = new Texture(Gdx.files.internal("ui/button_a_down.png"));
 		texDown = new Texture(Gdx.files.internal("ui/button_a_up.png"));
-	
-		createStage(stage);
+		super.show();
 	}
 	
 	public void hide() {
 		super.hide();
 		texUp.dispose();
 		texDown.dispose();
-		stage.dispose();
 	};
-	
-	@Override
-	public void addInputMultiplexer(InputMultiplexer input) {
-		// TODO Auto-generated method stub
-		super.addInputMultiplexer(input);
-		input.addProcessor(stage);
-	}
-	
-	@Override
-	public void removeInputMultiplexer(InputMultiplexer input) {
-		// TODO Auto-generated method stub
-		super.removeInputMultiplexer(input);
-		input.removeProcessor(stage);
-	}
 	
 	public void createStage(Stage stage) {
 		NinePatch patchUp = new NinePatch(texUp);
@@ -70,8 +52,8 @@ public class MenuScreen extends GameScreen{
 		
 		TextButton rotateGameButton = new TextButton("Rotate Game", style);
 		TextButton matchGameButton = new TextButton("Match Game", style);
-		TextButton settingButton= new TextButton("Settings", style);
-		TextButton highScoreButton  = new TextButton("High Score", style);
+		TextButton serverButton= new TextButton("Server", style);
+		TextButton clientButton  = new TextButton("Client", style);
 		TextButton exitButton = new TextButton("Exit", style);
 		
 		Table table = new Table(skin);
@@ -88,9 +70,9 @@ public class MenuScreen extends GameScreen{
 		table.row();
 		table.add(matchGameButton).width(buttonWide).height(buttonHigh);
 		table.row();
-		table.add(highScoreButton).width(buttonWide).height(buttonHigh);
+		table.add(clientButton).width(buttonWide).height(buttonHigh);
 		table.row();
-		table.add(settingButton).width(buttonWide).height(buttonHigh);
+		table.add(serverButton).width(buttonWide).height(buttonHigh);
 		table.row();
 		table.add(exitButton).width(buttonWide).height(buttonHigh);
 		stage.addActor(table);
@@ -100,7 +82,7 @@ public class MenuScreen extends GameScreen{
 			@Override
 			public void click(Actor actor, float x, float y) {
 				// TODO Auto-generated method stub
-				game.setScreen(game.getCellRotateScreen());
+				getGame().setScreen(getGame().getCellRotateScreen());
 			}
 		});
 		
@@ -109,19 +91,25 @@ public class MenuScreen extends GameScreen{
 			@Override
 			public void click(Actor actor, float x, float y) {
 				// TODO Auto-generated method stub
-				game.setScreen(game.getCellMatchScreen());
+				getGame().setScreen(getGame().getCellMatchScreen());
 			}
 		});
-	}
-	
-	@Override
-	public void render(float delta) {
-		// TODO Auto-generated method stub
-		Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-
-		stage.act(delta);
-		stage.draw();
+		
+		serverButton.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				getGame().setScreen(getGame().getServerScreen());
+			}
+		});
+		
+		clientButton.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				getGame().setScreen(getGame().getClientScreen());
+			}
+		});
 	}
 
 	@Override
@@ -132,6 +120,7 @@ public class MenuScreen extends GameScreen{
 
 	@Override
 	public void drawOverlay(float delta) {
+		// TODO Auto-generated method stub
 		
 	}
 

@@ -1,4 +1,4 @@
-package com.joey.chain.gui;
+package com.joey.chain.gui.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -14,6 +14,7 @@ import com.joey.chain.ReactorApp;
 import com.joey.chain.games.cellRotateChainGame.Chain;
 import com.joey.chain.games.cellRotateChainGame.Chain.ChainState;
 import com.joey.chain.games.cellRotateChainGame.RotateCellEngine;
+import com.joey.chain.gui.GameScreen;
 
 public class CellRotateChainScreen extends GameScreen {
 
