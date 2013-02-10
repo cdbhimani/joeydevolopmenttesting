@@ -3,24 +3,26 @@ package com.joey.chain;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.joey.chain.games.cellMatchSetGame.CellMatchEngine;
 import com.joey.chain.gui.GameScreen;
 import com.joey.chain.gui.game.CellMatchGameScreen;
 import com.joey.chain.gui.game.CellRotateChainScreen;
+import com.joey.chain.gui.game.CellSwapGameScreen;
 import com.joey.chain.gui.menus.HighScoreScreen;
 import com.joey.chain.gui.menus.MenuScreen;
 import com.joey.chain.gui.menus.SplashScreen;
-import com.joey.chain.gui.network.ClientScreen;
-import com.joey.chain.gui.network.ServerScreen;
+import com.joey.chain.gui.network.NetworkScreen;
 
 public class ReactorApp extends Game{
 	
 	CellRotateChainScreen cellRotateScreen;
 	CellMatchGameScreen cellMatchScreen;
+	CellSwapGameScreen cellSwapScreen;
+	
 	SplashScreen splashScreen;
 	MenuScreen menuScreen;
 	HighScoreScreen scoreScreen;
-	ServerScreen serverScreen;
-	ClientScreen clientScreen;
+	NetworkScreen networkScreen;
 	
 	InputMultiplexer inputProcessor;
 	
@@ -32,13 +34,13 @@ public class ReactorApp extends Game{
 
 		cellRotateScreen = new CellRotateChainScreen(this);
 		cellMatchScreen = new CellMatchGameScreen(this);
+		cellSwapScreen = new CellSwapGameScreen(this);
 		splashScreen = new SplashScreen(this);
 		menuScreen = new MenuScreen(this);
 		scoreScreen = new HighScoreScreen(this);
-		serverScreen = new ServerScreen(this);
-		clientScreen = new ClientScreen(this);
+		networkScreen = new NetworkScreen(this);
 //		setScreen(new FrameBufferScreen(this));
-		setScreen(splashScreen);
+		setScreen(cellSwapScreen);
 	}
 	
 	public void screenTransistion(GameScreen source, GameScreen dest){
@@ -80,16 +82,9 @@ public class ReactorApp extends Game{
 		return cellMatchScreen;
 	}
 
-	public ServerScreen getServerScreen() {
-		return serverScreen;
+	public NetworkScreen getNetworkScreen() {
+		return networkScreen;
 	}
-
-
-	public ClientScreen getClientScreen() {
-		return clientScreen;
-	}
-
-
 
 }
 
