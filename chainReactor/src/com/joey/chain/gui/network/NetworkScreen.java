@@ -1,7 +1,9 @@
 package com.joey.chain.gui.network;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.List;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -19,25 +21,25 @@ import com.joey.chain.common.ConsoleLogger;
 import com.joey.chain.common.ConsoleViewer;
 import com.joey.chain.gui.StageScreen;
 
-public class ServerScreen extends StageScreen {
+public class NetworkScreen extends StageScreen {
 	Server server;
 	Client client;
-	public static int tcpPort = 8080;
-	public static int udpPort = 8080;
+	public static int tcpPort = 9080;
+	public static int udpPort = 9081;
 	ConsoleLogger loger;
 	ConsoleViewer view;
-	ServerListener serverListen; 
-	ClientListener clientListen; 
+	NetworkListener serverListen; 
+	NetworkListener clientListen; 
 	TextField serverAddress;
 	
-	public ServerScreen(ReactorApp game){
+	public NetworkScreen(ReactorApp game){
 		super(game);
 		server = new Server();
 		client = new Client();
 		loger = new ConsoleLogger();
 		view = new ConsoleViewer(loger);
-		serverListen = new ServerListener(loger);
-		clientListen = new ClientListener(loger);
+		serverListen = new NetworkListener(loger, "SERVER : ");
+		clientListen = new NetworkListener(loger, "CLIENT : ");
 	}
 
 	public void startServer(){
@@ -69,6 +71,7 @@ public class ServerScreen extends StageScreen {
 		loger.println("CLIENT : Starting Client - Begin");
 		client.start();
 		try {
+			client.addListener(clientListen);
 			client.connect(5000, serverAddress.getText(), tcpPort, udpPort);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -87,6 +90,23 @@ public class ServerScreen extends StageScreen {
 		}
 		
 		loger.println("CLIENT : Stopping Client - Complete");
+	}
+	
+
+	public void listClientConnections(){
+		for(Connection c : server.getConnections()){
+			loger.println("SERVER : Connected : "+c.getRemoteAddressTCP());
+		}
+	}
+	
+	public void searchForServers(){
+		loger.println("CLIENT : Searching for servers");
+		List<InetAddress> list = client.discoverHosts(udpPort, 3000);
+		
+		loger.println("CLIENT : Found Count - "+list.size());
+		for(InetAddress address : list){
+			loger.println("CLIENT : Found - "+address);
+		}
 	}
 	
 	@Override
@@ -123,7 +143,7 @@ public class ServerScreen extends StageScreen {
 		listConnections.setClickListener(new ClickListener() {
 			@Override
 			public void click(Actor actor, float x, float y) {
-				listConnections();
+				listClientConnections();
 			}
 		});
 		
@@ -160,61 +180,65 @@ public class ServerScreen extends StageScreen {
 				stopClient();
 			}
 		});
+		TextButton searchServerClient = new TextButton("Find Server", getSkin());
+		searchServerClient.setClickListener(new ClickListener() {
+			@Override
+			public void click(Actor actor, float x, float y) {
+				searchForServers();
+			}
+		});
 		
 		Table clientContTable = new Table(getSkin());
 		clientContTable.pad(2).defaults().spaceBottom(1);
 		clientContTable.row();
 		clientContTable.add(serverAddress).fillX();
 		clientContTable.row();
+		clientContTable.add(searchServerClient).fillX();
+		clientContTable.row();
 		clientContTable.add(startClient).fillX();
 		clientContTable.row();
 		clientContTable.add(stopClient).fillX();
 		clientContTable.row();
 
-		
-		
-		Window clientWin = new Window("Server", getSkin());
-		
+		Window clientWin = new Window("Client", getSkin());
 		clientWin.add(clientContTable).fill();
 		clientWin.pack();
+		
+		clientWin.x = serverWin.width+5;
 		
 		stage.addActor(serverWin);
 		stage.addActor(clientWin);
 	}
-
-	public void listConnections(){
-		for(Connection c : server.getConnections()){
-			loger.println("SERVER: Connected : "+c.getRemoteAddressTCP());
-		}
-	}
 }
 
-class ServerListener extends Listener{
+class NetworkListener extends Listener{
 	ConsoleLogger log;
+	String tag;
 	
-	public ServerListener(ConsoleLogger loger) {
+	public NetworkListener(ConsoleLogger loger, String tag) {
 		this.log = loger;
+		this.tag = tag;
 	}
 	
 	@Override
 	public void disconnected(Connection connection) {
 		// TODO Auto-generated method stub
 		super.disconnected(connection);
-		log.println("SERVER: Disconnect from : "+connection.getRemoteAddressTCP());
+		log.println(tag+"Disconnect from : "+connection.getRemoteAddressTCP());
 	}
 	
 	@Override
 	public void connected(Connection connection) {
 		// TODO Auto-generated method stub
 		super.connected(connection);
-		log.println("SERVER: Connection from : "+connection.getRemoteAddressTCP());
+		log.println(tag+"Connection from : "+connection.getRemoteAddressTCP());
 	}
 	
 	@Override
 	public void received(Connection connection, Object object) {
 		// TODO Auto-generated method stub
 		super.received(connection, object);
-		log.println("SERVER: Recieved from : "+connection.getRemoteAddressTCP()+" : "+object);
+		log.println(tag+"Recieved from : "+connection.getRemoteAddressTCP()+" : "+object);
 	}
 	
 }

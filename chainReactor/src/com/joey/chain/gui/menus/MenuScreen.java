@@ -52,8 +52,7 @@ public class MenuScreen extends StageScreen{
 		
 		TextButton rotateGameButton = new TextButton("Rotate Game", style);
 		TextButton matchGameButton = new TextButton("Match Game", style);
-		TextButton serverButton= new TextButton("Server", style);
-		TextButton clientButton  = new TextButton("Client", style);
+		TextButton networkButton= new TextButton("Server", style);
 		TextButton exitButton = new TextButton("Exit", style);
 		
 		Table table = new Table(skin);
@@ -70,9 +69,7 @@ public class MenuScreen extends StageScreen{
 		table.row();
 		table.add(matchGameButton).width(buttonWide).height(buttonHigh);
 		table.row();
-		table.add(clientButton).width(buttonWide).height(buttonHigh);
-		table.row();
-		table.add(serverButton).width(buttonWide).height(buttonHigh);
+		table.add(networkButton).width(buttonWide).height(buttonHigh);
 		table.row();
 		table.add(exitButton).width(buttonWide).height(buttonHigh);
 		stage.addActor(table);
@@ -95,21 +92,14 @@ public class MenuScreen extends StageScreen{
 			}
 		});
 		
-		serverButton.setClickListener(new ClickListener() {
+		networkButton.setClickListener(new ClickListener() {
 			
 			@Override
 			public void click(Actor actor, float x, float y) {
-				getGame().setScreen(getGame().getServerScreen());
+				getGame().setScreen(getGame().getNetworkScreen());
 			}
 		});
 		
-		clientButton.setClickListener(new ClickListener() {
-			
-			@Override
-			public void click(Actor actor, float x, float y) {
-				getGame().setScreen(getGame().getClientScreen());
-			}
-		});
 	}
 
 	@Override
