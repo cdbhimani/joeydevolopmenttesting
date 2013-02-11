@@ -63,7 +63,7 @@ public class CellSwapGameScreen extends GameScreen{
 	public boolean touchDown(int x, int y, int pointer) {
 		System.out.println("Touch Down");
 		//Check was previous cell flagged store in up holder
-		if(gameEngine.getBoard()[(int) gridMouseUp.x][(int) gridMouseUp.y].isFlaged()){
+		if(isPositionInsideGrid(gridMouseUp) && gameEngine.getBoard()[(int) gridMouseUp.x][(int) gridMouseUp.y].isFlaged()){
 			gameEngine.getBoard()[(int) gridMouseUp.x][(int) gridMouseUp.y].unFlag();
 			gridMouseTouchNextToPrevious = true;
 		}else{
@@ -79,7 +79,7 @@ public class CellSwapGameScreen extends GameScreen{
 		gridMouseDown.x = Math.round(gridMouseDown.x);
 		gridMouseDown.y = Math.round(gridMouseDown.y);
 		
-		if(gridMouseDown.x >= 0 && gridMouseDown.y >= 0 && gridMouseDown.x < gameEngine.getWidth() && gridMouseDown.y < gameEngine.getHeight()){
+		if(isPositionInsideGrid(gridMouseDown)){
 			if(gridMouseTouchNextToPrevious){
 				int dx = (int) (gridMouseDown.x-gridMouseUp.x);
 				int dy = (int) (gridMouseDown.y-gridMouseUp.y);
@@ -117,35 +117,41 @@ public class CellSwapGameScreen extends GameScreen{
 			gameEngine.getBoard()[(int) gridMouseUp.x][(int) gridMouseUp.y].unFlag();	
 		}
 		
-		gridMouseDiff.set(gridMouseDown).sub(gridMouseUp);
+		gridMouseDiff.set(gridMouseUp).sub(gridMouseDown);
 		
 		System.out.println("\nDown : "+gridMouseDown);
 		System.out.println("Up   : "+gridMouseUp);
 		System.out.println("Diff : "+gridMouseDiff);
 		
-		if(Math.abs(gridMouseDiff.x) < 0.5 && Math.abs(gridMouseDiff.y) < 0.5){
-			//No Difference but mark cell
-			gameEngine.getBoard()[(int) gridMouseDown.x][(int) gridMouseDown.y].flag();
-			return super.touchDown(x, y, pointer);
-		}else if(Math.abs(gridMouseDiff.x) < 0.5 && Math.abs(gridMouseDiff.y) > 0.5){
-			gameEngine.touch((int)gridMouseDown.x, (int)gridMouseDown.y, 
-					gridMouseDiff.y > 0?SwapDirection.UP:SwapDirection.DOWN);
-			return true;
-		}else if(Math.abs(gridMouseDiff.x) > 0.5 && Math.abs(gridMouseDiff.y) < 0.5){
-			gameEngine.touch((int)gridMouseDown.x, (int)gridMouseDown.y, 
-					gridMouseDiff.x > 0?SwapDirection.RIGHT:SwapDirection.LEFT);
-			return true;
+		if(isPositionInsideGrid(gridMouseDown) && isPositionInsideGrid(gridMouseUp)){
+			//Ensure valid up position
+			if(Math.abs(gridMouseDiff.x) < 0.5 && Math.abs(gridMouseDiff.y) < 0.5){
+				//No Difference but mark cell
+				gameEngine.getBoard()[(int) gridMouseDown.x][(int) gridMouseDown.y].flag();
+				return super.touchDown(x, y, pointer);
+			}else if(Math.abs(gridMouseDiff.x) < 0.5 && Math.abs(gridMouseDiff.y) > 0.5){
+				gameEngine.touch((int)gridMouseDown.x, (int)gridMouseDown.y, 
+						gridMouseDiff.y > 0?SwapDirection.UP:SwapDirection.DOWN);
+				return true;
+			}else if(Math.abs(gridMouseDiff.x) > 0.5 && Math.abs(gridMouseDiff.y) < 0.5){
+				gameEngine.touch((int)gridMouseDown.x, (int)gridMouseDown.y, 
+						gridMouseDiff.x > 0?SwapDirection.RIGHT:SwapDirection.LEFT);
+				return true;
+			}
 		}
-		
 		return super.touchDown(x, y, pointer);
 		
 	}
 	
+	public boolean isPositionInsideGrid(Vector3 pos){
+		return(pos.x >= 0 && pos.y >= 0 && pos.x < gameEngine.getWidth() && pos.y < gameEngine.getHeight());
+	}
+	
 	@Override
 	public boolean tap(int x, int y, int count) {
-//		if(gameEngine.isFinished() && count > 1){
-//			gameEngine.reset();
-//		}
+		if(gameEngine.isFinished() && count > 1){
+			gameEngine.reset();
+		}
 		return super.tap(x, y, count);
 	}
 	
@@ -175,9 +181,9 @@ public class CellSwapGameScreen extends GameScreen{
 	@Override
 	public void drawScreen(float delta) {
 
-//		if(gameEngine.isFinished()){
-//			return;
-//		}
+		if(gameEngine.isFinished()){
+			return;
+		}
 		shape.setProjectionMatrix(cam.combined);
 		Cell c;
 	
@@ -207,9 +213,6 @@ public class CellSwapGameScreen extends GameScreen{
 
 	@Override
 	public void drawOverlay(float delta) {
-		if(true){
-			return;
-		}
 		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
 		if(gameEngine.isFinished()){
