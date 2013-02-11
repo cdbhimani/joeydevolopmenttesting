@@ -67,7 +67,7 @@ public class CellSwapEngine {
 		difficulty = 3;
 		score=0;
 		randomize();
-		activate();
+		doRecalculation();
 	}
 
 	public int getWidth(){
@@ -78,16 +78,34 @@ public class CellSwapEngine {
 		return board[0].length;
 	}
 	
-	public synchronized void touch(int x, int y, SwapDirection swap){
-		System.out.println(x+" : "+y+"  :  "+swap);
+	public synchronized boolean touch(int x, int y, SwapDirection swap){
+		if(state != CellSwapEngineState.waiting){
+			return false;
+		}
+		if(isValidMove(x, y, swap)){
+			swap(x, y, swap);
+			doRecalculation();
+			return true;
+		}else{
+			Cell dst = board[x+swap.dx][y+swap.dy];
+			Cell src = board[x][y];
+			
+			dst.desiredPos.set(src.lastPos);
+			src.desiredPos.set(dst.lastPos);
+			doAnimation();
+			return false;
+		}
 		
+	}
+	
+	private void swap(int x, int y, SwapDirection swap){	
 		Cell tmp = board[x+swap.dx][y+swap.dy];
 		board[x+swap.dx][y+swap.dy] = board[x][y];
 		board[x][y] = tmp;
-		
-		if(state == CellSwapEngineState.waiting){
-			activate();
-		}
+	}
+	
+	private boolean isValidMove(int x, int y, SwapDirection swap){
+		return true;
 	}
 	
 	public void createGrid(int sizeX, int sizeY){
@@ -110,13 +128,19 @@ public class CellSwapEngine {
 		}
 	}
 	
-	private void activate(){
+	private void doRecalculation(){
+		if(state == CellSwapEngineState.finshed || state == CellSwapEngineState.waiting){
+			animationStart = System.currentTimeMillis();
+			state = CellSwapEngineState.calculating;
+		}
+	}
+
+	private void doAnimation(){
 		if(state == CellSwapEngineState.finshed || state == CellSwapEngineState.waiting){
 			animationStart = System.currentTimeMillis();
 			state = CellSwapEngineState.animating;
 		}
 	}
-
 	private void computeUpdateStep(float prog){
 		for(int x = 0; x <board.length; x++){
 			for(int y = 0; y < board[x].length; y++){
@@ -136,7 +160,7 @@ public class CellSwapEngine {
 	}
 	
 	private boolean hasValidMovesRemain(){
-		return false;
+		return true;
 	}
 	
 	private boolean computeRelayoutStep(){
@@ -166,7 +190,7 @@ public class CellSwapEngine {
 				}
 			}
 		}
-		
+		System.out.println("Movement : "+movementNeededCount);
 		return movementNeededCount==0;
 	}
 	
@@ -233,6 +257,17 @@ public class CellSwapEngine {
 	public boolean isFinished() {
 		// TODO Auto-generated method stub
 		return state == CellSwapEngineState.finshed;
+	}
+	
+	public static void main(String input[]){
+		int x = 1;
+		int y = 1;
+		
+		CellSwapEngine engine = new CellSwapEngine(3, 3);
+		engine.touch(x, y, SwapDirection.RIGHT);
+		engine.touch(x, y, SwapDirection.LEFT);
+		engine.touch(x, y, SwapDirection.UP);
+		engine.touch(x, y, SwapDirection.DOWN);
 	}
 }
 
