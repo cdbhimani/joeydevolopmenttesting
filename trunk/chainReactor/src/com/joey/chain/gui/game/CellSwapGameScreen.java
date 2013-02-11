@@ -16,8 +16,9 @@ import com.joey.chain.gui.GameScreen;
 
 public class CellSwapGameScreen extends GameScreen{
 
-	int sizeX = 3;
-	int sizeY = 3;
+
+	int sizeX = 11;
+	int sizeY = 16;
 	
 	float radius;
 	float diameter;

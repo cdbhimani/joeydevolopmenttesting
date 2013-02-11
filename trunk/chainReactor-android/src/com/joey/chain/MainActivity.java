@@ -17,7 +17,7 @@ public class MainActivity extends AndroidApplication {
         		     
         AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
         cfg.useGL20 = true;      
-            
+              
        wifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE))
         	    .createWifiLock(WifiManager.WIFI_MODE_FULL, "mylock");
 
