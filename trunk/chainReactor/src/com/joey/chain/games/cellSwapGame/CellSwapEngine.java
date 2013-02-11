@@ -16,10 +16,18 @@ public class CellSwapEngine {
 	}
 	
 	public enum SwapDirection{
-		UP,
-		DOWN,
-		LEFT,
-		RIGHT
+		UP(0, 1),
+		DOWN(0, -1),
+		LEFT(-1, 0),
+		RIGHT(1,0);
+		
+		int dx;
+		int dy;
+		
+		private SwapDirection(int dx, int dy) {
+			this.dx = dx;
+			this.dy = dy;
+		}
 	}
 	
 	Comparator<Cell> sort = new Comparator<Cell>() {
@@ -72,8 +80,13 @@ public class CellSwapEngine {
 	
 	public synchronized void touch(int x, int y, SwapDirection swap){
 		System.out.println(x+" : "+y+"  :  "+swap);
+		
+		Cell tmp = board[x+swap.dx][y+swap.dy];
+		board[x+swap.dx][y+swap.dy] = board[x][y];
+		board[x][y] = tmp;
+		
 		if(state == CellSwapEngineState.waiting){
-				activate();
+			activate();
 		}
 	}
 	
