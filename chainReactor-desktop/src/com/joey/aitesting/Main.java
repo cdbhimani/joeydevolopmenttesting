@@ -11,8 +11,8 @@ public class Main {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "AiTesting";
 		cfg.useGL20 = true;
-		cfg.width = 600;
-		cfg.height = 480;
+		cfg.width = 200;
+		cfg.height = 200;
 		
 		LwjglApplication app = new LwjglApplication(new ReactorApp(), cfg);
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
