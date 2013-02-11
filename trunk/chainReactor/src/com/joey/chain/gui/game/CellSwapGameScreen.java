@@ -29,7 +29,7 @@ public class CellSwapGameScreen extends GameScreen{
 	Vector3 gridMouseDown = new Vector3();
 	Vector3 gridMouseUp = new Vector3();
 	boolean gridMouseValid = false;
-	boolean gridMouseTouchMove = false;
+	boolean gridMouseTouchNextToPrevious = false;
 	
 	public CellSwapGameScreen(ReactorApp game) {
 		super(game);
@@ -59,12 +59,12 @@ public class CellSwapGameScreen extends GameScreen{
 
 	@Override
 	public boolean touchDown(int x, int y, int pointer) {
-		//Check was previous cell flagged store in old
+		//Check was previous cell flagged store in up holder
 		if(gameEngine.getBoard()[(int) gridMouseDown.x][(int) gridMouseDown.y].isFlaged()){
-			gridMouseTouchMove = true;
+			gridMouseTouchNextToPrevious = true;
 			gridMouseUp.set(gridMouseDown);
 		}else{
-			gridMouseTouchMove = false;
+			gridMouseTouchNextToPrevious = false;
 		}
 		
 		gridMouseDown.x = x;
@@ -74,11 +74,23 @@ public class CellSwapGameScreen extends GameScreen{
 		
 		int xP = Math.round(gridMouseDown.x);
 		int yP = Math.round(gridMouseDown.y);
+		
 		if(xP >= 0 && yP >= 0 && xP < gameEngine.getWidth() && yP < gameEngine.getHeight()){
-			gridMouseValid = true;
-			
-			
-			
+			if(gridMouseTouchNextToPrevious){
+			int dx = (int) (gridMouseDown.x-gridMouseUp.x);
+			int dy = (int) (gridMouseDown.y-gridMouseUp.y);
+			if((dx*dy == 0 )&& (dx == 1 || dy == 1)){ //one is zero other is 1
+				gridMouseTouchNextToPrevious=true;
+				gridMouseValid=false;
+			}else{
+				gridMouseTouchNextToPrevious = false;
+				gridMouseValid = true;
+			}
+				
+				
+			}else{
+				gridMouseValid = true;
+			}
 			return true;
 		} else{
 			return super.touchDown(x, y, pointer);
@@ -91,18 +103,18 @@ public class CellSwapGameScreen extends GameScreen{
 			return false;
 		}
 		
-		//If was previous touch 
-		gridMouseUp.x = x;
-		gridMouseUp.y = y;
-		
-		screenToGrid(gridMouseUp);
-		
-		gridMouseUp.sub(gridMouseDown);
-		
-		gridMouseUp.x = Math.round(gridMouseUp.x);
-		gridMouseUp.y = Math.round(gridMouseUp.y);
-		System.out.println(gridMouseUp);
-		
+		if(!gridMouseTouchNextToPrevious){
+			//If was previous touch 
+			gridMouseUp.x = x;
+			gridMouseUp.y = y;
+			
+			screenToGrid(gridMouseUp);
+			
+			gridMouseUp.sub(gridMouseDown);
+			
+			gridMouseUp.x = Math.round(gridMouseUp.x);
+			gridMouseUp.y = Math.round(gridMouseUp.y);
+		}
 		if(Math.abs(gridMouseUp.x) < 0.5 && Math.abs(gridMouseUp.y) < 0.5){
 			//No Difference but mark cell
 			gameEngine.getBoard()[(int) gridMouseDown.x][(int) gridMouseDown.y].flag();
