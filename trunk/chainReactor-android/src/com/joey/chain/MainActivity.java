@@ -1,5 +1,5 @@
 package com.joey.chain;
-
+ 
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
@@ -10,11 +10,11 @@ import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
  
 public class MainActivity extends AndroidApplication {
-	 WifiLock wifiLock;
+	 WifiLock wifiLock;   
     @Override
     public void onCreate(Bundle savedInstanceState) { 
         super.onCreate(savedInstanceState); 
-        		             
+   
         AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
         cfg.useGL20 = true;      
               

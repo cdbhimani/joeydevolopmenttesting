@@ -53,7 +53,7 @@ public class CellSwapEngine {
 	private int cellMatchCountMin = 3;
 	
 	private long score = 0;
-	private int difficulty = 2;
+	private int difficulty = 0;
 	
 	
 	private boolean contineous = true;
@@ -64,7 +64,7 @@ public class CellSwapEngine {
 	}
 	
 	public void reset(){
-		difficulty = 3;
+		difficulty = 5;
 		score=0;
 		randomize();
 		doRecalculation();
@@ -102,8 +102,8 @@ public class CellSwapEngine {
 		
 		boolean validSwap = false;
 		boolean undoSwap = false;
-		
-		if(isSetCell(x, y, !isTest) || isSetCell(nX, nY, !isTest)){
+		System.out.println("Attempt Swap");
+		if(isScoreableCell(x, y, !isTest) || isScoreableCell(nX, nY, !isTest)){
 			validSwap = true;
 			undoSwap = false;
 		}else{
@@ -129,11 +129,12 @@ public class CellSwapEngine {
 		
 	}
 	
-	private boolean isSetCell(int x, int y, boolean flagIfValid){
-		return getSetCellX(x, y, flagIfValid) >= cellMatchCountMin
-				|| getSetCellY(x, y, flagIfValid) >= cellMatchCountMin;
+	private boolean isScoreableCell(int x, int y, boolean flagIfValid){
+		return getScoreCellX(x, y, flagIfValid) >= cellMatchCountMin
+				|| getScoreCellY(x, y, flagIfValid) >= cellMatchCountMin;
 	}
-	private int getSetCellX(int x, int y, boolean flagIfValid){
+		
+	private int getScoreCellX(int x, int y, boolean flagIfValid){
 		int xP,yP;
 		int count = 0;
 		int xLeft = 0;
@@ -155,15 +156,16 @@ public class CellSwapEngine {
 		}
 		
 		count = 1+xLeft+xRight;
-		if(flagIfValid || count >= cellMatchCountMin){
+		if(flagIfValid && count >= cellMatchCountMin){
 			for(xP = x-xLeft; xP<=x+xRight; xP++){
+				System.out.println("Flagged"+xP+","+yP);
 				board[xP][yP].flag();
 			}
 		}
 		return count;
 	}
 	
-	private int getSetCellY(int x, int y, boolean flagIfValid){
+	private int getScoreCellY(int x, int y, boolean flagIfValid){
 		int xP,yP;
 		int yUp = 0;
 		int yDown = 0;
@@ -187,41 +189,49 @@ public class CellSwapEngine {
 		}
 		
 		count = 1+yUp+yDown;
-		if(flagIfValid || count >= cellMatchCountMin){
+		if(flagIfValid && count >= cellMatchCountMin){
 			for(yP = y-yDown; yP<=y+yUp; yP++){
+				System.out.println("Flagged"+xP+","+yP);
 				board[xP][yP].flag();
 			}
 		}
 		return count;
 	}
 	
-	public void validateBoard(){
-		int x = 0;
-		int y = 0;
-		boolean invalid = false;
-		
-		while(!invalid){
-			x = 0;
-			y = 0;
-			invalid = false;
-			while(x < getWidth()){
-				while(y < getHeight()){
-					if(!board[x][y].isFlaged()){
-						if(isSetCell(x, y, true)){
-							invalid = true;
-						}
+	public int validateBoard(){
+		System.out.println("Validate Board");
+		boolean scoreFound = false;
+		for(int x = 0; x < getWidth(); x++){
+			for(int y = 0; y < getHeight(); y++){
+				System.out.println("Testing : "+x+","+y);
+				if(!board[x][y].isFlaged()){
+					
+					if(isScoreableCell(x, y, true)){
+						System.out.println("Not Flagged");
+						scoreFound = true;
 					}
+				}else{
+					System.out.println("Flagged");
+				}
+			}
+			
+		}
+		System.out.println("Checking Score : "+scoreFound);
+		return killTagged();
+	}
+	
+	public int killTagged(){
+		int count = 0;
+		for(int x=0; x < getWidth(); x++){
+			for(int y = 0; y < getHeight(); y++){
+				if(board[x][y].isFlaged()){
+					board[x][y].kill();
+					board[x][y].unFlag();
+					count++;
 				}
 			}
 		}
-		
-		if(invalid){
-			killTagged();
-		}
-	}
-	
-	public void killTagged(){
-		
+		return count;
 	}
 	
 	public boolean isValid(int x, int y){
@@ -246,6 +256,10 @@ public class CellSwapEngine {
 			for(int y = 0;y < getHeight(); y++){
 				board[x][y].setPos(x,y);
 				board[x][y].random(difficulty);
+				//Ensure first screen has no matches
+				while(isScoreableCell(x, y, false)){
+					board[x][y].random(difficulty);
+				}
 			}
 		}
 	}
@@ -284,7 +298,6 @@ public class CellSwapEngine {
 	private boolean hasValidMovesRemain(){
 		boolean offset = false;
 		int xOff = 0;
-		
 			
 		for(int y = 0; y < getHeight(); y++){
 			if(offset){
@@ -356,10 +369,13 @@ public class CellSwapEngine {
 			}
 			case calculating:{
 				if(computeRelayoutStep()==true){
-					if(hasValidMovesRemain()){
-						state = CellSwapEngineState.waiting;
-					}else{
-						state = CellSwapEngineState.finshed;
+					int clearCount = validateBoard();
+					if(clearCount == 0){
+						if(hasValidMovesRemain()){
+							state = CellSwapEngineState.waiting;
+						}else{
+							state = CellSwapEngineState.finshed;
+						}
 					}
 				}else{
 					state = CellSwapEngineState.animating;
@@ -407,14 +423,18 @@ public class CellSwapEngine {
 	}
 	
 	public static void main(String input[]){
-		int x = 1;
-		int y = 1;
-		
-		CellSwapEngine engine = new CellSwapEngine(3, 3);
-		engine.touch(x, y, SwapDirection.RIGHT);
-		engine.touch(x, y, SwapDirection.LEFT);
-		engine.touch(x, y, SwapDirection.UP);
-		engine.touch(x, y, SwapDirection.DOWN);
+
+		CellSwapEngine engine = new CellSwapEngine(5, 5);
+		for(int x= 0; x < engine.getWidth(); x++){
+			for(int y = 0;y < engine.getHeight(); y++){
+				System.out.print(engine.getBoard()[x][y].getTypeName()+"\t,\t");
+			}
+			System.out.println();
+		}
+		while(true){
+			System.out.println("Updating");
+			engine.update();
+		}
 	}
 }
 
