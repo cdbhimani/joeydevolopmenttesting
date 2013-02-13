@@ -15,8 +15,8 @@ import com.joey.chain.games.cellSwapGame.CellSwapEngine.SwapDirection;
 import com.joey.chain.gui.GameScreen;
 
 public class CellSwapGameScreen extends GameScreen{
-	int sizeX = 5;
-	int sizeY = 8;
+	int sizeX = 6;
+	int sizeY = 10;
 	boolean lastFlaged = false;
 	
 	float radius;
