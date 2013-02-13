@@ -7,13 +7,14 @@ import com.badlogic.gdx.math.Vector2;
 public class Cell {
 	private boolean flag = false;
 	private boolean alive = false;
-	
+	private boolean selected = false;
     public Vector2 currentPos;
     
     Vector2 lastDir;
     Vector2 lastPos;
     
     private Color color = Color.BLUE;
+	private String colorName = "BLUE";
 	
 	public Vector2 desiredPos;
 	
@@ -35,18 +36,17 @@ public class Cell {
 	public void random(int difficulity){
 		Color c = null;
 		switch(MathUtils.random(difficulity-1)){
-			case 0: c = Color.RED;break;
-			case 1: c = Color.GREEN;break;
-			case 2: c = Color.BLUE;break;
-			case 3: c = Color.ORANGE;break;
-			case 4: c = Color.PINK;break;
-			case 5: c = Color.ORANGE;break;
-			case 6: c = Color.CYAN;break;
-			case 7: c = Color.YELLOW;break;
-			case 8: c = Color.MAGENTA;break;
-			case 9: c = Color.BLACK;break;
-			case 10: c = Color.MAGENTA;break;
-			case 11: c = Color.LIGHT_GRAY;break;
+			case 0: c = Color.RED;colorName="RED";break;
+			case 1: c = Color.GREEN;colorName="GREEN";break;
+			case 2: c = Color.BLUE;colorName="BLUE";break;
+			case 3: c = Color.ORANGE;colorName="ORANGE";break;
+			case 4: c = Color.PINK;colorName="PINK";break;
+			case 5: c = Color.ORANGE;colorName="ORANGE";break;
+			case 6: c = Color.CYAN;colorName="CYAN";break;
+			case 7: c = Color.YELLOW;colorName="YELLOW";break;
+			case 8: c = Color.MAGENTA;colorName="MAGENTA";break;
+			case 9: c = Color.BLACK;colorName="BLACK";break;
+			case 10: c = Color.LIGHT_GRAY;colorName="LIGHT_GRAY";break;
 		}
 		color = c;
 		alive = true;
@@ -113,6 +113,10 @@ public class Cell {
 		
 		return calculateMovementRequired();
 	}
+	
+	public String getTypeName(){
+		return colorName;
+	}
 
 	public void setPos(float x, float y) {
 		lastDir.set(0,0);
@@ -120,6 +124,14 @@ public class Cell {
 		currentPos.set(x,y);
 		desiredPos.set(x,y);
 		updateFinished();
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
 	}
 
 }

@@ -52,6 +52,7 @@ public class MenuScreen extends StageScreen{
 		
 		TextButton rotateGameButton = new TextButton("Rotate Game", style);
 		TextButton matchGameButton = new TextButton("Match Game", style);
+		TextButton swapGameButton = new TextButton("Swap Game", style);
 		TextButton networkButton= new TextButton("Server", style);
 		TextButton exitButton = new TextButton("Exit", style);
 		
@@ -68,6 +69,8 @@ public class MenuScreen extends StageScreen{
 		table.add(rotateGameButton).width(buttonWide).height(buttonHigh);
 		table.row();
 		table.add(matchGameButton).width(buttonWide).height(buttonHigh);
+		table.row();
+		table.add(swapGameButton).width(buttonWide).height(buttonHigh);
 		table.row();
 		table.add(networkButton).width(buttonWide).height(buttonHigh);
 		table.row();
@@ -92,6 +95,15 @@ public class MenuScreen extends StageScreen{
 			}
 		});
 		
+		swapGameButton.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				// TODO Auto-generated method stub
+				getGame().setScreen(getGame().getCellSwapScreen());
+			}
+		});
+
 		networkButton.setClickListener(new ClickListener() {
 			
 			@Override

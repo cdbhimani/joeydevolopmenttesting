@@ -44,7 +44,7 @@ public class CellMatchEngine {
 	private int difficulty = 2;
 	
 	
-	private boolean contineous = false;
+	private boolean contineous = true;
 	
 	public CellMatchEngine(int sizeX, int sizeY){
 		createGrid(sizeX, sizeY);
