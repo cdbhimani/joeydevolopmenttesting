@@ -14,7 +14,7 @@ import com.joey.chain.gui.menus.SplashScreen;
 import com.joey.chain.gui.network.NetworkScreen;
 
 public class ReactorApp extends Game{
-	
+	  
 	CellRotateChainScreen cellRotateScreen;
 	CellMatchGameScreen cellMatchScreen;
 	CellSwapGameScreen cellSwapScreen;
@@ -40,7 +40,7 @@ public class ReactorApp extends Game{
 		scoreScreen = new HighScoreScreen(this);
 		networkScreen = new NetworkScreen(this);
 //		setScreen(new FrameBufferScreen(this));
-		setScreen(cellSwapScreen);
+		setScreen(splashScreen);
 	}
 	
 	public void screenTransistion(GameScreen source, GameScreen dest){
@@ -84,6 +84,10 @@ public class ReactorApp extends Game{
 
 	public NetworkScreen getNetworkScreen() {
 		return networkScreen;
+	}
+
+	public CellSwapGameScreen getCellSwapScreen() {
+		return cellSwapScreen;
 	}
 
 }

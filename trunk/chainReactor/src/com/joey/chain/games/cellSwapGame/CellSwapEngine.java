@@ -46,17 +46,17 @@ public class CellSwapEngine {
 		}
 	};
 	
-	private int[] horizontalRowSorter;
 	private Cell[][] board;
 	private CellSwapEngineState state = CellSwapEngineState.finshed;
 	private long animationStart = 0;
-	private float animationTime = 100f;
+	private float animationTime = 250f;
+	private int cellMatchCountMin = 3;
 	
 	private long score = 0;
 	private int difficulty = 2;
 	
 	
-	private boolean contineous = false;
+	private boolean contineous = true;
 	
 	public CellSwapEngine(int sizeX, int sizeY){
 		createGrid(sizeX, sizeY);
@@ -82,35 +82,157 @@ public class CellSwapEngine {
 		if(state != CellSwapEngineState.waiting){
 			return false;
 		}
-		if(isValidMove(x, y, swap)){
-			swap(x, y, swap);
-			doRecalculation();
-			return true;
-		}else{
-			Cell dst = board[x+swap.dx][y+swap.dy];
-			Cell src = board[x][y];
-			
-			dst.desiredPos.set(src.lastPos);
-			src.desiredPos.set(dst.lastPos);
-			doAnimation();
+		return attemptSwap(x, y, swap, false);
+	}
+		
+		
+	private boolean attemptSwap(int x, int y, SwapDirection swap, boolean isTest){
+		int nX = x+swap.dx;
+		int nY = y+swap.dy;
+		
+		if(!isValid(x, y) || !isValid(nX, nY)){
 			return false;
 		}
 		
+		Cell cellA = board[nX][nY];
+		Cell cellB = board[x][y];
+		
+		board[nX][nY] = cellB;
+		board[x][y] =cellA;
+		
+		boolean validSwap = false;
+		boolean undoSwap = false;
+		
+		if(isSetCell(x, y, !isTest) || isSetCell(nX, nY, !isTest)){
+			validSwap = true;
+			undoSwap = false;
+		}else{
+			validSwap = false;
+			undoSwap = true;
+		}
+		
+		if(undoSwap || isTest){
+			board[nX][nY] = cellA;
+			board[x][y] =cellB;
+		}
+		
+		if(!isTest){
+			cellA.desiredPos.set(cellB.lastPos);
+			cellA.calculateMovementRequired();
+		
+			cellB.desiredPos.set(cellA.lastPos);
+			cellB.calculateMovementRequired();
+		
+			doAnimation();
+		}
+		return validSwap;
+		
 	}
 	
-	private void swap(int x, int y, SwapDirection swap){	
-		Cell tmp = board[x+swap.dx][y+swap.dy];
-		board[x+swap.dx][y+swap.dy] = board[x][y];
-		board[x][y] = tmp;
+	private boolean isSetCell(int x, int y, boolean flagIfValid){
+		return getSetCellX(x, y, flagIfValid) >= cellMatchCountMin
+				|| getSetCellY(x, y, flagIfValid) >= cellMatchCountMin;
+	}
+	private int getSetCellX(int x, int y, boolean flagIfValid){
+		int xP,yP;
+		int count = 0;
+		int xLeft = 0;
+		int xRight = 0;
+		Cell cell = board[x][y];
+		xP = x+1;
+		yP = y;
+
+		while(isValid(xP, yP) && isSameType(xP, yP, cell)){
+			xRight++;
+			xP++;
+		}
+
+		xP = x-1;
+		yP = y;
+		while(isValid(xP, yP) && isSameType(xP, yP, cell)){
+			xLeft++;
+			xP--;
+		}
+		
+		count = 1+xLeft+xRight;
+		if(flagIfValid || count >= cellMatchCountMin){
+			for(xP = x-xLeft; xP<=x+xRight; xP++){
+				board[xP][yP].flag();
+			}
+		}
+		return count;
 	}
 	
-	private boolean isValidMove(int x, int y, SwapDirection swap){
-		return true;
+	private int getSetCellY(int x, int y, boolean flagIfValid){
+		int xP,yP;
+		int yUp = 0;
+		int yDown = 0;
+		int count = 0;
+		Cell cell = board[x][y];
+		
+
+		xP = x;
+		yP = y+1;
+		//Up
+		while(isValid(xP, yP) && isSameType(xP, yP, cell)){
+			yUp++;
+			yP++;
+		}
+		
+		xP = x;
+		yP = y-1;
+		while(isValid(xP, yP) && isSameType(xP, yP, cell)){
+			yDown++;
+			yP--;
+		}
+		
+		count = 1+yUp+yDown;
+		if(flagIfValid || count >= cellMatchCountMin){
+			for(yP = y-yDown; yP<=y+yUp; yP++){
+				board[xP][yP].flag();
+			}
+		}
+		return count;
 	}
 	
+	public void validateBoard(){
+		int x = 0;
+		int y = 0;
+		boolean invalid = false;
+		
+		while(!invalid){
+			x = 0;
+			y = 0;
+			invalid = false;
+			while(x < getWidth()){
+				while(y < getHeight()){
+					if(!board[x][y].isFlaged()){
+						if(isSetCell(x, y, true)){
+							invalid = true;
+						}
+					}
+				}
+			}
+		}
+		
+		if(invalid){
+			killTagged();
+		}
+	}
+	
+	public void killTagged(){
+		
+	}
+	
+	public boolean isValid(int x, int y){
+		return x>=0&&y>=0&&x<getWidth()&&y<getHeight()&&board[x][y].isAlive();
+	}
+	
+	private boolean isSameType(int x, int y, Cell type){
+		return board[x][y].equals(type);
+	}
 	public void createGrid(int sizeX, int sizeY){
 		board = new Cell[sizeX][sizeY];
-		horizontalRowSorter = new int[sizeX];
 
 		for(int x = 0; x < getWidth(); x++){
 			for(int y = 0;y < getHeight(); y++){
@@ -160,7 +282,33 @@ public class CellSwapEngine {
 	}
 	
 	private boolean hasValidMovesRemain(){
-		return true;
+		boolean offset = false;
+		int xOff = 0;
+		
+			
+		for(int y = 0; y < getHeight(); y++){
+			if(offset){
+				xOff = 1;
+			}else{
+				xOff = 0;
+			}
+			offset = !offset;
+			
+			for(int x = xOff; x<getWidth(); x+=2){
+				if(attemptSwap(x, y, SwapDirection.UP,    true))
+					return true;
+				
+				if(attemptSwap(x, y, SwapDirection.DOWN,  true))
+					return true;
+				
+				if(attemptSwap(x, y, SwapDirection.LEFT,  true))
+					return true;
+				
+				if(attemptSwap(x, y, SwapDirection.RIGHT, true))
+					return true;
+			}
+		}
+		return false;
 	}
 	
 	private boolean computeRelayoutStep(){
@@ -190,11 +338,10 @@ public class CellSwapEngine {
 				}
 			}
 		}
-		System.out.println("Movement : "+movementNeededCount);
 		return movementNeededCount==0;
 	}
 	
-	public void sortColumn(Cell[] data){
+	private void sortColumn(Cell[] data){
 		Arrays.sort(data, this.sort);
 		
 	}
@@ -202,7 +349,7 @@ public class CellSwapEngine {
 	public synchronized void update(){
 		switch(state){
 			case finshed:{
-			
+				break;
 			}
 			case waiting:{
 				break;

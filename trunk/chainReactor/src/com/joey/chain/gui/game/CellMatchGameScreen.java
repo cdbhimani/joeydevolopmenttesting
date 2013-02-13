@@ -15,9 +15,8 @@ import com.joey.chain.games.cellMatchSetGame.CellMatchEngine;
 import com.joey.chain.gui.GameScreen;
 
 public class CellMatchGameScreen extends GameScreen{
-
-	int sizeX = 11;
-	int sizeY = 16;
+	int sizeX = 6;
+	int sizeY = 10;
 	
 	float radius;
 	float diameter;

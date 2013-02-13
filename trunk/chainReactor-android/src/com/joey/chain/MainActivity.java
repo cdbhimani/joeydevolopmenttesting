@@ -13,8 +13,8 @@ public class MainActivity extends AndroidApplication {
 	 WifiLock wifiLock;
     @Override
     public void onCreate(Bundle savedInstanceState) { 
-        super.onCreate(savedInstanceState);
-        		     
+        super.onCreate(savedInstanceState); 
+        		             
         AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
         cfg.useGL20 = true;      
               
