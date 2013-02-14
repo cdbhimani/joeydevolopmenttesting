@@ -1,7 +1,10 @@
 package com.joey.chain.network.utils;
 
 import com.esotericsoftware.kryonet.EndPoint;
+import com.joey.chain.network.transport.ClientData;
+import com.joey.chain.network.transport.ClientLoginMessage;
 import com.joey.chain.network.transport.EntityState;
+import com.joey.chain.network.transport.ServerStatus;
 
 public class NetworkUtils {
 	
@@ -23,7 +26,9 @@ public class NetworkUtils {
 	}
 	
 	public void registerClasses(EndPoint ep){
-		ep.getKryo().register(EntityState.class);
+		ep.getKryo().register(ClientLoginMessage.class);
+		ep.getKryo().register(ClientData.class);
+		ep.getKryo().register(ServerStatus.class);
 	}
 
 	public int getUdpPort() {
