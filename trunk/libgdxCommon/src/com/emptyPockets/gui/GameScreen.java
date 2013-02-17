@@ -1,6 +1,5 @@
 package com.emptyPockets.gui;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
@@ -43,10 +42,7 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	
 
 	public Skin getSkin(){
-		if( skin == null ) {
-            skin = new Skin( Gdx.files.internal( "ui/uiskin.json" ), Gdx.files.internal( "ui/uiskin.png" ) );
-        }
-        return skin;
+		return Scene2DToolkit.getToolkit().getSkin();
 	}
 	
 	public void removeInputMultiplexer(InputMultiplexer input){
@@ -102,64 +98,29 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public boolean longPress(int x, int y) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
-	@Override
-	public boolean fling(float velocityX, float velocityY) {
-		// TODO Auto-generated method stub
-		return false;
+	public Color getClearColor() {
+		return clearColor;
 	}
 
-	@Override
-	public boolean pan(int x, int y, int deltaX, int deltaY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean zoom(float originalDistance, float currentDistance) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean pinch(Vector2 initialFirstPointer, Vector2 initialSecondPointer, Vector2 firstPointer, Vector2 secondPointer) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	public boolean touchDown(int x, int y, int pointer) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	public boolean tap(int x, int y, int count) {
-		// TODO Auto-generated method stub
-		return false;
+	public void setClearColor(Color clearColor) {
+		this.clearColor = clearColor;
 	}
 
 	@Override
 	public boolean keyDown(int keycode) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -171,30 +132,30 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 	@Override
 	public boolean keyTyped(char character) {
-		 
-		return false;
-	}
-
-	@Override
-	public boolean touchDown(int x, int y, int pointer, int button) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean touchUp(int x, int y, int pointer, int button) {
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean touchDragged(int x, int y, int pointer) {
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean touchMoved(int x, int y) {
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -205,12 +166,47 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 		return false;
 	}
 
-	public Color getClearColor() {
-		return clearColor;
+	@Override
+	public boolean touchDown(float x, float y, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
-	public void setClearColor(Color clearColor) {
-		this.clearColor = clearColor;
+	@Override
+	public boolean tap(float x, float y, int count, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean longPress(float x, float y) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean fling(float velocityX, float velocityY, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean pan(float x, float y, float deltaX, float deltaY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean zoom(float initialDistance, float distance) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
+			Vector2 pointer1, Vector2 pointer2) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

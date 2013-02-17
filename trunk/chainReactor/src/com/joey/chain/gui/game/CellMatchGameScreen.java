@@ -52,7 +52,7 @@ public class CellMatchGameScreen extends GameScreen{
 	}
 
 	@Override
-	public boolean tap(int x, int y, int count) {
+	public boolean tap(float x, float y, int count, int button) {
 		if(gameEngine.isFinished() && count > 1){
 			gameEngine.reset();
 		}else{
@@ -65,7 +65,7 @@ public class CellMatchGameScreen extends GameScreen{
 				gameEngine.touch(xP, yP);
 			}
 		}
-		return super.tap(x, y, count);
+		return super.tap(x, y, count, button);
 	}
 	public float getRadius() {
 		return radius;

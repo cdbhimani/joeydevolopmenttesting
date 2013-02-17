@@ -60,7 +60,7 @@ public class CellSwapGameScreen extends GameScreen{
 	}
 
 	@Override
-	public boolean touchDown(int x, int y, int pointer) {
+	public boolean touchDown(int x, int y, int pointer, int button) {
 		//Check was previous cell flagged store in up holder
 		if(lastFlaged){
 			gridMouseTouchNextToPrevious = true;
@@ -96,7 +96,7 @@ public class CellSwapGameScreen extends GameScreen{
 			}
 			return true;
 		} else{
-			return super.touchDown(x, y, pointer);
+			return super.touchDown(x, y, pointer, button);
 		}
 	}
 	
@@ -125,7 +125,7 @@ public class CellSwapGameScreen extends GameScreen{
 				//No Difference but mark cell
 				lastFlaged = true;
 				gameEngine.getBoard()[(int)gridMouseUp.x][(int)gridMouseUp.y].setSelected(true);
-				return super.touchDown(x, y, pointer);
+				return super.touchDown(x, y, pointer, button);
 			}else if(Math.abs(gridMouseDiff.x) < 0.5 && Math.abs(gridMouseDiff.y) > 0.5){
 				gameEngine.touch((int)gridMouseDown.x, (int)gridMouseDown.y, 
 						gridMouseDiff.y > 0?SwapDirection.UP:SwapDirection.DOWN);
@@ -136,7 +136,7 @@ public class CellSwapGameScreen extends GameScreen{
 				return true;
 			}
 		}
-		return super.touchDown(x, y, pointer);
+		return super.touchDown(x, y, pointer, button);
 		
 	}
 	
@@ -145,11 +145,11 @@ public class CellSwapGameScreen extends GameScreen{
 	}
 	
 	@Override
-	public boolean tap(int x, int y, int count) {
+	public boolean tap(float x, float y, int count,int button) {
 		if(gameEngine.isFinished() && count > 1){
 			gameEngine.reset();
 		}
-		return super.tap(x, y, count);
+		return super.tap(x, y, count, button);
 	}
 	
 	private void screenToGrid(Vector3 vec){

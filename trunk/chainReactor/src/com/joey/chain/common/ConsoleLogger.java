@@ -1,12 +1,7 @@
 package com.joey.chain.common;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.input.GestureDetector.GestureListener;
-import com.badlogic.gdx.math.Vector2;
 
-public class ConsoleLogger implements InputProcessor, GestureListener {
+public class ConsoleLogger{
 	int maxConsoleSize = 1000;
 	int maxConsoleLines = 10;
 	StringBuffer console = new StringBuffer();
@@ -90,99 +85,5 @@ public class ConsoleLogger implements InputProcessor, GestureListener {
 
 	public String toString() {
 		return console.toString();
-	}
-
-	@Override
-	public boolean keyDown(int keycode) {
-		println("KEY DOWN[" + keycode + "]");
-		return false;
-	}
-
-	@Override
-	public boolean keyUp(int keycode) {
-		println("KEY UP[" + keycode + "]");
-		return false;
-	}
-
-	@Override
-	public boolean keyTyped(char character) {
-		println("KEY TYPED[" + (int)character + "]");
-		return false;
-	}
-
-	@Override
-	public boolean touchDown(int x, int y, int pointer, int button) {
-		println("TOUCH DOWN [" + x + "," + y + "]"+" - "+pointer+" - "+button);
-		return false;
-	}
-
-	@Override
-	public boolean touchUp(int x, int y, int pointer, int button) {
-		println("TOUCH UP [" + x + "," + y + "]"+" - "+pointer+" - "+button);
-		return false;
-	}
-
-	@Override
-	public boolean touchDragged(int x, int y, int pointer) {
-		println("TOUCH DRAGGED [" + x + "," + y + "]"+" - "+pointer);
-		return false;
-	}
-
-	@Override
-	public boolean touchMoved(int x, int y) {
-		println("TOUCH MOVED [" + x + "," + y + "]");
-		return false;
-	}
-
-	@Override
-	public boolean scrolled(int amount) {
-		println("Scrolled[" + amount + "]");
-		return false;
-	}
-
-	@Override
-	public boolean touchDown(int x, int y, int pointer) {
-		println("Gesture - TOUCH DOWN [" + x + "," + y + "]"+" - "+pointer);
-		return false;
-	}
-
-	@Override
-	public boolean tap(int x, int y, int count) {
-		println("Gesture - TAP[" + x + "," + y + "]"+" - "+count);
-		return false;
-	}
-
-	@Override
-	public boolean longPress(int x, int y) {
-		println("Gesture - LONG Press[" + x + "," + y + "]");
-		return false;
-	}
-
-	@Override
-	public boolean fling(float velocityX, float velocityY) {
-		println("Gesture - fling[" + velocityX + "," + velocityY + "]");
-		return false;
-	}
-
-	@Override
-	public boolean pan(int x, int y, int deltaX, int deltaY) {
-		println("Gesture - pan[" + x + "," + y + "]"+" - "+deltaX+" - "+deltaY);
-		return false;
-	}
-
-	@Override
-	public boolean zoom(float originalDistance, float currentDistance) {
-		println("Gesture - zoom[" + originalDistance+ "," + currentDistance + "]");
-		return false;
-	}
-
-	@Override
-	public boolean pinch(Vector2 initialFirstPointer,Vector2 initialSecondPointer, Vector2 firstPointer,Vector2 secondPointer) {
-		println("Gesture - pinch[" + initialFirstPointer.x+ "," + initialFirstPointer.y+ "]"
-				+" - [" + initialSecondPointer.x+ "," + initialSecondPointer.y+ "]"
-				+" - [" + firstPointer.x+ "," + firstPointer.y+ "]"
-				+" - [" + secondPointer.x+ "," + secondPointer.y+ "]"
-				);
-		return false;
 	}
 }

@@ -2,16 +2,16 @@ package com.joey.chain.gui.network;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.util.List;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -126,23 +126,23 @@ public class NetworkScreen extends StageScreen {
 	public void createStage(Stage stage) {
 
 		TextButton startServer = new TextButton("Start", getSkin());
-		startServer.setClickListener(new ClickListener() {
+		startServer.addListener(new ClickListener() {
 			@Override
-			public void click(Actor actor, float x, float y) {
+			public void clicked(InputEvent even, float x, float y) {
 				startServer();
 			}
 		});
 		TextButton stopServer = new TextButton("Stop", getSkin());
-		stopServer.setClickListener(new ClickListener() {
+		stopServer.addListener(new ClickListener() {
 			@Override
-			public void click(Actor actor, float x, float y) {
+			public void clicked(InputEvent even, float x, float y) {
 				stopServer();
 			}
 		});
 		TextButton listConnections = new TextButton("List All Connections", getSkin());
-		listConnections.setClickListener(new ClickListener() {
+		listConnections.addListener(new ClickListener() {
 			@Override
-			public void click(Actor actor, float x, float y) {
+			public void clicked(InputEvent even, float x, float y) {
 				listClientConnections();
 			}
 		});
@@ -164,26 +164,26 @@ public class NetworkScreen extends StageScreen {
 		serverWin.add(serverContTable).fill();
 		serverWin.pack();
 		
-		serverAddress = new TextField(getSkin());
+		serverAddress = new TextField("",getSkin());
 		
 		TextButton startClient = new TextButton("Connect", getSkin());
-		startClient.setClickListener(new ClickListener() {
+		startClient.addListener(new ClickListener() {
 			@Override
-			public void click(Actor actor, float x, float y) {
+			public void clicked(InputEvent even, float x, float y) {
 				startClient();
 			}
 		});
 		TextButton stopClient = new TextButton("Disconnect", getSkin());
-		stopClient.setClickListener(new ClickListener() {
+		stopClient.addListener(new ClickListener() {
 			@Override
-			public void click(Actor actor, float x, float y) {
+			public void clicked(InputEvent even, float x, float y) {
 				stopClient();
 			}
 		});
 		TextButton searchServerClient = new TextButton("Find Server", getSkin());
-		searchServerClient.setClickListener(new ClickListener() {
+		searchServerClient.addListener(new ClickListener() {
 			@Override
-			public void click(Actor actor, float x, float y) {
+			public void clicked(InputEvent even, float x, float y) {
 				searchForServers();
 			}
 		});
@@ -204,7 +204,8 @@ public class NetworkScreen extends StageScreen {
 		clientWin.add(clientContTable).fill();
 		clientWin.pack();
 		
-		clientWin.x = serverWin.width+5;
+		
+		clientWin.setX(serverWin.getWidth()+5);
 		
 		stage.addActor(serverWin);
 		stage.addActor(clientWin);
