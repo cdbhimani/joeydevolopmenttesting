@@ -161,7 +161,7 @@ public class CellRotateChainScreen extends GameScreen {
 	}
 
 	@Override
-	public boolean tap(int x, int y, int count) {
+	public boolean tap(float x, float y, int count, int button) {
 		if(count > 1){
 			engine.resetBorad(System.currentTimeMillis());
 			return true;

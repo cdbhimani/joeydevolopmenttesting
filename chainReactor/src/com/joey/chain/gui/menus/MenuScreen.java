@@ -1,18 +1,18 @@
 package com.joey.chain.gui.menus;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.joey.chain.ReactorApp;
 import com.joey.chain.gui.StageScreen;
 
@@ -42,12 +42,12 @@ public class MenuScreen extends StageScreen{
 	public void createStage(Stage stage) {
 		NinePatch patchUp = new NinePatch(texUp);
 		NinePatch patchDown = new NinePatch(texDown);
-		
+
 		Skin skin = getSkin();
 		
 		TextButtonStyle style = new TextButtonStyle();
-		style.up = patchUp;
-		style.down = patchDown;
+		style.up = new NinePatchDrawable(patchUp);
+		style.down = new NinePatchDrawable(patchDown);
 		style.font = new BitmapFont();
 		
 		TextButton rotateGameButton = new TextButton("Rotate Game", style);
@@ -77,37 +77,32 @@ public class MenuScreen extends StageScreen{
 		table.add(exitButton).width(buttonWide).height(buttonHigh);
 		stage.addActor(table);
 		
-		rotateGameButton.setClickListener(new ClickListener() {
-			
+		rotateGameButton.addListener(new ClickListener() {
 			@Override
-			public void click(Actor actor, float x, float y) {
-				// TODO Auto-generated method stub
+			public void clicked(InputEvent even, float x, float y) {
 				getGame().setScreen(getGame().getCellRotateScreen());
 			}
 		});
 		
-		matchGameButton.setClickListener(new ClickListener() {
-			
+		matchGameButton.addListener(new ClickListener() {
 			@Override
-			public void click(Actor actor, float x, float y) {
+			public void clicked(InputEvent even, float x, float y) {
 				// TODO Auto-generated method stub
 				getGame().setScreen(getGame().getCellMatchScreen());
 			}
 		});
 		
-		swapGameButton.setClickListener(new ClickListener() {
-			
+		swapGameButton.addListener(new ClickListener() {
 			@Override
-			public void click(Actor actor, float x, float y) {
+			public void clicked(InputEvent even, float x, float y) {
 				// TODO Auto-generated method stub
 				getGame().setScreen(getGame().getCellSwapScreen());
 			}
 		});
 
-		networkButton.setClickListener(new ClickListener() {
-			
+		networkButton.addListener(new ClickListener() {
 			@Override
-			public void click(Actor actor, float x, float y) {
+			public void clicked(InputEvent even, float x, float y) {
 				getGame().setScreen(getGame().getNetworkScreen());
 			}
 		});

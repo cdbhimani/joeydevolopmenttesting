@@ -15,8 +15,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.FlickScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.joey.chain.ReactorApp;
@@ -30,7 +30,7 @@ public class FrameBufferScreen extends GameScreen {
 	FrameBuffer frmBuff;
 	TextureRegion frm;
 	OrthographicCamera frmCam;
-	Window win = new Window(getSkin());
+	Window win = new Window("",getSkin());
 	Stage stage;
 	int frmSizeX = 2048;
 	int frmSizeY = 2048;
@@ -40,12 +40,13 @@ public class FrameBufferScreen extends GameScreen {
 		setClearColor(new Color(1,1,1,1));
 	}
 	
+	
 	@Override
-	public boolean touchDown(int x, int y, int pointer) {
+	public boolean touchDown(int x, int y, int pointer, int button) {
 		// TODO Auto-generated method stub
-		super.touchDown(x, y, pointer);
-		win.width++;
-		win.height++;
+		super.touchDown(x, y, pointer, button);
+		win.setWidth(win.getWidth()+1);
+		win.setHeight(win.getHeight()+1);
 		win.invalidate();
 		win.invalidateHierarchy();
 		win.validate();
@@ -72,7 +73,7 @@ public class FrameBufferScreen extends GameScreen {
 		Image i = new Image(frmBuff.getColorBufferTexture());
 
 
-		FlickScrollPane scroll = new FlickScrollPane(i,"");
+		ScrollPane scroll = new ScrollPane(i,getSkin());
 		
 
 		
@@ -141,8 +142,8 @@ class FrameBufferActor extends Widget{
 	public FrameBufferActor(FrameBuffer buf){
 		this.buffer = buf;
 		this.bufferTexture = buf.getColorBufferTexture();
-		this.width = bufferTexture.getWidth();
-		this.height = bufferTexture.getHeight();
+		this.setWidth(bufferTexture.getWidth());
+		this.setHeight(bufferTexture.getHeight());
 	}
 	
 	@Override
@@ -152,10 +153,4 @@ class FrameBufferActor extends Widget{
 		System.out.printf("\n\n%d %d %d %d\n", 0,0,bufferTexture.getWidth(),bufferTexture.getHeight());
 	}
 
-	@Override
-	public Actor hit(float x, float y) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 }

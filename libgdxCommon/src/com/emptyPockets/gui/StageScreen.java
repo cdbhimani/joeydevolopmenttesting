@@ -42,8 +42,9 @@ public abstract class StageScreen extends GameScreen {
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
 		super.resize(width, height);
+		stage.setViewport(width, height, false);
 		stageCamera.viewportWidth = width;
-		stageCamera.viewportHeight=height;
+		stageCamera.viewportHeight= height;
 		stageCamera.position.x =width/2;
 		stageCamera.position.y =height/2;
 	}
@@ -63,7 +64,11 @@ public abstract class StageScreen extends GameScreen {
 	public void drawStage(float delta) {
 		stage.setCamera(stageCamera);
 		stage.act(delta);
-		stage.draw();
+		try{
+			stage.draw();
+		}catch(Exception e){
+			
+		}
 	}
 
 
