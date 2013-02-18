@@ -34,6 +34,7 @@ public class Tire {
 		getBody().setUserData(this);
 		
 		shape.dispose();
+
 	}
 	
 	public Vector2 getLateralVelocity(){
