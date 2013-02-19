@@ -96,11 +96,8 @@ public class Tire {
 		}
 		
 		force*=Math.abs(power);
-//		System.out.println("\nVel"+body.getLinearVelocity());
-		System.out.println("Force : "+force);
 		currentForwardNormal.nor().mul(force);
-//		System.out.println(currentForwardNormal);
-		getBody().applyForceToCenter(currentForwardNormal);//, getBody().getWorldCenter());
+		getBody().applyForceToCenter(currentForwardNormal);
 	}
 	
 	public void updateTurn(float power){

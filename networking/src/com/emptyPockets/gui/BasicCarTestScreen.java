@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -17,9 +18,13 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.emptyPockets.box2d.Box2DScreen;
 import com.emptyPockets.box2d.Car;
 
@@ -38,11 +43,17 @@ public class BasicCarTestScreen extends Box2DScreen{
 	TextButton accel;
 	TextButton decel;
 	
+	TextButton rotateUsingPhone;
+	TextButton rotateScreen;
+	
+	
 	Vector2 velocityTemp = new Vector2();	
 	Car car;
 	
 	long zoomLast = 0;
 	long zoomDelay = 100;
+	
+	boolean useRotate = false;
 	
 	public BasicCarTestScreen(InputMultiplexer inputProcessor) {
 		super(inputProcessor);
@@ -55,6 +66,10 @@ public class BasicCarTestScreen extends Box2DScreen{
 		accel = new TextButton("A",getSkin());
 		decel = new TextButton("D",getSkin());
 		
+		
+		rotateScreen = new TextButton("Fixed", getSkin(), "toggle");
+		rotateUsingPhone = new TextButton("Rotate", getSkin(), "toggle");
+		
 		setClearColor(Color.BLACK);
 		
 		pad = new Touchpad(5f, getSkin());
@@ -66,7 +81,7 @@ public class BasicCarTestScreen extends Box2DScreen{
 		super.createWorld(world);
 	
 		createPlayer();
-		createObjects(100, 2,5);	
+		createObjects(50, 1,5, 200,200);	
 	}
 	
 	@Override
@@ -84,22 +99,22 @@ public class BasicCarTestScreen extends Box2DScreen{
 		}
 	};
 
-	private void createObjects(int count, float minSize, float maxSize){
+	private void createObjects(int count, float minSize, float maxSize, float wide, float high){
 		for(int i = 0; i < count; i++){
 			BodyDef bodyDef = new BodyDef();
 			bodyDef.type=BodyType.DynamicBody;
 		
-			float radius = MathUtils.random(minSize, maxSize)*getWorldScale(); 
-			float x= MathUtils.random(0,Gdx.graphics.getWidth())*getWorldScale();
-			float y= MathUtils.random(0,Gdx.graphics.getHeight())*getWorldScale();
+			float radius = MathUtils.random(minSize, maxSize); 
+			float x= MathUtils.random(-wide,wide);
+			float y= MathUtils.random(-high,high);
 			bodyDef.position.set(x,y);
 			
 			Body body = getWorld().createBody(bodyDef);
 			body.setLinearDamping(1);
-			body.setAngularDamping(0.1f);
+			body.setAngularDamping(1f);
 			
 			FixtureDef fixtureDef = new FixtureDef();
-			fixtureDef.density = MathUtils.random(0.5f, 1f);
+			fixtureDef.density = 0.8f;
 			
 		
 			Shape s = null;
@@ -134,6 +149,16 @@ public class BasicCarTestScreen extends Box2DScreen{
 		float x = 0;
 		float y = 0;
 		
+		if(rotateUsingPhone.isChecked()){
+			float rot = Gdx.input.getAccelerometerY();
+			if(rot > 1){
+				x=rot;
+			}
+			if(rot < -1){
+				x = rot;
+			}
+			x/=10;
+		}
 		if(left.isPressed() || Gdx.input.isKeyPressed(Input.Keys.A)){
 			x=-1;
 		}
@@ -174,21 +199,24 @@ public class BasicCarTestScreen extends Box2DScreen{
 		float buttonHeight = 1f;
 		
 		in.setSize(ScreenSizeHelper.getcmtoPxlX(.6f), ScreenSizeHelper.getcmtoPxlY(.6f));
-		out.setSize(ScreenSizeHelper.getcmtoPxlX(.6f), ScreenSizeHelper.getcmtoPxlY(.6f));
-		
-		in.setPosition(0, Gdx.graphics.getHeight()-in.getHeight());
-		out.setPosition(Gdx.graphics.getWidth()-out.getWidth(), Gdx.graphics.getHeight()-out.getHeight());
-		
+		out.setSize(ScreenSizeHelper.getcmtoPxlX(.6f), ScreenSizeHelper.getcmtoPxlY(.6f));	
 		left.setSize(buttonWide-2*border,  ScreenSizeHelper.getcmtoPxlY(buttonHeight));
 		right.setSize(buttonWide-2*border, ScreenSizeHelper.getcmtoPxlY(buttonHeight));
 		accel.setSize(buttonWide-2*border, ScreenSizeHelper.getcmtoPxlY(buttonHeight));
 		decel.setSize(buttonWide-2*border, ScreenSizeHelper.getcmtoPxlY(buttonHeight));
+		rotateUsingPhone.setSize(buttonWide-2*border, ScreenSizeHelper.getcmtoPxlY(buttonHeight));
+		rotateScreen.setSize(buttonWide-2*border, ScreenSizeHelper.getcmtoPxlY(buttonHeight));
 		
 		left.setPosition(border, border);
 		right.setPosition(border+buttonWide, border);
-		
 		accel.setPosition(Gdx.graphics.getWidth()-2*buttonWide+border, border);
 		decel.setPosition(Gdx.graphics.getWidth()-buttonWide+border, border);
+		
+		in.setPosition(0, Gdx.graphics.getHeight()-in.getHeight());
+		out.setPosition(Gdx.graphics.getWidth()-out.getWidth(), Gdx.graphics.getHeight()-out.getHeight());
+
+		rotateUsingPhone.setPosition(Gdx.graphics.getWidth()/2-buttonWide, Gdx.graphics.getHeight()-rotateUsingPhone.getHeight());
+		rotateScreen.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()-rotateScreen.getHeight());
 		
 		in.invalidate();
 		out.invalidate();
@@ -196,7 +224,8 @@ public class BasicCarTestScreen extends Box2DScreen{
 		right.invalidate();
 		accel.invalidate();
 		decel.invalidate();
-		
+		rotateUsingPhone.invalidate();
+		rotateScreen.invalidate();
 		
 	}
 
@@ -210,11 +239,18 @@ public class BasicCarTestScreen extends Box2DScreen{
 		stage.addActor(decel);
 		stage.addActor(in);
 		stage.addActor(out);
+		stage.addActor(rotateUsingPhone);
+		stage.addActor(rotateScreen);
 	}
 
 	@Override
 	public void updateWorldCamera(OrthographicCamera worldCamera) {
 		super.updateWorldCamera(worldCamera);
+		
+		if(rotateScreen.isChecked()){
+			Vector2 v = car.getBody().getWorldVector(new Vector2(0,1)).cpy().nor();
+			worldCamera.up.set(v.x, v.y, 0);
+		}
 		worldCamera.position.x = car.getBody().getPosition().x;
 		worldCamera.position.y = car.getBody().getPosition().y;
 	}
