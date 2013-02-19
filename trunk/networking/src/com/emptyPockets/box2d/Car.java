@@ -51,10 +51,10 @@ public class Car {
         jointDef.upperAngle = 0;
         jointDef.localAnchorB.set(0, 0);//center of tire
 
-        float maxForwardSpeed = 100;
-        float maxBackwardSpeed = -50;
-        float backTireMaxDriveForce = 30;
-        float frontTireMaxDriveForce = 20;
+        float maxForwardSpeed = 200;
+        float maxBackwardSpeed = -100;
+        float backTireMaxDriveForce = 300;
+        float frontTireMaxDriveForce = 200;
         float backTireMaxLateralImpulse = 8.5f;
         float frontTireMaxLateralImpulse = 7.5f;
 
@@ -114,6 +114,7 @@ public class Car {
         flJoint.setLimits( newAngle, newAngle );
         frJoint.setLimits( newAngle, newAngle );
 	}
+	
 
 	public Body getBody() {
 		return body;
