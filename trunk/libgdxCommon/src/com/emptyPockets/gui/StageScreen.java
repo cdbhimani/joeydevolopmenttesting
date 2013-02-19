@@ -13,21 +13,18 @@ public abstract class StageScreen extends GameScreen {
 	public StageScreen(InputMultiplexer inputMultiplexer) {
 		super(inputMultiplexer);
 		stageCamera = new OrthographicCamera();
-		// TODO Auto-generated constructor stub
 	}
 
 	public abstract void createStage(Stage stage);
 	
 	@Override
 	public void addInputMultiplexer(InputMultiplexer input) {
-		// TODO Auto-generated method stub
 		super.addInputMultiplexer(input);
 		input.addProcessor(stage);
 	}
 	
 	@Override
 	public void removeInputMultiplexer(InputMultiplexer input) {
-		// TODO Auto-generated method stub
 		super.removeInputMultiplexer(input);
 		input.removeProcessor(stage);
 		
@@ -39,6 +36,13 @@ public abstract class StageScreen extends GameScreen {
 	}
 	
 	@Override
+	public void hide() {
+		super.hide();
+		stage.dispose();
+		stage = null;
+	}
+
+	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
 		super.resize(width, height);
@@ -48,22 +52,25 @@ public abstract class StageScreen extends GameScreen {
 		stageCamera.position.x =width/2;
 		stageCamera.position.y =height/2;
 	}
+	
 	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-		super.hide();
-		stage.dispose();
-	}
-
-	@Override
-	public void render(float delta) {
-		super.render(delta);
+	public void renderScreen(float delta) {
+		super.renderScreen(delta);
+		eventLogger.begin("Stage Draw");
 		drawStage(delta);
+		eventLogger.end("Stage Draw");
+	}
+	
+	@Override
+	public void updateLogic(float delta) {
+		super.updateLogic(delta);
+		eventLogger.begin("Stage Logic");
+		stage.act(delta);
+		eventLogger.end("Stage Logic");
 	}
 	
 	public void drawStage(float delta) {
 		stage.setCamera(stageCamera);
-		stage.act(delta);
 		try{
 			stage.draw();
 		}catch(Exception e){

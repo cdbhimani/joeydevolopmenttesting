@@ -14,8 +14,8 @@ public class ProgramMain extends Game{
 	public void create() {
 		input = new InputMultiplexer();
 		Gdx.input.setInputProcessor(input);
-//		BasicCarTestScreen screen = new BasicCarTestScreen(input);
-		NetworkScreen screen = new NetworkScreen(input);
+		BasicCarTestScreen screen = new BasicCarTestScreen(input);
+//		NetworkScreen screen = new NetworkScreen(input);
 		setScreen(screen);
 	}
 	

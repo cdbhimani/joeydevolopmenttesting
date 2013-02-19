@@ -133,6 +133,12 @@ public class NetworkScreen extends StageScreen{
 		
 	}
 
+	@Override
+	public void drawBackground(float delta) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
 
 class NetworkListener extends Listener{
