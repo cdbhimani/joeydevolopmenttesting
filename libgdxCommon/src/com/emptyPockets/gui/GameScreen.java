@@ -11,25 +11,26 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.emptyPockets.utils.event.EventRecorder;
 
 public abstract class GameScreen implements Screen, GestureListener, InputProcessor{
 
-	protected OrthographicCamera cam = new OrthographicCamera();
+	protected OrthographicCamera screenCamera = new OrthographicCamera();
 	GestureDetector gesture;
 	protected Color clearColor = new Color(1,1,1,1);
 	protected Skin skin;
-	protected long updateTime = 0;
-	protected long drawTime = 0;
+	protected EventRecorder eventLogger;
 	InputMultiplexer parentInputMultiplexer;
 	
 	public GameScreen(InputMultiplexer inputProcessor){
 		this.parentInputMultiplexer = inputProcessor;
 		this.gesture = new GestureDetector(this);
+		eventLogger = new EventRecorder(50);
 	}
 	
 	public void initializeRender(){
-		cam.update();
-		if(Gdx.gl10 !=null)cam.apply(Gdx.gl10);
+		screenCamera.update();
+		if(Gdx.gl10 !=null)screenCamera.apply(Gdx.gl10);
 		
 		Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT); // #14
@@ -60,29 +61,42 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 
 	@Override
-	public void render(float delta) {
-		long start;
-		start = System.currentTimeMillis();
+	public final void render(float delta) {
+		eventLogger.begin("Logic");
 		updateLogic(delta);
-		updateTime= System.currentTimeMillis()-start;
+		eventLogger.end("Logic");
 		
-		start = System.currentTimeMillis();
+		eventLogger.begin("Render");
 		initializeRender();
-		drawScreen(delta);
-		drawTime = System.currentTimeMillis()-start;
-		drawOverlay(delta);
+		renderScreen(delta);
+		eventLogger.end("Render");
 	}
 	
-	public abstract void drawScreen(float delta);
-	
-	public abstract void drawOverlay(float delta);
+	public void renderScreen(float delta){
+		eventLogger.begin("Background");
+		drawBackground(delta);
+		eventLogger.end("Background");
 		
-	public abstract void updateLogic(float delta);
+		eventLogger.begin("Screen");
+		drawScreen(delta);
+		eventLogger.end("Screen");
+		
+		eventLogger.begin("Overlay");
+		drawOverlay(delta);
+		eventLogger.end("Overlay");
+	}
+	
+	public void updateLogic(float delta){
+	}
+	
+	public abstract void drawBackground(float delta);
+	public abstract void drawScreen(float delta);
+	public abstract void drawOverlay(float delta);
 
 	@Override
 	public void resize(int width, int height) {
-		cam = new OrthographicCamera(width, height);
-		cam.translate(width / 2, height / 2, 0);
+		screenCamera = new OrthographicCamera(width, height);
+		screenCamera.translate(width / 2, height / 2, 0);
 	}
 
 

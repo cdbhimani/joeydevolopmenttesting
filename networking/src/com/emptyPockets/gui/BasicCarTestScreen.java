@@ -1,6 +1,7 @@
 package com.emptyPockets.gui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -19,14 +20,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.emptyPockets.box2d.Box2DScreen;
 import com.emptyPockets.box2d.Car;
 
-public class BasicCarTestScreen extends StageScreen{
-	public float worldToScreen = .51f;
-	OrthographicCamera worldCam;
-	
-	float worldBorderInset = 0.1f;
-	float worldBorder = 10f;
+public class BasicCarTestScreen extends Box2DScreen{
 	
 	float playerRotationPad = MathUtils.degreesToRadians*30000;
 	
@@ -47,13 +44,9 @@ public class BasicCarTestScreen extends StageScreen{
 	long zoomLast = 0;
 	long zoomDelay = 100;
 	
-	Box2DDebugRenderer render;
-	World world;
-	
 	public BasicCarTestScreen(InputMultiplexer inputProcessor) {
 		super(inputProcessor);
-		
-		
+		setShowDebug(true);
 		in= new TextButton("+",getSkin());
 		out = new TextButton("-",getSkin());
 		
@@ -62,21 +55,18 @@ public class BasicCarTestScreen extends StageScreen{
 		accel = new TextButton("A",getSkin());
 		decel = new TextButton("D",getSkin());
 		
-		worldCam = new OrthographicCamera();
 		setClearColor(Color.BLACK);
-		render = new Box2DDebugRenderer();
 		
 		pad = new Touchpad(5f, getSkin());
-		setupBox2D();
 		
 	}
 	
-	public void setupBox2D(){
-		world= new World(new Vector2(), true);
-//		createGround();
+	@Override
+	public void createWorld(World world) {
+		super.createWorld(world);
+	
 		createPlayer();
-		createObjects(100, 2,5);
-		
+		createObjects(100, 2,5);	
 	}
 	
 	@Override
@@ -88,9 +78,9 @@ public class BasicCarTestScreen extends StageScreen{
 	public void zoom(int amount) {
 		float scale = 0.03f;
 		if(amount >0){
-			worldToScreen*=1+scale;
+			setWorldScale(getWorldScale()*(1+scale));
 		}else{
-			worldToScreen*=1-scale;
+			setWorldScale(getWorldScale()*(1-scale));
 		}
 	};
 
@@ -99,12 +89,12 @@ public class BasicCarTestScreen extends StageScreen{
 			BodyDef bodyDef = new BodyDef();
 			bodyDef.type=BodyType.DynamicBody;
 		
-			float radius = MathUtils.random(minSize, maxSize); 
-			float x= MathUtils.random(0,Gdx.graphics.getWidth())*worldToScreen;
-			float y= MathUtils.random(0,Gdx.graphics.getHeight())*worldToScreen;
+			float radius = MathUtils.random(minSize, maxSize)*getWorldScale(); 
+			float x= MathUtils.random(0,Gdx.graphics.getWidth())*getWorldScale();
+			float y= MathUtils.random(0,Gdx.graphics.getHeight())*getWorldScale();
 			bodyDef.position.set(x,y);
 			
-			Body body = world.createBody(bodyDef);
+			Body body = getWorld().createBody(bodyDef);
 			body.setLinearDamping(1);
 			body.setAngularDamping(0.1f);
 			
@@ -134,75 +124,8 @@ public class BasicCarTestScreen extends StageScreen{
 		}
 	}
 	
-	private void createGround(){
-		//Bottom
-		{
-			BodyDef groundBodyDef =new BodyDef();  
-			groundBodyDef.position.set(new Vector2(0, 0));  
-	
-			Body groundBody = world.createBody(groundBodyDef);  
-			
-			PolygonShape groundBox = new PolygonShape();  
-			groundBox.setAsBox(worldBorder/2, worldBorderInset);
-			
-			Fixture fix = groundBody.createFixture(groundBox, 0.0f); 
-			
-			fix.setRestitution(0.9f);
-			groundBox.dispose();
-		}
-		
-		//TOP
-		{
-			BodyDef groundBodyDef =new BodyDef();  
-			groundBodyDef.position.set(new Vector2(0, Gdx.graphics.getHeight()-worldBorderInset));  
-	
-			Body groundBody = world.createBody(groundBodyDef);  
-			
-			PolygonShape groundBox = new PolygonShape();  
-			groundBox.setAsBox(worldBorder/2, worldBorderInset);
-			
-			Fixture fix = groundBody.createFixture(groundBox, 0.0f); 
-			
-			fix.setRestitution(0.9f);
-			groundBox.dispose();
-	
-		}
-		
-		//LEFT
-		{
-			BodyDef groundBodyDef =new BodyDef();  
-			groundBodyDef.position.set(0,0);  
-	
-			Body groundBody = world.createBody(groundBodyDef);  
-			
-			PolygonShape groundBox = new PolygonShape();  
-			groundBox.setAsBox(worldBorderInset,worldBorder/2);
-			
-			Fixture fix = groundBody.createFixture(groundBox, 0.0f); 
-			
-			fix.setRestitution(0.9f);
-			groundBox.dispose();
-		}
-		
-		//RIGHT
-		{
-			BodyDef groundBodyDef =new BodyDef();  
-			groundBodyDef.position.set(Gdx.graphics.getWidth()-worldBorderInset,0);  
-	
-			Body groundBody = world.createBody(groundBodyDef);  
-			
-			PolygonShape groundBox = new PolygonShape();  
-			groundBox.setAsBox(worldBorderInset,worldBorder/2);
-			
-			Fixture fix = groundBody.createFixture(groundBox, 0.0f); 
-			
-			fix.setRestitution(0.9f);
-			groundBox.dispose();
-		}
-	}
-	
 	private void createPlayer() {
-		car = new Car(world);
+		car = new Car(getWorld());
 		
 	}
 
@@ -211,44 +134,40 @@ public class BasicCarTestScreen extends StageScreen{
 		float x = 0;
 		float y = 0;
 		
-		if(left.isPressed())x=-1;
-		if(right.isPressed())x=1;
-		
-		if(accel.isPressed())y=1;
-		if(decel.isPressed())y=-1;
-		
-		if(in.isPressed() || out.isPressed()){
-			if(System.currentTimeMillis() > zoomLast+zoomDelay){
-				if(in.isPressed()){
-					scrolled(+1);
-				}
-				if(out.isPressed()){
-					scrolled(-1);
-				}
-				zoomLast = System.currentTimeMillis();
-			}
+		if(left.isPressed() || Gdx.input.isKeyPressed(Input.Keys.A)){
+			x=-1;
 		}
+		if(right.isPressed()|| Gdx.input.isKeyPressed(Input.Keys.D)){
+			x=1;
+		}
+		
+		if(accel.isPressed()|| Gdx.input.isKeyPressed(Input.Keys.W)){
+			y=1;
+		}
+		if(decel.isPressed()|| Gdx.input.isKeyPressed(Input.Keys.S)){
+			y=-1;
+		}
+		
+		int zoom = 0;
+		if(in.isPressed() || Gdx.input.isKeyPressed(Input.Keys.PLUS)){
+			zoom = 1;
+		}else if(out.isPressed() || Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
+			zoom = -1;
+		}
+
+		if((zoom != 0) && (System.currentTimeMillis() > zoomLast+zoomDelay)){
+			zoom(zoom);
+			zoomLast = System.currentTimeMillis();
+		}
+
 		car.update(x, y);
-		world.step(delta, 1, 1);
+		
+		super.updateLogic(delta);
 	}
 
-	public void updateCameraViewport(){
-		worldCam.viewportWidth = Gdx.graphics.getWidth()*worldToScreen;
-		worldCam.viewportHeight= Gdx.graphics.getHeight()*worldToScreen;
-		worldCam.position.set(car.getBody().getPosition().x, car.getBody().getPosition().y,0);
-		worldCam.update();
-	}
-	
-	@Override
-	public void drawScreen(float delta) {
-		updateCameraViewport();
-		render.render(world, worldCam.combined);
-	}
-	
 	@Override
 	public void resize(int width, int height) {
 		super.resize(width, height);
-		
 
 		float border = 4;
 		float buttonWide = Gdx.graphics.getWidth()/5;
@@ -271,6 +190,14 @@ public class BasicCarTestScreen extends StageScreen{
 		accel.setPosition(Gdx.graphics.getWidth()-2*buttonWide+border, border);
 		decel.setPosition(Gdx.graphics.getWidth()-buttonWide+border, border);
 		
+		in.invalidate();
+		out.invalidate();
+		left.invalidate();
+		right.invalidate();
+		accel.invalidate();
+		decel.invalidate();
+		
+		
 	}
 
 	@Override
@@ -286,8 +213,9 @@ public class BasicCarTestScreen extends StageScreen{
 	}
 
 	@Override
-	public void drawOverlay(float delta) {
-		
+	public void updateWorldCamera(OrthographicCamera worldCamera) {
+		super.updateWorldCamera(worldCamera);
+		worldCamera.position.x = car.getBody().getPosition().x;
+		worldCamera.position.y = car.getBody().getPosition().y;
 	}
-
 }

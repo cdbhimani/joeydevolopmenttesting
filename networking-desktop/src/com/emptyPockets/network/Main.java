@@ -9,8 +9,8 @@ public class Main {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "networking";
 		cfg.useGL20 = true;
-		cfg.width = 480;
-		cfg.height = 320;
+		cfg.width = 50;
+		cfg.height = 30;
 		
 		new LwjglApplication(new ProgramMain(), cfg);
 	}
