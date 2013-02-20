@@ -14,7 +14,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.emptyPockets.gui.StageScreen;
 
-public class Box2DScreen extends StageScreen{
+public abstract class Box2DScreen extends StageScreen{
 	private World world;
 	Vector2 gravity;
 	int velocityIterations = 2;
@@ -103,21 +103,7 @@ public class Box2DScreen extends StageScreen{
 		worldCamera.viewportHeight=Gdx.graphics.getHeight()*worldScale;
 	}
 	
-	@Override
-	public void createStage(Stage stage) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public void createWorld(World world){
-		
-	}
-
-	@Override
-	public void drawScreen(float delta) {
-		// TODO Auto-generated method stub
-		
-	}
+	public abstract void createWorld(World world);
 
 	@Override
 	public void drawBackground(float delta) {

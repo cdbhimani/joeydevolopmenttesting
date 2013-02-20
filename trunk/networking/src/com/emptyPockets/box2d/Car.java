@@ -14,7 +14,7 @@ import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.emptyPockets.network.NetworkEntity;
 
-public class Car {
+public class Car{
 	private Body body;
 	Vector<Tire> tires = new Vector<Tire>();
 	RevoluteJoint flJoint;

@@ -17,8 +17,7 @@ public class Box2DServer extends Listener {
 	World world;
 	WorldState worldState;
 	Server server;
-	public Box2DServer(){
-		world = new World(new Vector2(), true);
+	public Box2DServer(World world){
 		createServer();
 	}
 	
@@ -48,6 +47,7 @@ public class Box2DServer extends Listener {
 		Iterator<Body> bodies = world.getBodies();
 		while(bodies.hasNext()){
 			Body body = bodies.next();
+			
 			if(body.getUserData() instanceof NetworkEntity){
 				NetworkEntity entity = (NetworkEntity) body.getUserData();
 				entity.update();
@@ -58,11 +58,5 @@ public class Box2DServer extends Listener {
 	
 	public void sendWorldState(){
 		server.sendToAllTCP(worldState);
-	}
-	
-	public void update(float delta){
-		world.step(delta,3,3);
-		updateWorldState();
-		sendWorldState();
 	}
 }
