@@ -1,10 +1,13 @@
 package com.emptyPockets.gui;
 
+import java.util.Iterator;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -22,11 +25,13 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.emptyPockets.box2d.Box2DScreen;
 import com.emptyPockets.box2d.Car;
+import com.emptyPockets.box2d.BodyLauncher;
 
 public class BasicCarTestScreen extends Box2DScreen{
 	
@@ -40,18 +45,23 @@ public class BasicCarTestScreen extends Box2DScreen{
 	TextButton in;
 	TextButton out;
 	
+	TextButton shoot;
 	TextButton accel;
 	TextButton decel;
 	
 	TextButton rotateUsingPhone;
 	TextButton rotateScreen;
 	
+	TextField bulletCount;
+	
 	
 	Vector2 velocityTemp = new Vector2();	
 	Car car;
+	BodyLauncher gunA;
+	BodyLauncher gunB;
 	
 	long zoomLast = 0;
-	long zoomDelay = 100;
+	long zoomDelay = 50;
 	
 	boolean useRotate = false;
 	
@@ -65,7 +75,8 @@ public class BasicCarTestScreen extends Box2DScreen{
 		right = new TextButton("R",getSkin());
 		accel = new TextButton("A",getSkin());
 		decel = new TextButton("D",getSkin());
-		
+		shoot = new TextButton("Shoot", getSkin(),"toggle");
+		bulletCount = new TextField("Value", getSkin());
 		
 		rotateScreen = new TextButton("Fixed", getSkin(), "toggle");
 		rotateUsingPhone = new TextButton("Rotate", getSkin(), "toggle");
@@ -141,11 +152,31 @@ public class BasicCarTestScreen extends Box2DScreen{
 	
 	private void createPlayer() {
 		car = new Car(getWorld());
-		
+		gunA = new BodyLauncher(car.getBody(), new Vector2(-.5f,11), new Vector2(0,1), 1000, 100);
+		gunB = new BodyLauncher(car.getBody(), new Vector2(+.5f,11), new Vector2(0,1), 1000, 100);
 	}
 
+	public void removeInvaidBullets(){
+		int bulletCount = 0;
+		Iterator<Body> bodies = getWorld().getBodies();
+		while(bodies.hasNext()){
+			Body body = bodies.next();
+			if(body.getUserData() instanceof BodyLauncher){
+				bulletCount++;
+				BodyLauncher source= (BodyLauncher) body.getUserData();
+				//Remove Slow bullets
+				if(body.getLinearVelocity().len2() < source.getBulledMinSpeed2()
+				  || body.getPosition().dst2(car.getBody().getPosition()) > source.getBulletMaxDistance2()
+						){
+					removeBody(body);
+				}
+			}
+		}
+		this.bulletCount.setText(""+bulletCount);
+	}
 	@Override
 	public void updateLogic(float delta) {
+		removeInvaidBullets();
 		float x = 0;
 		float y = 0;
 		
@@ -185,6 +216,13 @@ public class BasicCarTestScreen extends Box2DScreen{
 			zoomLast = System.currentTimeMillis();
 		}
 
+		if(shoot.isChecked()){
+			if(MathUtils.randomBoolean()){
+				gunA.shoot();
+			}else{
+				gunB.shoot();
+			}
+		}
 		car.update(x, y);
 		
 		super.updateLogic(delta);
@@ -196,7 +234,7 @@ public class BasicCarTestScreen extends Box2DScreen{
 
 		float border = 4;
 		float buttonWide = Gdx.graphics.getWidth()/5;
-		float buttonHeight = 1f;
+		float buttonHeight = 0.6f;
 		
 		in.setSize(ScreenSizeHelper.getcmtoPxlX(.6f), ScreenSizeHelper.getcmtoPxlY(.6f));
 		out.setSize(ScreenSizeHelper.getcmtoPxlX(.6f), ScreenSizeHelper.getcmtoPxlY(.6f));	
@@ -204,14 +242,17 @@ public class BasicCarTestScreen extends Box2DScreen{
 		right.setSize(buttonWide-2*border, ScreenSizeHelper.getcmtoPxlY(buttonHeight));
 		accel.setSize(buttonWide-2*border, ScreenSizeHelper.getcmtoPxlY(buttonHeight));
 		decel.setSize(buttonWide-2*border, ScreenSizeHelper.getcmtoPxlY(buttonHeight));
+		shoot.setSize(2*buttonWide-2*border, ScreenSizeHelper.getcmtoPxlY(buttonHeight));
 		rotateUsingPhone.setSize(buttonWide-2*border, ScreenSizeHelper.getcmtoPxlY(buttonHeight));
 		rotateScreen.setSize(buttonWide-2*border, ScreenSizeHelper.getcmtoPxlY(buttonHeight));
 		
+		
+		bulletCount.setPosition(border, Gdx.graphics.getHeight()/2);
 		left.setPosition(border, border);
 		right.setPosition(border+buttonWide, border);
 		accel.setPosition(Gdx.graphics.getWidth()-2*buttonWide+border, border);
 		decel.setPosition(Gdx.graphics.getWidth()-buttonWide+border, border);
-		
+		shoot.setPosition(accel.getX(), accel.getHeight()+border);
 		in.setPosition(0, Gdx.graphics.getHeight()-in.getHeight());
 		out.setPosition(Gdx.graphics.getWidth()-out.getWidth(), Gdx.graphics.getHeight()-out.getHeight());
 
@@ -223,10 +264,11 @@ public class BasicCarTestScreen extends Box2DScreen{
 		left.invalidate();
 		right.invalidate();
 		accel.invalidate();
+		shoot.invalidate();
 		decel.invalidate();
 		rotateUsingPhone.invalidate();
 		rotateScreen.invalidate();
-		
+		bulletCount.invalidate();
 	}
 
 	@Override
@@ -241,6 +283,8 @@ public class BasicCarTestScreen extends Box2DScreen{
 		stage.addActor(out);
 		stage.addActor(rotateUsingPhone);
 		stage.addActor(rotateScreen);
+		stage.addActor(shoot);
+		stage.addActor(bulletCount);
 	}
 
 	@Override

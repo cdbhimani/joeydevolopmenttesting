@@ -1,11 +1,14 @@
 package com.emptyPockets.box2d;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -21,10 +24,13 @@ public class Box2DScreen extends StageScreen{
 	OrthographicCamera worldCamera;
 	float worldScale = 0.1f;
 	ShapeRenderer backShape;
+	
+	ArrayList<Body> bodiesToRemove; 
 	public Box2DScreen(InputMultiplexer inputMultiplexer) {
 		super(inputMultiplexer);
 		gravity = new Vector2();
 		worldCamera = new OrthographicCamera();
+		bodiesToRemove = new ArrayList<Body>();
 	}
 
 	public void show() {
@@ -38,6 +44,13 @@ public class Box2DScreen extends StageScreen{
 		createWorld(world);
 	}
 	
+	public void removeBody(Body body){
+		synchronized (bodiesToRemove) {
+			if(!bodiesToRemove.contains(body)){
+				bodiesToRemove.add(body);
+			}
+		}
+	}
 	@Override
 	public void hide() {
 		super.hide();
@@ -66,6 +79,12 @@ public class Box2DScreen extends StageScreen{
 	
 	public void updateWorld(float delta){
 		getWorld().step(delta, velocityIterations, positionIterations);
+		synchronized (bodiesToRemove) {
+			for(Body b : bodiesToRemove) {
+				getWorld().destroyBody(b);
+			}
+			bodiesToRemove.clear();
+		}
 		updateWorldCamera(worldCamera);
 		worldCamera.update();
 	}
