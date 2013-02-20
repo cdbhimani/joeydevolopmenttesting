@@ -31,7 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.emptyPockets.box2d.Box2DScreen;
 import com.emptyPockets.box2d.Car;
-import com.emptyPockets.box2d.BodyLauncher;
+import com.emptyPockets.box2d.BulletLauncher;
 
 public class BasicCarTestScreen extends Box2DScreen{
 	
@@ -57,8 +57,8 @@ public class BasicCarTestScreen extends Box2DScreen{
 	
 	Vector2 velocityTemp = new Vector2();	
 	Car car;
-	BodyLauncher gunA;
-	BodyLauncher gunB;
+	BulletLauncher gunA;
+	BulletLauncher gunB;
 	
 	long zoomLast = 0;
 	long zoomDelay = 50;
@@ -152,8 +152,8 @@ public class BasicCarTestScreen extends Box2DScreen{
 	
 	private void createPlayer() {
 		car = new Car(getWorld());
-		gunA = new BodyLauncher(car.getBody(), new Vector2(-.5f,11), new Vector2(0,1), 1000, 100);
-		gunB = new BodyLauncher(car.getBody(), new Vector2(+.5f,11), new Vector2(0,1), 1000, 100);
+		gunA = new BulletLauncher(car.getBody(), new Vector2(-.5f,11), new Vector2(0,1), 1000, 100);
+		gunB = new BulletLauncher(car.getBody(), new Vector2(+.5f,11), new Vector2(0,1), 1000, 100);
 	}
 
 	public void removeInvaidBullets(){
@@ -161,9 +161,9 @@ public class BasicCarTestScreen extends Box2DScreen{
 		Iterator<Body> bodies = getWorld().getBodies();
 		while(bodies.hasNext()){
 			Body body = bodies.next();
-			if(body.getUserData() instanceof BodyLauncher){
+			if(body.getUserData() instanceof BulletLauncher){
 				bulletCount++;
-				BodyLauncher source= (BodyLauncher) body.getUserData();
+				BulletLauncher source= (BulletLauncher) body.getUserData();
 				//Remove Slow bullets
 				if(body.getLinearVelocity().len2() < source.getBulledMinSpeed2()
 				  || body.getPosition().dst2(car.getBody().getPosition()) > source.getBulletMaxDistance2()
