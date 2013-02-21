@@ -2,6 +2,7 @@ package com.emptyPockets.bodyEditor.main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -10,25 +11,31 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.emptyPockets.bodyEditor.entity.PolygonEntity;
+import com.emptyPockets.bodyEditor.main.controls.EntityControler;
 import com.emptyPockets.gui.StageScreen;
 import com.emptyPockets.utils.OrthoCamController;
 
-public class PolygonEditorScreen extends StageScreen {
-	PolygonEntity entity;
+public class EntityEditorScreen extends StageScreen {
+	private PolygonEntity entity;
 	OrthographicCamera cam;
 	OrthoCamController camControl;
 	ShapeRenderer shape;
+	EntityControler currentControler;
 	
 	//Temp for camera 
 	Vector3 _tmpCam2MouseVec = new Vector3();
 	
 	
-	public PolygonEditorScreen(InputMultiplexer inputMultiplexer) {
+	public EntityEditorScreen(InputMultiplexer inputMultiplexer) {
 		super(inputMultiplexer);
-		entity = new PolygonEntity();
+		setEntity(new PolygonEntity());
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camControl= new OrthoCamController(cam);
 		setClearColor(Color.DARK_GRAY);
+	}
+	
+	public float getMouseDistance(){
+		return 5;
 	}
 
 	@Override
@@ -80,7 +87,7 @@ public class PolygonEditorScreen extends StageScreen {
 		float nodeSize = getMouseDistance();
 		shape.begin(ShapeType.Rectangle);
 		shape.setColor(Color.RED);
-		for(Vector2 p : entity.getPolygon()){
+		for(Vector2 p : getEntity().getPolygon()){
 			shape.rect(p.x-nodeSize, p.y-nodeSize, 2*nodeSize, 2*nodeSize);
 		}
 		shape.end();
@@ -90,20 +97,18 @@ public class PolygonEditorScreen extends StageScreen {
 		Vector2 p2;
 		shape.begin(ShapeType.Line);
 		shape.setColor(Color.WHITE);
-		for(int i = 1; i < entity.getPolygon().size(); i++){
-			p1 = entity.getPolygon().get(i-1);
-			p2 = entity.getPolygon().get(i);
+		for(int i = 1; i < getEntity().getPolygon().size(); i++){
+			p1 = getEntity().getPolygon().get(i-1);
+			p2 = getEntity().getPolygon().get(i);
 			shape.line(p1.x, p1.y, p2.x, p2.y);
 		}
 		//Close Shape
-		if(entity.getPolygon().size() > 2){
-			p1 = entity.getPolygon().get(entity.getPolygon().size()-1);
-			p2 = entity.getPolygon().get(0);
+		if(getEntity().getPolygon().size() > 2){
+			p1 = getEntity().getPolygon().get(getEntity().getPolygon().size()-1);
+			p2 = getEntity().getPolygon().get(0);
 			shape.line(p1.x, p1.y, p2.x, p2.y);
 		}
 		shape.end();
-		
-		
 	}
 
 	public void camToPanel(float x, float y, Vector2 vec){
@@ -114,49 +119,41 @@ public class PolygonEditorScreen extends StageScreen {
 			vec.y = _tmpCam2MouseVec.y;
 		}
 	}
-	@Override
-	public boolean touchDown(int x, int y, int pointer, int button) {
-		Vector2 mouse = new Vector2();
-		camToPanel(x, y, mouse);
-		float mouseDistance = getMouseDistance();
-		float mouseDistance2 = mouseDistance*mouseDistance;
-		for(Vector2 p : entity.getPolygon()){
-			if(p.dst2(mouse) < mouseDistance2){
-				return true;
-			}
-		}
-		return false;
-	}
 	
-	public float getMouseDistance(){
-		return 5;
-	}
-	
-	@Override
-	public boolean tap(float x, float y, int count, int button) {
-		synchronized (entity) {
-			Vector2 v = new Vector2();
-			camToPanel(x, y, v);
-			entity.getPolygon().add(v);
-		}
-		return false;
-	}
-	
-	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		return false;
-	}
-		
-	@Override
-	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		return false;
-	}
 	@Override
 	public void drawOverlay(float delta) {
-
 	}
 
 	@Override
 	public void drawStage(float delta) {
+	}
+
+	public PolygonEntity getEntity() {
+		return entity;
+	}
+
+	public void setEntity(PolygonEntity entity) {
+		this.entity = entity;
+	}
+	
+	@Override
+	public boolean touchDown(float x, float y, int pointer, int button) {
+		if(currentControler != null){
+			return currentControler.touchDown(x, y, pointer, button);
+		}
+		return super.touchDown(x, y, pointer, button);
+	}
+	
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return super.touchUp(screenX, screenY, pointer, button);
+	}
+	@Override
+	public boolean touchUp(float x, float y, int pointer, int button) {
+		if(currentControler != null){
+			return currentControler.touchDown(x, y, pointer, button);
+		}
+		return super.touchDown(x, y, pointer, button);
 	}
 }
