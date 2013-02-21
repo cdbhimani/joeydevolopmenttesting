@@ -88,11 +88,9 @@ public class BasicCarTestScreen extends Box2DScreen{
 	}
 	
 	@Override
-	public void createWorld(World world) {
-		super.createWorld(world);
-	
+	public void createWorld(World world) {	
 		createPlayer();
-		createObjects(50, 1,5, 200,200);	
+		createObjects(500, 1,5, 800,800);	
 	}
 	
 	@Override
@@ -297,5 +295,11 @@ public class BasicCarTestScreen extends Box2DScreen{
 		}
 		worldCamera.position.x = car.getBody().getPosition().x;
 		worldCamera.position.y = car.getBody().getPosition().y;
+	}
+
+	@Override
+	public void drawScreen(float delta) {
+		// TODO Auto-generated method stub
+		
 	}
 }

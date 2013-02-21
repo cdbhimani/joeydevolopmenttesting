@@ -3,6 +3,7 @@ package com.emptyPockets.main;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.emptyPockets.bodyEditor.main.PolygonEditorScreen;
 import com.emptyPockets.gui.GameScreen;
 import com.emptyPockets.gui.BasicCarTestScreen;
 import com.emptyPockets.gui.Network;
@@ -17,7 +18,8 @@ public class ProgramMain extends Game{
 		Gdx.input.setInputProcessor(input);
 //		BasicCarTestScreen screen = new BasicCarTestScreen(input);
 //		NetworkScreen screen = new NetworkScreen(input);
-		Network screen = new Network(input);
+//		Network screen = new Network(input);
+		PolygonEditorScreen screen = new PolygonEditorScreen(input);
 		setScreen(screen);
 	}
 	
