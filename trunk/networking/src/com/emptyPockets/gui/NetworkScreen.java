@@ -92,7 +92,7 @@ public class NetworkScreen extends StageScreen{
 	
 	public void startClient(){
 		Console.println("Starting Client");
-		ServerDiscovery.findServer(stage, client, Network.getNetwork().tcpPort,Network.getNetwork().udpPort, Network.getNetwork().discoveryTimeout, Network.getNetwork().connectionTimeout);
+		ServerDiscovery.findServer(getStage(), client, Network.getNetwork().tcpPort,Network.getNetwork().udpPort, Network.getNetwork().discoveryTimeout, Network.getNetwork().connectionTimeout);
 		Console.println("Finished Client");
 	}
 

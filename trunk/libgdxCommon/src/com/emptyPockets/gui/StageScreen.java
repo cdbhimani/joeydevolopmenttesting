@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public abstract class StageScreen extends GameScreen {
 
-	Stage stage;
+	private Stage stage;
 	OrthographicCamera stageCamera;
 	
 	public StageScreen(InputMultiplexer inputMultiplexer) {
@@ -20,33 +20,33 @@ public abstract class StageScreen extends GameScreen {
 	@Override
 	public void addInputMultiplexer(InputMultiplexer input) {
 		super.addInputMultiplexer(input);
-		input.addProcessor(stage);
+		input.addProcessor(getStage());
 	}
 	
 	@Override
 	public void removeInputMultiplexer(InputMultiplexer input) {
 		super.removeInputMultiplexer(input);
-		input.removeProcessor(stage);
+		input.removeProcessor(getStage());
 		
 	}
 	public void show() {
-		stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getWidth(), false);
+		setStage(new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getWidth(), false));
 		super.show();
-		createStage(stage);
+		createStage(getStage());
 	}
 	
 	@Override
 	public void hide() {
 		super.hide();
-		stage.dispose();
-		stage = null;
+		getStage().dispose();
+		setStage(null);
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
 		super.resize(width, height);
-		stage.setViewport(width, height, false);
+		getStage().setViewport(width, height, false);
 		stageCamera.viewportWidth = width;
 		stageCamera.viewportHeight= height;
 		stageCamera.position.x =width/2;
@@ -65,17 +65,25 @@ public abstract class StageScreen extends GameScreen {
 	public void updateLogic(float delta) {
 		super.updateLogic(delta);
 		eventLogger.begin("Stage Logic");
-		stage.act(delta);
+		getStage().act(delta);
 		eventLogger.end("Stage Logic");
 	}
 	
 	public void drawStage(float delta) {
-		stage.setCamera(stageCamera);
+		getStage().setCamera(stageCamera);
 		try{
-			stage.draw();
+			getStage().draw();
 		}catch(Exception e){
 			
 		}
+	}
+
+	public Stage getStage() {
+		return stage;
+	}
+
+	public void setStage(Stage stage) {
+		this.stage = stage;
 	}
 
 
