@@ -2,7 +2,6 @@ package com.emptyPockets.bodyEditor.main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -10,28 +9,31 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.emptyPockets.bodyEditor.entity.Entity;
 import com.emptyPockets.bodyEditor.entity.PolygonEntity;
-import com.emptyPockets.bodyEditor.main.controls.EntityControler;
+import com.emptyPockets.bodyEditor.main.controls.EntityEditorControlsManager;
 import com.emptyPockets.gui.StageScreen;
-import com.emptyPockets.utils.OrthoCamController;
 
 public class EntityEditorScreen extends StageScreen {
-	private PolygonEntity entity;
-	OrthographicCamera cam;
-	OrthoCamController camControl;
-	ShapeRenderer shape;
-	EntityControler currentControler;
+	
+	EntityEditorControlsManager controls;
+	Entity entity;
 	
 	//Temp for camera 
 	Vector3 _tmpCam2MouseVec = new Vector3();
-	
+	OrthographicCamera editorCamera;
+	ShapeRenderer shape;
 	
 	public EntityEditorScreen(InputMultiplexer inputMultiplexer) {
 		super(inputMultiplexer);
-		setEntity(new PolygonEntity());
-		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		camControl= new OrthoCamController(cam);
 		setClearColor(Color.DARK_GRAY);
+		
+		
+		editorCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		controls = new EntityEditorControlsManager(this);
+		controls.update();
+		
+		setEntity(new PolygonEntity());
 	}
 	
 	public float getMouseDistance(){
@@ -58,68 +60,56 @@ public class EntityEditorScreen extends StageScreen {
 	@Override
 	public void addInputMultiplexer(InputMultiplexer input) {
 		super.addInputMultiplexer(input);
-		input.addProcessor(camControl);		
+		input.addProcessor(controls.getInputMultiplexer());		
 	}
 	
 	@Override
 	public void removeInputMultiplexer(InputMultiplexer input) {
 		super.removeInputMultiplexer(input);
-		input.removeProcessor(camControl);		
+		input.removeProcessor(controls.getInputMultiplexer());		
 	}
 	
 	@Override
 	public void resize(int width, int height) {
-		cam.viewportWidth = width;
-		cam.viewportHeight = height;
+		editorCamera.viewportWidth = width;
+		editorCamera.viewportHeight = height;
 	}
 
 	@Override
 	public void drawBackground(float delta) {
-
+		editorCamera.update();
+		shape.setProjectionMatrix(editorCamera.combined);
+		shape.begin(ShapeType.Rectangle);
+		shape.setColor(Color.RED);
+		shape.rect(0, 0, 100, 100);
+		shape.end();
 	}
 
 	@Override
 	public void drawScreen(float delta) {
-		cam.update();
-		shape.setProjectionMatrix(cam.combined);
+		editorCamera.update();
+		shape.setProjectionMatrix(editorCamera.combined);
 		
-		//Draw Nodes
-		float nodeSize = getMouseDistance();
-		shape.begin(ShapeType.Rectangle);
-		shape.setColor(Color.RED);
-		for(Vector2 p : getEntity().getPolygon()){
-			shape.rect(p.x-nodeSize, p.y-nodeSize, 2*nodeSize, 2*nodeSize);
-		}
-		shape.end();
+		Entity entity = getEntity();
 		
-		//Draw Lines
-		Vector2 p1;
-		Vector2 p2;
-		shape.begin(ShapeType.Line);
-		shape.setColor(Color.WHITE);
-		for(int i = 1; i < getEntity().getPolygon().size(); i++){
-			p1 = getEntity().getPolygon().get(i-1);
-			p2 = getEntity().getPolygon().get(i);
-			shape.line(p1.x, p1.y, p2.x, p2.y);
-		}
-		//Close Shape
-		if(getEntity().getPolygon().size() > 2){
-			p1 = getEntity().getPolygon().get(getEntity().getPolygon().size()-1);
-			p2 = getEntity().getPolygon().get(0);
-			shape.line(p1.x, p1.y, p2.x, p2.y);
-		}
-		shape.end();
+		controls.drawScreen(shape, entity);
+
 	}
 
+	
 	public void camToPanel(float x, float y, Vector2 vec){
 		synchronized (_tmpCam2MouseVec) {
 			_tmpCam2MouseVec.set(x,y,0);
-			cam.unproject(_tmpCam2MouseVec);
+			editorCamera.unproject(_tmpCam2MouseVec);
 			vec.x = _tmpCam2MouseVec.x;
 			vec.y = _tmpCam2MouseVec.y;
 		}
 	}
 	
+	public void updateScreenControl(){
+		controls.update();
+	}
+
 	@Override
 	public void drawOverlay(float delta) {
 	}
@@ -128,32 +118,19 @@ public class EntityEditorScreen extends StageScreen {
 	public void drawStage(float delta) {
 	}
 
-	public PolygonEntity getEntity() {
+	public Entity getEntity() {
 		return entity;
 	}
 
-	public void setEntity(PolygonEntity entity) {
+	public void setEntity(Entity entity) {
 		this.entity = entity;
+		updateScreenControl();
+	}
+
+	public OrthographicCamera getEditorCamera() {
+		return editorCamera;
 	}
 	
-	@Override
-	public boolean touchDown(float x, float y, int pointer, int button) {
-		if(currentControler != null){
-			return currentControler.touchDown(x, y, pointer, button);
-		}
-		return super.touchDown(x, y, pointer, button);
-	}
 	
-	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return super.touchUp(screenX, screenY, pointer, button);
-	}
-	@Override
-	public boolean touchUp(float x, float y, int pointer, int button) {
-		if(currentControler != null){
-			return currentControler.touchDown(x, y, pointer, button);
-		}
-		return super.touchDown(x, y, pointer, button);
-	}
 }
+
