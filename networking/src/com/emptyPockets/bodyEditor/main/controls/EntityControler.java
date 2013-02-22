@@ -1,11 +1,28 @@
 package com.emptyPockets.bodyEditor.main.controls;
 
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class EntityControler  implements InputProcessor, GestureListener {
 
+	GestureDetector gestureDetector;
+	
+	public EntityControler(){
+		gestureDetector = new GestureDetector(this);
+	}
+	
+	public void attach(InputMultiplexer owner){
+		owner.addProcessor(this);
+		owner.addProcessor(gestureDetector);
+	}
+	
+	public void detach(InputMultiplexer owner){
+		owner.removeProcessor(this);
+		owner.removeProcessor(gestureDetector);
+	}
 	@Override
 	public boolean touchDown(float x, float y, int pointer, int button) {
 		// TODO Auto-generated method stub
