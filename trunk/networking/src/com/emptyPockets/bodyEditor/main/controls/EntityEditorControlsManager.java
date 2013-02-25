@@ -2,45 +2,96 @@ package com.emptyPockets.bodyEditor.main.controls;
 
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.emptyPockets.bodyEditor.entity.Entity;
 import com.emptyPockets.bodyEditor.entity.PolygonEntity;
 import com.emptyPockets.bodyEditor.main.EntityEditorScreen;
+import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.utils.OrthoCamController;
 
-public class EntityEditorControlsManager {
+public class EntityEditorControlsManager extends Table {
 	EntityEditorScreen owner;
-	
+
 	OrthoCamController cameraControl;
 	PolygonControler polygonControl;
-	
+
 	InputMultiplexer inputMultiplexer;
 
-	
-	public EntityEditorControlsManager(EntityEditorScreen editor){
+	ButtonGroup buttonGroup;
+	Button positionButton;
+	Button editorButton;
+
+	public EntityEditorControlsManager(EntityEditorScreen editor) {
 		this.owner = editor;
-		cameraControl = new OrthoCamController(owner.getEditorCamera());
 		inputMultiplexer = new InputMultiplexer();
+
+		cameraControl = new OrthoCamController(owner.getEditorCamera());
 		polygonControl = new PolygonControler(owner);
-				
+
+		positionButton = new TextButton("+", owner.getSkin(), "toggle");
+		editorButton = new TextButton("E", owner.getSkin(), "toggle");
+		
+		buttonGroup = new ButtonGroup();
+		buttonGroup.add(positionButton);
+		buttonGroup.add(editorButton);
+		editorButton.setChecked(true);
+		buttonGroup.setMaxCheckCount(1);
+
+		layoutButtons();
 		attachListeners();
-	}
-	
-	private void attachListeners(){
 		
-		if(owner.getEntity() instanceof PolygonEntity){
-			polygonControl.attach(inputMultiplexer);
+		ChangeListener change = new ChangeListener(){
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				update();
+			}
+		};
+		
+		positionButton.addListener(change);
+		editorButton.addListener(change);
+	}
+
+	public void layoutButtons() {
+		float sizeX = ScreenSizeHelper.getcmtoPxlX(.6f);
+		float sizeY = ScreenSizeHelper.getcmtoPxlY(.6f);
+		clear();
+		add(positionButton).size(sizeX, sizeY);
+		row();
+		add(editorButton).size(sizeX, sizeY);
+		pack();
+	}
+
+	private void attachListeners() {
+
+		if (editorButton.isChecked()) {
+			if (owner.getEntity() instanceof PolygonEntity) {
+				polygonControl.attach(inputMultiplexer);
+			}
+			
+//			inputMultiplexer.addProcessor(cameraControl);
 		}
-		
-		inputMultiplexer.addProcessor(cameraControl);
+
+		if (positionButton.isChecked()) {
+			inputMultiplexer.addProcessor(cameraControl);
+		}
 	}
-	
-	private void detachListeners(){
+
+	private void detachListeners() {
 		inputMultiplexer.clear();
 	}
-	
-	public void update(){
+
+	public void update() {
 		detachListeners();
 		attachListeners();
+
+		if (owner.getEntity() instanceof PolygonEntity) {
+			polygonControl.setPolygon(((PolygonEntity) owner.getEntity()).getPolygon());
+		}
 	}
 
 	public InputMultiplexer getInputMultiplexer() {
@@ -52,11 +103,17 @@ public class EntityEditorControlsManager {
 	}
 
 	public void drawScreen(ShapeRenderer shape, Entity entity) {
-		if(entity != null){
-			if(entity instanceof PolygonEntity){
-				polygonControl.drawPolygonEntity(shape, (PolygonEntity) entity);
+		if (entity != null) {
+			if (entity instanceof PolygonEntity) {
+				polygonControl.drawPolygon(shape,
+						((PolygonEntity) entity).getPolygon(), editorButton.isChecked());
 			}
 		}
-		
+
 	}
+
+	public void resize(int width, int height) {
+		layoutButtons();
+	}
+
 }
