@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
@@ -18,6 +19,7 @@ import com.emptyPockets.graphics.GraphicsToolkit;
 import com.emptyPockets.gui.StageScreen;
 
 public class EntityEditorScreen extends StageScreen {
+	TextureAtlas textureAtlas;
 	
 	EntityEditorControlsManager controls;
 	Entity entity;
@@ -118,7 +120,16 @@ public class EntityEditorScreen extends StageScreen {
 	@Override
 	public void drawOverlay(float delta) {
 		// TODO Auto-generated method stub
-		
+
+	    long lastFlip = 0;
+	    long flipTime = 1000;
+	    boolean display = false;
+	    
+	    //..In your rendering loop
+	    if(lastFlip+flipTime > System.currentTimeMillis()){
+	         display = false;
+	         lastFlip = System.currentTimeMillis();
+	    }
 	}
 	
 	public void updateScreenControl(){
