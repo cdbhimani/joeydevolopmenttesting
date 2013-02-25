@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptyPockets.bodyEditor.main.EntityEditorScreen;
@@ -13,7 +14,6 @@ import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.utils.maths.MathsToolkit;
 
 public class PolygonControler extends EntityControler{
-	EntityEditorScreen owner;
 	float minPixelDistance = ScreenSizeHelper.getcmtoPxlX(.25f);
 
 	Vector2 lastMouse = new Vector2();
@@ -36,7 +36,7 @@ public class PolygonControler extends EntityControler{
 	
 	
 	public PolygonControler(EntityEditorScreen owner){
-		this.owner = owner;
+		super(owner);
 	}
 	
 	private Vector2 getPoint(int index){
@@ -81,7 +81,7 @@ public class PolygonControler extends EntityControler{
 					}
 				}
 			}else{ //Double Tap Remove
-				if(pointSelectedCount == 0){
+				if(pointSelectedCount == 0 && mousePointSelectedIndex != -1){
 					//Deal with a case where 
 					removePoint(mousePointSelectedIndex);
 					clearGroupSelection();
