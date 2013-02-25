@@ -5,12 +5,14 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
+import com.emptyPockets.bodyEditor.main.EntityEditorScreen;
 
 public abstract class EntityControler  implements InputProcessor, GestureListener {
-
+	protected EntityEditorScreen owner;
 	GestureDetector gestureDetector;
 	
-	public EntityControler(){
+	public EntityControler(EntityEditorScreen owner){
+		this.owner = owner;
 		gestureDetector = new GestureDetector(this);
 	}
 	
