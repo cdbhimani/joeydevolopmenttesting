@@ -6,11 +6,13 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
 import com.emptyPockets.bodyEditor.main.EntityEditorScreen;
+import com.emptyPockets.gui.ScreenSizeHelper;
 
 public abstract class EntityControler  implements InputProcessor, GestureListener {
+	
 	protected EntityEditorScreen owner;
 	GestureDetector gestureDetector;
-	
+	protected float minContactDistance = ScreenSizeHelper.getcmtoPxlX(.4f);
 	public EntityControler(EntityEditorScreen owner){
 		this.owner = owner;
 		gestureDetector = new GestureDetector(this);

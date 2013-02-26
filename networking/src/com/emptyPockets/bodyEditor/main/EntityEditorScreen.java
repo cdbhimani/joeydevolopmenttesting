@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.emptyPockets.bodyEditor.entity.Entity;
 import com.emptyPockets.bodyEditor.entity.PolygonEntity;
+import com.emptyPockets.bodyEditor.entity.RectangleEntity;
 import com.emptyPockets.bodyEditor.main.controls.EntityEditorControlsManager;
 import com.emptyPockets.graphics.GraphicsToolkit;
 import com.emptyPockets.gui.StageScreen;
@@ -43,7 +44,8 @@ public class EntityEditorScreen extends StageScreen {
 		controls = new EntityEditorControlsManager(this);
 		controls.update();
 		
-		setEntity(new PolygonEntity());
+		setEntity(new RectangleEntity());
+//		setEntity(new PolygonEntity());
 	}
 
 	@Override
