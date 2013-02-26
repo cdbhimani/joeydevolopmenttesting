@@ -20,7 +20,7 @@ public class EntityEditorControlsManager extends Table {
 
 	OrthoCamController cameraControl;
 	PolygonControler polygonControl;
-	ExceptionControler rectangleControl;
+	RectangleControler rectangleControl;
 	
 	InputMultiplexer inputMultiplexer;
 
@@ -34,7 +34,7 @@ public class EntityEditorControlsManager extends Table {
 
 		cameraControl = new OrthoCamController(owner.getEditorCamera());
 		polygonControl = new PolygonControler(owner);
-		rectangleControl = new ExceptionControler(owner);
+		rectangleControl = new RectangleControler(owner);
 		
 		positionButton = new TextButton("+", owner.getSkin(), "toggle");
 		editorButton = new TextButton("E", owner.getSkin(), "toggle");
