@@ -14,7 +14,7 @@ import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.utils.maths.MathsToolkit;
 
 public class PolygonControler extends EntityControler{
-	float minPixelDistance = ScreenSizeHelper.getcmtoPxlX(.25f);
+	
 
 	Vector2 lastMouse = new Vector2();
 	Vector2 firstDown = new Vector2();
@@ -63,15 +63,18 @@ public class PolygonControler extends EntityControler{
 	
 	@Override
 	public boolean tap(float x, float y, int count, int button) {
+		boolean returnValue = false;
 		synchronized (polygonPointData) {
 			owner.camToPanel(x, y, lastMouse);
 			updateMouseSelection();
+
 			//Check if there is a selection - if so remove it
 			if(lineSelectedCount > 0 || pointSelectedCount > 0){
 				clearGroupSelection();
 				updateGroupSelection();
-			}else if(count == 1){
-				//Ignore if mouse on point
+				returnValue = true;
+			}else if(count == 1){ 
+				//Add point if mouse not over another point
 				if(mousePointSelectedIndex == -1){
 					Vector2 pos = lastMouse.cpy();
 					if(mouseLineSelectedIndex != -1){
@@ -79,18 +82,21 @@ public class PolygonControler extends EntityControler{
 					}else{
 						addPoint(pos);
 					}
+					returnValue = true;
 				}
-			}else{ //Double Tap Remove
-				if(pointSelectedCount == 0 && mousePointSelectedIndex != -1){
+				
+			}else if(count == 2){ 
+				//Remove if over existing point
+				if(mousePointSelectedIndex != -1){
 					//Deal with a case where 
 					removePoint(mousePointSelectedIndex);
-					clearGroupSelection();
-					return true;
+					returnValue = true;
 				}
 			}
-			clearGroupSelection();
 		}
-		return false;
+		clearMouseSelection();
+		
+		return returnValue;
 	}
 	
 	@Override
@@ -237,19 +243,12 @@ public class PolygonControler extends EntityControler{
 		selectedRegion.width  =lastMouse.x-firstDown.x;
 		selectedRegion.height =lastMouse.y-firstDown.y;
 		
-		if(selectedRegion.width < 0){
-			selectedRegion.x+=selectedRegion.width;
-			selectedRegion.width*=-1;
-		}
-		if(selectedRegion.height < 0){
-			selectedRegion.y+=selectedRegion.height;
-			selectedRegion.height*=-1;
-		}
+		MathsToolkit.validateRectangle(selectedRegion);
 	}
 
 	private void updateMouseSelection(){
 		clearMouseSelection();
-		float mouseDistance = owner.panelToCam(minPixelDistance);
+		float mouseDistance = owner.panelToCam(minContactDistance)/2;
 		float mouseDistance2 = mouseDistance*mouseDistance;
 		
 		boolean pointFound = false;
@@ -336,7 +335,8 @@ public class PolygonControler extends EntityControler{
 		}
 	}
 	
-	public void drawPolygon(ShapeRenderer shape, ArrayList<Vector2> data, boolean edit){
+	public void draw(ShapeRenderer shape, boolean edit){
+		
 		if(activeSelectionRegion){
 			Color c = Color.LIGHT_GRAY;
 			c.a = 0.5f;
@@ -352,7 +352,7 @@ public class PolygonControler extends EntityControler{
 			shape.end();
 		}
 		
-		if(data == null || data.size() == 0){
+		if(polygonPointData == null || polygonPointData.size() == 0){
 			return;
 		}
 		
@@ -367,18 +367,18 @@ public class PolygonControler extends EntityControler{
 			Color line = Color.BLUE;
 			Color lineSelected = Color.CYAN;
 			
-			for(int i = 0; i <  data.size() && data.size() > 1; i++){
+			for(int i = 0; i <  polygonPointData.size() && polygonPointData.size() > 1; i++){
 				if(isLineSelected(i) && edit){
 					shape.setColor(lineSelected);		
 				}else{
 					shape.setColor(line);
 				}
-				if(i < data.size()-1){
-					p1 =  data.get(i);
-					p2 =  data.get(i+1);	
+				if(i < polygonPointData.size()-1){
+					p1 =  polygonPointData.get(i);
+					p2 =  polygonPointData.get(i+1);	
 				}else{
-					p1 =  data.get( data.size()-1);
-					p2 =  data.get(0);
+					p1 =  polygonPointData.get( polygonPointData.size()-1);
+					p2 =  polygonPointData.get(0);
 				}
 				shape.line(p1.x, p1.y, p2.x, p2.y);
 			}
@@ -392,10 +392,10 @@ public class PolygonControler extends EntityControler{
 				
 				Gdx.gl.glLineWidth(1f);
 				//Draw Nodes
-				float nodeSize = owner.panelToCam(minPixelDistance);
+				float nodeSize = owner.panelToCam(minContactDistance)/2;
 				shape.begin(ShapeType.Rectangle);
-				for(int i = 0; i <  data.size()-1; i++){
-					Vector2 p = data.get(i);
+				for(int i = 0; i <  polygonPointData.size()-1; i++){
+					Vector2 p = polygonPointData.get(i);
 					if(isPointSelected(i)){
 						shape.setColor(node);
 					}else{
@@ -407,12 +407,12 @@ public class PolygonControler extends EntityControler{
 				
 				//Draw last node as a circle
 				shape.begin(ShapeType.Circle);
-				if(isPointSelected(data.size()-1)){
+				if(isPointSelected(polygonPointData.size()-1)){
 					shape.setColor(node);
 				}else{
 					shape.setColor(nodeSelected);
 				}
-				shape.circle(data.get(data.size()-1).x, data.get(data.size()-1).y, nodeSize);
+				shape.circle(polygonPointData.get(polygonPointData.size()-1).x, polygonPointData.get(polygonPointData.size()-1).y, nodeSize);
 				shape.end();
 			}
 		}

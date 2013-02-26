@@ -6,6 +6,16 @@ import com.badlogic.gdx.math.Vector2;
 
 public class MathsToolkit {
 
+	public static void validateRectangle(Rectangle rec){
+		if(rec.width < 0){
+			rec.x+=rec.width;
+			rec.width*=-1;
+		}
+		if(rec.height < 0){
+			rec.y+=rec.height;
+			rec.height*=-1;
+		}
+	}
 	public static boolean SegmentIntersectRectangle(Rectangle rec, Vector2 p1, Vector2 p2) {
 		// Find min and max X for the segment
 

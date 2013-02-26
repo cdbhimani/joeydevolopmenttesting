@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.emptyPockets.bodyEditor.entity.Entity;
 import com.emptyPockets.bodyEditor.entity.PolygonEntity;
+import com.emptyPockets.bodyEditor.entity.RectangleEntity;
 import com.emptyPockets.bodyEditor.main.EntityEditorScreen;
 import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.utils.OrthoCamController;
@@ -19,7 +20,8 @@ public class EntityEditorControlsManager extends Table {
 
 	OrthoCamController cameraControl;
 	PolygonControler polygonControl;
-
+	ExceptionControler rectangleControl;
+	
 	InputMultiplexer inputMultiplexer;
 
 	ButtonGroup buttonGroup;
@@ -32,7 +34,8 @@ public class EntityEditorControlsManager extends Table {
 
 		cameraControl = new OrthoCamController(owner.getEditorCamera());
 		polygonControl = new PolygonControler(owner);
-
+		rectangleControl = new ExceptionControler(owner);
+		
 		positionButton = new TextButton("+", owner.getSkin(), "toggle");
 		editorButton = new TextButton("E", owner.getSkin(), "toggle");
 		
@@ -73,6 +76,10 @@ public class EntityEditorControlsManager extends Table {
 				polygonControl.attach(inputMultiplexer);
 			}
 			
+			if(owner.getEntity() instanceof RectangleEntity){
+				rectangleControl.attach(inputMultiplexer);
+			}
+			
 //			inputMultiplexer.addProcessor(cameraControl);
 		}
 
@@ -92,6 +99,9 @@ public class EntityEditorControlsManager extends Table {
 		if (owner.getEntity() instanceof PolygonEntity) {
 			polygonControl.setPolygon(((PolygonEntity) owner.getEntity()).getPolygon());
 		}
+		if (owner.getEntity() instanceof RectangleEntity) {
+			rectangleControl.setRectangle(((RectangleEntity)owner.getEntity()).getRectangle());
+		}
 	}
 
 	public InputMultiplexer getInputMultiplexer() {
@@ -105,8 +115,11 @@ public class EntityEditorControlsManager extends Table {
 	public void drawScreen(ShapeRenderer shape, Entity entity) {
 		if (entity != null) {
 			if (entity instanceof PolygonEntity) {
-				polygonControl.drawPolygon(shape,
-						((PolygonEntity) entity).getPolygon(), editorButton.isChecked());
+				polygonControl.draw(shape,editorButton.isChecked());
+			}
+			
+			if (entity instanceof RectangleEntity) {
+				rectangleControl.draw(shape,editorButton.isChecked());
 			}
 		}
 
