@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.emptyPockets.bodyEditor.main.EntityEditorScreen;
 import com.emptyPockets.utils.maths.MathsToolkit;
 
-public class RectangleControler extends EntityControler{
+public class RectangleControler extends BaseEntityControler{
 		
 	boolean newRectangle = false;
 	Rectangle rectangle;
@@ -19,9 +19,7 @@ public class RectangleControler extends EntityControler{
 	Vector2 firstMouse = new Vector2();
 	Vector2 lastMouse = new Vector2();
 	
-	Color rectangleColor = Color.BLUE;
-	Color controlColor = Color.LIGHT_GRAY;
-	Color controlMarkColor = Color.GREEN;
+
 	
 	boolean mouseCenterDrag = false;
 	boolean mouseTLDrag = false;
@@ -102,11 +100,9 @@ public class RectangleControler extends EntityControler{
 	
 	@Override
 	public boolean tap(float x, float y, int count, int button) {
-		if(rectangle != null){
-			synchronized (rectangle) {
-				if(count > 1){
-					newRectangle = true;
-				}
+		synchronized (rectangle) {
+			if(count > 1){
+				newRectangle = true;
 			}
 		}
 		return super.tap(x, y, count, button);
@@ -114,8 +110,6 @@ public class RectangleControler extends EntityControler{
 	
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
-		if(rectangle == null){
-		}
 		synchronized (rectangle) {
 			owner.camToPanel(x, y, firstMouse);	
 			lastMouse.set(firstMouse);
@@ -244,50 +238,50 @@ public class RectangleControler extends EntityControler{
 			
 			//Bottom
 			getBL(hold, mouseWidth, regionGap);
-			shape.setColor(mouseBLDrag?controlMarkColor:controlColor);
+			shape.setColor(mouseBLDrag?highLightColor:controlColor);
 			if(hold.width > 0 && hold.height > 0)
 				shape.rect(hold.x, hold.y, hold.width, hold.height);
 			
 			getBM(hold, mouseWidth, regionGap);
-			shape.setColor(mouseBMDrag?controlMarkColor:controlColor);
+			shape.setColor(mouseBMDrag?highLightColor:controlColor);
 			if(hold.width > 0 && hold.height > 0)
 				shape.rect(hold.x, hold.y, hold.width, hold.height);
 			
 			getBR(hold, mouseWidth, regionGap);
-			shape.setColor(mouseBRDrag?controlMarkColor:controlColor);
+			shape.setColor(mouseBRDrag?highLightColor:controlColor);
 			if(hold.width > 0 && hold.height > 0)
 				shape.rect(hold.x, hold.y, hold.width, hold.height);
 			
 			//Center
 			getCL(hold, mouseWidth, regionGap);
-			shape.setColor(mouseCLDrag?controlMarkColor:controlColor);
+			shape.setColor(mouseCLDrag?highLightColor:controlColor);
 			if(hold.width > 0 && hold.height > 0)
 				shape.rect(hold.x, hold.y, hold.width, hold.height);
 			
 			getCR(hold, mouseWidth, regionGap);
-			shape.setColor(mouseCRDrag?controlMarkColor:controlColor);
+			shape.setColor(mouseCRDrag?highLightColor:controlColor);
 			if(hold.width > 0 && hold.height > 0)
 				shape.rect(hold.x, hold.y, hold.width, hold.height);
 			
 			//TOP
 			getTL(hold, mouseWidth, regionGap);
-			shape.setColor(mouseTLDrag?controlMarkColor:controlColor);
+			shape.setColor(mouseTLDrag?highLightColor:controlColor);
 			if(hold.width > 0 && hold.height > 0)
 				shape.rect(hold.x, hold.y, hold.width, hold.height);
 			
 			getTM(hold, mouseWidth, regionGap);
-			shape.setColor(mouseTMDrag?controlMarkColor:controlColor);
+			shape.setColor(mouseTMDrag?highLightColor:controlColor);
 			if(hold.width > 0 && hold.height > 0)
 				shape.rect(hold.x, hold.y, hold.width, hold.height);
 			
 			getTR(hold, mouseWidth, regionGap);
-			shape.setColor(mouseTRDrag?controlMarkColor:controlColor);
+			shape.setColor(mouseTRDrag?highLightColor:controlColor);
 			if(hold.width > 0 && hold.height > 0)
 				shape.rect(hold.x, hold.y, hold.width, hold.height);
 			
 			//Draw Shape
-			shape.setColor(rectangleColor);
-			shape.setColor(mouseCenterDrag?controlMarkColor:rectangleColor);
+			shape.setColor(shapeColor);
+			shape.setColor(mouseCenterDrag?highLightColor:shapeColor);
 			shape.rect(rectangle.x, rectangle.y, rectangle.width,rectangle.height);
 			
 			shape.end();

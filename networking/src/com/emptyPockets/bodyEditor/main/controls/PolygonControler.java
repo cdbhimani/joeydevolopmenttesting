@@ -13,7 +13,7 @@ import com.emptyPockets.bodyEditor.main.EntityEditorScreen;
 import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.utils.maths.MathsToolkit;
 
-public class PolygonControler extends EntityControler{
+public class PolygonControler extends BaseEntityControler{
 	
 
 	Vector2 lastMouse = new Vector2();

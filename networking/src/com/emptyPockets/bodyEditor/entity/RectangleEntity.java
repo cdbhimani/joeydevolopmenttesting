@@ -3,7 +3,7 @@ package com.emptyPockets.bodyEditor.entity;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 
-public class RectangleEntity extends Entity {
+public class RectangleEntity extends BaseEntity {
 
 	Rectangle rectangle;
 	

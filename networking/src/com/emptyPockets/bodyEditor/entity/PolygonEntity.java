@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
-public class PolygonEntity extends Entity {
+public class PolygonEntity extends BaseEntity {
 	private ArrayList<Vector2> polygon;
 
 	public PolygonEntity() {

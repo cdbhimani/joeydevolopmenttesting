@@ -2,20 +2,29 @@ package com.emptyPockets.bodyEditor.main.controls;
 
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
 import com.emptyPockets.bodyEditor.main.EntityEditorScreen;
 import com.emptyPockets.gui.ScreenSizeHelper;
 
-public abstract class EntityControler  implements InputProcessor, GestureListener {
+public abstract class BaseEntityControler  implements InputProcessor, GestureListener {
 	
 	protected EntityEditorScreen owner;
 	GestureDetector gestureDetector;
 	protected float minContactDistance = ScreenSizeHelper.getcmtoPxlX(.4f);
-	public EntityControler(EntityEditorScreen owner){
+	protected Color shapeColor = Color.BLUE;
+	protected Color controlColor = Color.LIGHT_GRAY;
+	protected Color highLightColor = Color.GREEN;
+	
+	public BaseEntityControler(EntityEditorScreen owner){
 		this.owner = owner;
 		gestureDetector = new GestureDetector(this);
+		
+		shapeColor.a = 0.8f;
+		controlColor.a = 0.4f;
+		highLightColor.a = 0.8f;
 	}
 	
 	public void attach(InputMultiplexer owner){
