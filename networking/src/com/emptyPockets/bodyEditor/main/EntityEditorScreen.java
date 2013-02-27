@@ -3,19 +3,14 @@ package com.emptyPockets.bodyEditor.main;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.emptyPockets.bodyEditor.entity.BaseEntity;
-import com.emptyPockets.bodyEditor.entity.CircleEntity;
 import com.emptyPockets.bodyEditor.entity.PolygonEntity;
-import com.emptyPockets.bodyEditor.entity.RectangleEntity;
 import com.emptyPockets.bodyEditor.main.controls.EntityEditorControlsManager;
 import com.emptyPockets.graphics.GraphicsToolkit;
 import com.emptyPockets.gui.StageScreen;
@@ -45,9 +40,9 @@ public class EntityEditorScreen extends StageScreen {
 		controls = new EntityEditorControlsManager(this);
 		controls.update();
 		
-		setEntity(new CircleEntity());
+//		setEntity(new CircleEntity());
 //		setEntity(new RectangleEntity());
-//		setEntity(new PolygonEntity());
+		setEntity(new PolygonEntity());
 	}
 
 	@Override
