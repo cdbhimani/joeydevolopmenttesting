@@ -12,7 +12,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.emptyPockets.bodyEditor.entity.Entity;
+import com.emptyPockets.bodyEditor.entity.BaseEntity;
+import com.emptyPockets.bodyEditor.entity.CircleEntity;
 import com.emptyPockets.bodyEditor.entity.PolygonEntity;
 import com.emptyPockets.bodyEditor.entity.RectangleEntity;
 import com.emptyPockets.bodyEditor.main.controls.EntityEditorControlsManager;
@@ -23,7 +24,7 @@ public class EntityEditorScreen extends StageScreen {
 	TextureAtlas textureAtlas;
 	
 	EntityEditorControlsManager controls;
-	Entity entity;
+	BaseEntity entity;
 	
 	//Temp for camera projections 
 	Vector3 _tmpCam2MouseVec = new Vector3();
@@ -44,7 +45,8 @@ public class EntityEditorScreen extends StageScreen {
 		controls = new EntityEditorControlsManager(this);
 		controls.update();
 		
-		setEntity(new RectangleEntity());
+		setEntity(new CircleEntity());
+//		setEntity(new RectangleEntity());
 //		setEntity(new PolygonEntity());
 	}
 
@@ -113,36 +115,25 @@ public class EntityEditorScreen extends StageScreen {
 		editorCamera.update();
 		shape.setProjectionMatrix(editorCamera.combined);
 		
-		Entity entity = getEntity();
-
+		BaseEntity entity = getEntity();
 		
 		controls.drawScreen(shape, entity);
 	}
 	
 	@Override
 	public void drawOverlay(float delta) {
-		// TODO Auto-generated method stub
-
-	    long lastFlip = 0;
-	    long flipTime = 1000;
-	    boolean display = false;
-	    
-	    //..In your rendering loop
-	    if(lastFlip+flipTime > System.currentTimeMillis()){
-	         display = false;
-	         lastFlip = System.currentTimeMillis();
-	    }
+	
 	}
 	
 	public void updateScreenControl(){
 		controls.update();
 	}
 
-	public Entity getEntity() {
+	public BaseEntity getEntity() {
 		return entity;
 	}
 
-	public void setEntity(Entity entity) {
+	public void setEntity(BaseEntity entity) {
 		this.entity = entity;
 		updateScreenControl();
 	}

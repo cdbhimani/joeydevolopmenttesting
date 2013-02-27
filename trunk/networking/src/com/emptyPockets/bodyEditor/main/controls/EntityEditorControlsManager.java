@@ -8,7 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.emptyPockets.bodyEditor.entity.Entity;
+import com.emptyPockets.bodyEditor.entity.BaseEntity;
+import com.emptyPockets.bodyEditor.entity.CircleEntity;
 import com.emptyPockets.bodyEditor.entity.PolygonEntity;
 import com.emptyPockets.bodyEditor.entity.RectangleEntity;
 import com.emptyPockets.bodyEditor.main.EntityEditorScreen;
@@ -21,7 +22,7 @@ public class EntityEditorControlsManager extends Table {
 	OrthoCamController cameraControl;
 	PolygonControler polygonControl;
 	RectangleControler rectangleControl;
-	
+	ErrorControler circleControl;
 	InputMultiplexer inputMultiplexer;
 
 	ButtonGroup buttonGroup;
@@ -35,6 +36,7 @@ public class EntityEditorControlsManager extends Table {
 		cameraControl = new OrthoCamController(owner.getEditorCamera());
 		polygonControl = new PolygonControler(owner);
 		rectangleControl = new RectangleControler(owner);
+		circleControl = new ErrorControler(owner);
 		
 		positionButton = new TextButton("+", owner.getSkin(), "toggle");
 		editorButton = new TextButton("E", owner.getSkin(), "toggle");
@@ -80,6 +82,9 @@ public class EntityEditorControlsManager extends Table {
 				rectangleControl.attach(inputMultiplexer);
 			}
 			
+			if(owner.getEntity() instanceof CircleEntity){
+				circleControl.attach(inputMultiplexer);
+			}
 //			inputMultiplexer.addProcessor(cameraControl);
 		}
 
@@ -102,6 +107,9 @@ public class EntityEditorControlsManager extends Table {
 		if (owner.getEntity() instanceof RectangleEntity) {
 			rectangleControl.setRectangle(((RectangleEntity)owner.getEntity()).getRectangle());
 		}
+		if (owner.getEntity() instanceof CircleEntity) {
+			circleControl.setCircle(((CircleEntity) owner.getEntity()).getCircle());
+		}
 	}
 
 	public InputMultiplexer getInputMultiplexer() {
@@ -112,7 +120,7 @@ public class EntityEditorControlsManager extends Table {
 		this.inputMultiplexer = inputMultiplexer;
 	}
 
-	public void drawScreen(ShapeRenderer shape, Entity entity) {
+	public void drawScreen(ShapeRenderer shape, BaseEntity entity) {
 		if (entity != null) {
 			if (entity instanceof PolygonEntity) {
 				polygonControl.draw(shape,editorButton.isChecked());
@@ -120,6 +128,10 @@ public class EntityEditorControlsManager extends Table {
 			
 			if (entity instanceof RectangleEntity) {
 				rectangleControl.draw(shape,editorButton.isChecked());
+			}
+			
+			if (entity instanceof CircleEntity) {
+				circleControl.draw(shape,editorButton.isChecked());
 			}
 		}
 
