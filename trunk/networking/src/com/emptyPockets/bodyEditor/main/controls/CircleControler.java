@@ -1,5 +1,6 @@
 package com.emptyPockets.bodyEditor.main.controls;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
@@ -8,7 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.emptyPockets.bodyEditor.main.EntityEditorScreen;
 import com.emptyPockets.utils.maths.MathsToolkit;
 
-public class ErrorControler extends  BaseEntityControler{
+public class CircleControler extends  BaseEntityControler{
 	Circle circle;
 
 	Vector2 lastMouse = new Vector2();
@@ -21,7 +22,7 @@ public class ErrorControler extends  BaseEntityControler{
 	boolean newCircle = false;
 	int segmentCount = 100;
 	
-	public ErrorControler(EntityEditorScreen owner) {
+	public CircleControler(EntityEditorScreen owner) {
 		super(owner);
 	}
 
@@ -30,7 +31,6 @@ public class ErrorControler extends  BaseEntityControler{
 		mouseOnBorder = false;
 	}
 	public void updateMouseState(){
-		System.out.println("UPDATE");
 		clearMouseState();
 		float mouseTouchSize= circle.radius+owner.panelToCam(minContactDistance);
 		
@@ -123,12 +123,20 @@ public class ErrorControler extends  BaseEntityControler{
 		}
 		float mouseTouchSize= owner.panelToCam(minContactDistance);
 		synchronized (circle) {
+			Gdx.gl.glLineWidth(2f);
 			shape.begin(ShapeType.Circle);
-			shape.setColor(mouseInsideCircle?highLightColor:shapeColor);
+			shape.setColor(mouseInsideCircle?shapeHighlightColor:shapeColor);
 			shape.circle(circle.x, circle.y, circle.radius,segmentCount);
-			shape.setColor(mouseOnBorder?highLightColor:controlColor);
-			shape.circle(circle.x, circle.y, circle.radius+mouseTouchSize,segmentCount);
 			shape.end();
+			
+			Gdx.gl.glLineWidth(1f);
+			if(edit)
+			{
+				shape.begin(ShapeType.Circle);
+				shape.setColor(mouseOnBorder?controlHighlightColor:controlColor);
+				shape.circle(circle.x, circle.y, circle.radius+mouseTouchSize,segmentCount);
+				shape.end();
+			}
 		}
 		
 	}

@@ -238,50 +238,50 @@ public class RectangleControler extends BaseEntityControler{
 			
 			//Bottom
 			getBL(hold, mouseWidth, regionGap);
-			shape.setColor(mouseBLDrag?highLightColor:controlColor);
+			shape.setColor(mouseBLDrag?controlHighlightColor:controlColor);
 			if(hold.width > 0 && hold.height > 0)
 				shape.rect(hold.x, hold.y, hold.width, hold.height);
 			
 			getBM(hold, mouseWidth, regionGap);
-			shape.setColor(mouseBMDrag?highLightColor:controlColor);
+			shape.setColor(mouseBMDrag?controlHighlightColor:controlColor);
 			if(hold.width > 0 && hold.height > 0)
 				shape.rect(hold.x, hold.y, hold.width, hold.height);
 			
 			getBR(hold, mouseWidth, regionGap);
-			shape.setColor(mouseBRDrag?highLightColor:controlColor);
+			shape.setColor(mouseBRDrag?controlHighlightColor:controlColor);
 			if(hold.width > 0 && hold.height > 0)
 				shape.rect(hold.x, hold.y, hold.width, hold.height);
 			
 			//Center
 			getCL(hold, mouseWidth, regionGap);
-			shape.setColor(mouseCLDrag?highLightColor:controlColor);
+			shape.setColor(mouseCLDrag?controlHighlightColor:controlColor);
 			if(hold.width > 0 && hold.height > 0)
 				shape.rect(hold.x, hold.y, hold.width, hold.height);
 			
 			getCR(hold, mouseWidth, regionGap);
-			shape.setColor(mouseCRDrag?highLightColor:controlColor);
+			shape.setColor(mouseCRDrag?controlHighlightColor:controlColor);
 			if(hold.width > 0 && hold.height > 0)
 				shape.rect(hold.x, hold.y, hold.width, hold.height);
 			
 			//TOP
 			getTL(hold, mouseWidth, regionGap);
-			shape.setColor(mouseTLDrag?highLightColor:controlColor);
+			shape.setColor(mouseTLDrag?controlHighlightColor:controlColor);
 			if(hold.width > 0 && hold.height > 0)
 				shape.rect(hold.x, hold.y, hold.width, hold.height);
 			
 			getTM(hold, mouseWidth, regionGap);
-			shape.setColor(mouseTMDrag?highLightColor:controlColor);
+			shape.setColor(mouseTMDrag?controlHighlightColor:controlColor);
 			if(hold.width > 0 && hold.height > 0)
 				shape.rect(hold.x, hold.y, hold.width, hold.height);
 			
 			getTR(hold, mouseWidth, regionGap);
-			shape.setColor(mouseTRDrag?highLightColor:controlColor);
+			shape.setColor(mouseTRDrag?controlHighlightColor:controlColor);
 			if(hold.width > 0 && hold.height > 0)
 				shape.rect(hold.x, hold.y, hold.width, hold.height);
 			
 			//Draw Shape
 			shape.setColor(shapeColor);
-			shape.setColor(mouseCenterDrag?highLightColor:shapeColor);
+			shape.setColor(mouseCenterDrag?shapeHighlightColor:shapeColor);
 			shape.rect(rectangle.x, rectangle.y, rectangle.width,rectangle.height);
 			
 			shape.end();

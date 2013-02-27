@@ -15,8 +15,9 @@ public abstract class BaseEntityControler  implements InputProcessor, GestureLis
 	GestureDetector gestureDetector;
 	protected float minContactDistance = ScreenSizeHelper.getcmtoPxlX(.4f);
 	protected Color shapeColor = Color.BLUE;
-	protected Color controlColor = Color.LIGHT_GRAY;
-	protected Color highLightColor = Color.GREEN;
+	protected Color shapeHighlightColor = Color.MAGENTA;
+	protected Color controlColor = Color.GREEN;
+	protected Color controlHighlightColor = Color.RED;
 	
 	public BaseEntityControler(EntityEditorScreen owner){
 		this.owner = owner;
@@ -24,7 +25,7 @@ public abstract class BaseEntityControler  implements InputProcessor, GestureLis
 		
 		shapeColor.a = 0.8f;
 		controlColor.a = 0.4f;
-		highLightColor.a = 0.8f;
+		controlHighlightColor.a = 0.8f;
 	}
 	
 	public void attach(InputMultiplexer owner){

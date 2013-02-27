@@ -3,14 +3,13 @@ package com.emptyPockets.bodyEditor.main.controls;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptyPockets.bodyEditor.main.EntityEditorScreen;
-import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.utils.maths.MathsToolkit;
 
 public class PolygonControler extends BaseEntityControler{
@@ -188,6 +187,25 @@ public class PolygonControler extends BaseEntityControler{
 		return editCount;
 	}
 	
+	private void removeSelection(){
+		synchronized (polygonPointData) {
+			ArrayList<Vector2> pointToRemove = new ArrayList<Vector2>();
+			ArrayList<Boolean> pointSeltoRemove = new ArrayList<Boolean>();
+			ArrayList<Boolean> lineSeltoRemove = new ArrayList<Boolean>();
+			
+			for(int i = 0;i < polygonPointData.size(); i++){
+				if(isPointSelected(i)){
+					pointToRemove.add(polygonPointData.get(i));
+
+				}
+			}
+			
+			polygonPointData.removeAll(pointToRemove);
+			clearGroupSelection();
+			clearMouseSelection();
+		}
+	}
+	
 	private boolean isPointSelected(int index){
 		if(isMousePointSelected(index) || isGroupPointSelected(index)){
 			return true;
@@ -287,6 +305,21 @@ public class PolygonControler extends BaseEntityControler{
 	private void clearGroupSelection(){
 		pointSelectedCount = 0;
 		lineSelectedCount = 0;
+		
+		if(lineSelectionData.size() != polygonPointData.size()){
+			lineSelectionData.clear();
+			lineSelectionData.ensureCapacity(polygonPointData.size());
+			for(int i =0; i < polygonPointData.size(); i++){
+				lineSelectionData.add(false);
+			}
+		}
+		if(pointSelectionData.size() != polygonPointData.size()){
+			pointSelectionData.clear();
+			pointSelectionData.ensureCapacity(polygonPointData.size());
+			for(int i =0; i < polygonPointData.size(); i++){
+				pointSelectionData.add(false);
+			}
+		}
 		for(int i =0; i < polygonPointData.size(); i++){
 			pointSelectionData.set(i, false);
 			lineSelectionData.set(i, false);
@@ -294,7 +327,9 @@ public class PolygonControler extends BaseEntityControler{
 	}
 	
 	private void updateGroupSelection(){
+		if(!Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)){
 		clearGroupSelection();
+		}
 		
 		//Test rectangle
 		if(activeSelectionRegion){
@@ -357,21 +392,18 @@ public class PolygonControler extends BaseEntityControler{
 		}
 		
 		synchronized (polygonPointData) {
+			
 			//Draw Lines
 			Vector2 p1 = null;
 			Vector2 p2 = null;
 			Gdx.gl.glLineWidth(3f);
 			
 			shape.begin(ShapeType.Line);
-			
-			Color line = Color.BLUE;
-			Color lineSelected = Color.CYAN;
-			
 			for(int i = 0; i <  polygonPointData.size() && polygonPointData.size() > 1; i++){
 				if(isLineSelected(i) && edit){
-					shape.setColor(lineSelected);		
+					shape.setColor(shapeHighlightColor);		
 				}else{
-					shape.setColor(line);
+					shape.setColor(shapeColor);
 				}
 				if(i < polygonPointData.size()-1){
 					p1 =  polygonPointData.get(i);
@@ -385,11 +417,6 @@ public class PolygonControler extends BaseEntityControler{
 			shape.end();
 			
 			if(edit){
-				Color node = Color.RED;
-				Color nodeSelected = Color.GREEN;
-				node.a = 0.6f;
-				nodeSelected.a = 0.6f;
-				
 				Gdx.gl.glLineWidth(1f);
 				//Draw Nodes
 				float nodeSize = owner.panelToCam(minContactDistance)/2;
@@ -397,9 +424,9 @@ public class PolygonControler extends BaseEntityControler{
 				for(int i = 0; i <  polygonPointData.size()-1; i++){
 					Vector2 p = polygonPointData.get(i);
 					if(isPointSelected(i)){
-						shape.setColor(node);
+						shape.setColor(controlHighlightColor);
 					}else{
-						shape.setColor(nodeSelected);
+						shape.setColor(controlColor);
 					}
 					shape.rect(p.x-nodeSize, p.y-nodeSize, 2*nodeSize, 2*nodeSize);
 				}
@@ -408,9 +435,9 @@ public class PolygonControler extends BaseEntityControler{
 				//Draw last node as a circle
 				shape.begin(ShapeType.Circle);
 				if(isPointSelected(polygonPointData.size()-1)){
-					shape.setColor(node);
+					shape.setColor(controlHighlightColor);
 				}else{
-					shape.setColor(nodeSelected);
+					shape.setColor(controlColor);
 				}
 				shape.circle(polygonPointData.get(polygonPointData.size()-1).x, polygonPointData.get(polygonPointData.size()-1).y, nodeSize);
 				shape.end();
@@ -418,6 +445,15 @@ public class PolygonControler extends BaseEntityControler{
 		}
 	}
 	
+	@Override
+	public boolean keyDown(int code) {
+		synchronized (polygonPointData) {
+			if(Input.Keys.DEL == code){
+				removeSelection();
+			}	
+		}
+		return super.keyDown(code);
+	}
 	public void setPolygon(ArrayList<Vector2> points){
 		this.polygonPointData = points;
 		this.pointSelectionData.ensureCapacity(points.size());
