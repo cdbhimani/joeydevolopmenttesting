@@ -1,5 +1,6 @@
-package com.emptyPockets.bodyEditor.main.controls;
+package com.emptyPockets.bodyEditor.main.controls.shape;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -9,7 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.emptyPockets.bodyEditor.main.EntityEditorScreen;
 import com.emptyPockets.utils.maths.MathsToolkit;
 
-public class RectangleControler extends BaseEntityControler{
+public class RectangleControler extends BaseShapeControler{
 		
 	boolean newRectangle = false;
 	Rectangle rectangle;
@@ -18,8 +19,6 @@ public class RectangleControler extends BaseEntityControler{
 	
 	Vector2 firstMouse = new Vector2();
 	Vector2 lastMouse = new Vector2();
-	
-
 	
 	boolean mouseCenterDrag = false;
 	boolean mouseTLDrag = false;
@@ -100,37 +99,47 @@ public class RectangleControler extends BaseEntityControler{
 	
 	@Override
 	public boolean tap(float x, float y, int count, int button) {
-		synchronized (rectangle) {
-			if(count > 1){
-				newRectangle = true;
-			}
+		if(rectangle == null || state == ControlState.DISABLED){
+			return false;
 		}
 		return super.tap(x, y, count, button);
 	}
 	
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
+		if(rectangle == null || state == ControlState.DISABLED){
+			return false;
+		}
+		boolean returnValue = false;
+		
 		synchronized (rectangle) {
 			owner.camToPanel(x, y, firstMouse);	
 			lastMouse.set(firstMouse);
-			updateMouseState();
-			
 			if(newRectangle){
 				rectangle.x = firstMouse.x;
 				rectangle.y = firstMouse.y;
 				rectangle.width  = 1;
 				rectangle.height = 1;
 				MathsToolkit.validateRectangle(rectangle);
+				returnValue=true;
 			}
 			
 			updateMouseState();
+			if(mouseCenterDrag ||((mouseBLDrag||mouseBMDrag||mouseBRDrag||mouseTLDrag||mouseTMDrag||mouseTRDrag||mouseCLDrag||mouseCRDrag)&&state==ControlState.EDIT)){
+				returnValue = true;
+			}
 		}
 		
-		return super.touchDown(x, y, pointer, button);
+		return returnValue||super.touchDown(x, y, pointer, button);
 	}
 	
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
+		if(rectangle == null || state == ControlState.DISABLED){
+			return false;
+		}
+		boolean returnValue = false;
+		
 		synchronized (rectangle) {
 			//Building new Rectangle
 			if(newRectangle){
@@ -140,6 +149,7 @@ public class RectangleControler extends BaseEntityControler{
 				rectangle.width = lastMouse.x - firstMouse.x;
 				rectangle.height = lastMouse.y - firstMouse.y;
 				MathsToolkit.validateRectangle(rectangle);
+				returnValue = true;
 			}else{
 				//Change occouring
 				Vector2 currentMouse= new Vector2();
@@ -147,38 +157,44 @@ public class RectangleControler extends BaseEntityControler{
 				float dx = currentMouse.x-lastMouse.x;
 				float dy = currentMouse.y-lastMouse.y;
 				lastMouse.set(currentMouse);
+				
+				if(mouseCenterDrag ||((mouseBLDrag||mouseBMDrag||mouseBRDrag||mouseTLDrag||mouseTMDrag||mouseTRDrag||mouseCLDrag||mouseCRDrag)&&state==ControlState.EDIT)){
+					returnValue = true;
+				}
+				
 				if(mouseCenterDrag){
 					//Drag inside Rectangle
 					rectangle.x +=dx;
 					rectangle.y +=dy;
-				}else if(mouseTRDrag){
-					rectangle.width+=dx;
-					rectangle.height+=dy;
-				}else if(mouseTMDrag){
-					rectangle.height+=dy;
-				}else if(mouseTLDrag){
-					rectangle.x+=dx;
-					rectangle.width-=dx;
-					rectangle.height+=dy;
-				}else if(mouseCLDrag){
-					rectangle.x+=dx;
-					rectangle.width-=dx;
-				}else if(mouseCRDrag){
-					rectangle.width+=dx;
-				}else if(mouseBLDrag){
-					rectangle.x+=dx;
-					rectangle.width-=dx;
-					rectangle.y+=dy;
-					rectangle.height-=dy;
-				}else if(mouseBMDrag){
-					rectangle.y+=dy;
-					rectangle.height-=dy;
-				}else if(mouseBRDrag){
-					rectangle.width+=dx;
-					rectangle.y+=dy;
-					rectangle.height-=dy;
+				}else if(state==ControlState.EDIT){
+					if(mouseTRDrag){
+						rectangle.width+=dx;
+						rectangle.height+=dy;
+					}else if(mouseTMDrag){
+						rectangle.height+=dy;
+					}else if(mouseTLDrag){
+						rectangle.x+=dx;
+						rectangle.width-=dx;
+						rectangle.height+=dy;
+					}else if(mouseCLDrag){
+						rectangle.x+=dx;
+						rectangle.width-=dx;
+					}else if(mouseCRDrag){
+						rectangle.width+=dx;
+					}else if(mouseBLDrag){
+						rectangle.x+=dx;
+						rectangle.width-=dx;
+						rectangle.y+=dy;
+						rectangle.height-=dy;
+					}else if(mouseBMDrag){
+						rectangle.y+=dy;
+						rectangle.height-=dy;
+					}else if(mouseBRDrag){
+						rectangle.width+=dx;
+						rectangle.y+=dy;
+						rectangle.height-=dy;
+					}
 				}
-				
 				if(rectangle.width < 0){
 					//Allows moving if size below 0
 					if(mouseTRDrag || mouseBRDrag || mouseCRDrag){
@@ -194,19 +210,28 @@ public class RectangleControler extends BaseEntityControler{
 				}
 			}
 		}
-		return super.touchDragged(x, x, pointer);
+		return returnValue||super.touchDragged(x, x, pointer);
 	}
 	
 	@Override
 	public boolean mouseMoved(int x, int y) {
+		if(rectangle == null || state == ControlState.DISABLED){
+			return false;
+		}
+		boolean returnValue = false;
+		
 		synchronized (rectangle) {
 			owner.camToPanel(x, y, lastMouse);	
 			updateMouseState();
 		}
-		return super.mouseMoved(x, y);
+		return returnValue||super.mouseMoved(x, y);
 	}
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
+		if(rectangle == null || state == ControlState.DISABLED){
+			return false;
+		}
+		boolean returnValue = false;
 		synchronized (rectangle) {
 			owner.camToPanel(x, y, lastMouse);	
 			clearMouseState();
@@ -218,72 +243,74 @@ public class RectangleControler extends BaseEntityControler{
 				rectangle.width = lastMouse.x - firstMouse.x;
 				rectangle.height = lastMouse.y - firstMouse.y;
 				MathsToolkit.validateRectangle(rectangle);
+				returnValue=true;
 			}
 		}
-		return super.touchUp(x, y, pointer, button);
-	}
-
-	public void createRectangle(){
-		
+		return returnValue||super.touchUp(x, y, pointer, button);
 	}
 	
-	public void draw(ShapeRenderer shape, boolean edit){
+	public void draw(ShapeRenderer shape){
+		if(rectangle == null){
+			return;
+		}
 		synchronized (rectangle) {
 			shape.begin(ShapeType.Rectangle);
 
-			float mouseWidth = owner.panelToCam(this.minContactDistance);
-			float regionGap = owner.panelToCam(this.borderGap);
-			
-			Rectangle hold = new Rectangle();
-			
-			//Bottom
-			getBL(hold, mouseWidth, regionGap);
-			shape.setColor(mouseBLDrag?controlHighlightColor:controlColor);
-			if(hold.width > 0 && hold.height > 0)
-				shape.rect(hold.x, hold.y, hold.width, hold.height);
-			
-			getBM(hold, mouseWidth, regionGap);
-			shape.setColor(mouseBMDrag?controlHighlightColor:controlColor);
-			if(hold.width > 0 && hold.height > 0)
-				shape.rect(hold.x, hold.y, hold.width, hold.height);
-			
-			getBR(hold, mouseWidth, regionGap);
-			shape.setColor(mouseBRDrag?controlHighlightColor:controlColor);
-			if(hold.width > 0 && hold.height > 0)
-				shape.rect(hold.x, hold.y, hold.width, hold.height);
-			
-			//Center
-			getCL(hold, mouseWidth, regionGap);
-			shape.setColor(mouseCLDrag?controlHighlightColor:controlColor);
-			if(hold.width > 0 && hold.height > 0)
-				shape.rect(hold.x, hold.y, hold.width, hold.height);
-			
-			getCR(hold, mouseWidth, regionGap);
-			shape.setColor(mouseCRDrag?controlHighlightColor:controlColor);
-			if(hold.width > 0 && hold.height > 0)
-				shape.rect(hold.x, hold.y, hold.width, hold.height);
-			
-			//TOP
-			getTL(hold, mouseWidth, regionGap);
-			shape.setColor(mouseTLDrag?controlHighlightColor:controlColor);
-			if(hold.width > 0 && hold.height > 0)
-				shape.rect(hold.x, hold.y, hold.width, hold.height);
-			
-			getTM(hold, mouseWidth, regionGap);
-			shape.setColor(mouseTMDrag?controlHighlightColor:controlColor);
-			if(hold.width > 0 && hold.height > 0)
-				shape.rect(hold.x, hold.y, hold.width, hold.height);
-			
-			getTR(hold, mouseWidth, regionGap);
-			shape.setColor(mouseTRDrag?controlHighlightColor:controlColor);
-			if(hold.width > 0 && hold.height > 0)
-				shape.rect(hold.x, hold.y, hold.width, hold.height);
-			
+			if(state==ControlState.EDIT){
+				float mouseWidth = owner.panelToCam(this.minContactDistance);
+				float regionGap = owner.panelToCam(this.borderGap);
+				
+				Rectangle hold = new Rectangle();
+				
+				//Bottom
+				getBL(hold, mouseWidth, regionGap);
+				shape.setColor(mouseBLDrag?controlHighlightColor:controlColor);
+				if(hold.width > 0 && hold.height > 0)
+					shape.rect(hold.x, hold.y, hold.width, hold.height);
+				
+				getBM(hold, mouseWidth, regionGap);
+				shape.setColor(mouseBMDrag?controlHighlightColor:controlColor);
+				if(hold.width > 0 && hold.height > 0)
+					shape.rect(hold.x, hold.y, hold.width, hold.height);
+				
+				getBR(hold, mouseWidth, regionGap);
+				shape.setColor(mouseBRDrag?controlHighlightColor:controlColor);
+				if(hold.width > 0 && hold.height > 0)
+					shape.rect(hold.x, hold.y, hold.width, hold.height);
+				
+				//Center
+				getCL(hold, mouseWidth, regionGap);
+				shape.setColor(mouseCLDrag?controlHighlightColor:controlColor);
+				if(hold.width > 0 && hold.height > 0)
+					shape.rect(hold.x, hold.y, hold.width, hold.height);
+				
+				getCR(hold, mouseWidth, regionGap);
+				shape.setColor(mouseCRDrag?controlHighlightColor:controlColor);
+				if(hold.width > 0 && hold.height > 0)
+					shape.rect(hold.x, hold.y, hold.width, hold.height);
+				
+				//TOP
+				getTL(hold, mouseWidth, regionGap);
+				shape.setColor(mouseTLDrag?controlHighlightColor:controlColor);
+				if(hold.width > 0 && hold.height > 0)
+					shape.rect(hold.x, hold.y, hold.width, hold.height);
+				
+				getTM(hold, mouseWidth, regionGap);
+				shape.setColor(mouseTMDrag?controlHighlightColor:controlColor);
+				if(hold.width > 0 && hold.height > 0)
+					shape.rect(hold.x, hold.y, hold.width, hold.height);
+				
+				getTR(hold, mouseWidth, regionGap);
+				shape.setColor(mouseTRDrag?controlHighlightColor:controlColor);
+				if(hold.width > 0 && hold.height > 0)
+					shape.rect(hold.x, hold.y, hold.width, hold.height);
+			}
 			//Draw Shape
+			Gdx.gl.glLineWidth(2f);
 			shape.setColor(shapeColor);
 			shape.setColor(mouseCenterDrag?shapeHighlightColor:shapeColor);
 			shape.rect(rectangle.x, rectangle.y, rectangle.width,rectangle.height);
-			
+			Gdx.gl.glLineWidth(1f);
 			shape.end();
 		}
 	}

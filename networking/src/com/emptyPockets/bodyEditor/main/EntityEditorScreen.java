@@ -40,9 +40,6 @@ public class EntityEditorScreen extends StageScreen {
 		controls = new EntityEditorControlsManager(this);
 		controls.update();
 		
-//		setEntity(new CircleEntity());
-//		setEntity(new RectangleEntity());
-		setEntity(new PolygonEntity());
 	}
 
 	@Override
