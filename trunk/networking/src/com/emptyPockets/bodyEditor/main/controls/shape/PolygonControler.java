@@ -1,4 +1,4 @@
-package com.emptyPockets.bodyEditor.main.controls;
+package com.emptyPockets.bodyEditor.main.controls.shape;
 
 import java.util.ArrayList;
 
@@ -7,19 +7,20 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptyPockets.bodyEditor.main.EntityEditorScreen;
 import com.emptyPockets.utils.maths.MathsToolkit;
 
-public class PolygonControler extends BaseEntityControler{
+public class PolygonControler extends BaseShapeControler{
 	
 
 	Vector2 lastMouse = new Vector2();
 	Vector2 firstDown = new Vector2();
 	
+	Polygon polygon = new Polygon(new float[6]);
 	ArrayList<Vector2> polygonPointData = new ArrayList<Vector2>();
-	
 	int mousePointSelectedIndex = -1;
 	int mouseLineSelectedIndex = -1;
 
@@ -62,6 +63,9 @@ public class PolygonControler extends BaseEntityControler{
 	
 	@Override
 	public boolean tap(float x, float y, int count, int button) {
+		if(polygon == null || state==ControlState.DISABLED){
+			return false;
+		}
 		boolean returnValue = false;
 		synchronized (polygonPointData) {
 			owner.camToPanel(x, y, lastMouse);
@@ -95,11 +99,16 @@ public class PolygonControler extends BaseEntityControler{
 		}
 		clearMouseSelection();
 		
-		return returnValue;
+		return returnValue || super.tap(x, y, count, button);
 	}
 	
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
+		if(polygon == null || state==ControlState.DISABLED){
+			return false;
+		}
+		boolean returnValue = false;
+		
 		synchronized (polygonPointData) {
 			Vector2 currentMouse = new Vector2();
 			owner.camToPanel(x, y, currentMouse);
@@ -111,39 +120,49 @@ public class PolygonControler extends BaseEntityControler{
 			}else{
 				float dx = currentMouse.x-lastMouse.x;
 				float dy = currentMouse.y-lastMouse.y;
-				translateSelection(dx, dy);
+				editCount = translateSelection(dx, dy);
 			}
 			
 			lastMouse.set(currentMouse);
 			
 			if(editCount > 0){
-				return true;
+				returnValue = true;
 			}
 		}
-		return super.touchDragged(x, y, pointer);
+		return returnValue|| super.touchDragged(x, y, pointer);
 	}
 	
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
+		if(polygon == null || state==ControlState.DISABLED){
+			return false;
+		}
+		boolean returnValue = false;
 		synchronized (polygonPointData) {
 			owner.camToPanel(x, y, lastMouse);
 			activeSelectionRegion = false;
 			clearMouseSelection();
 		}
-		return super.touchUp(x, y, pointer, button);
+		return returnValue || super.touchUp(x, y, pointer, button);
 	}
 	
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
+		if(polygon == null || state==ControlState.DISABLED){
+			return false;
+		}
+		boolean returnValue = false;
+		
 		synchronized (polygonPointData) {
 			owner.camToPanel(x, y, lastMouse);	
 			firstDown.set(lastMouse);
 			updateMouseSelection();
 			
 			//When no points nearby drag around points
-			if(mouseLineSelectedIndex == -1 && mousePointSelectedIndex == -1){
+			if(mouseLineSelectedIndex == -1 && mousePointSelectedIndex == -1 && Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)){
 				activeSelectionRegion = true;
 				updateSelectedRegion();
+				returnValue = true;
 			}else{
 				//Deals with dragging so that only on selected points
 				boolean clearSelection = false;
@@ -164,11 +183,14 @@ public class PolygonControler extends BaseEntityControler{
 				}
 			}
 		}
-		return false;
+		return returnValue || super.touchDown(x, y, pointer, button);
 	}
 	
 	@Override
 	public boolean mouseMoved(int x, int y) {
+		if(polygon == null || state==ControlState.DISABLED){
+			return false;
+		}
 		synchronized (polygonPointData) {
 			owner.camToPanel(x, y, lastMouse);
 			updateMouseSelection();
@@ -370,8 +392,8 @@ public class PolygonControler extends BaseEntityControler{
 		}
 	}
 	
-	public void draw(ShapeRenderer shape, boolean edit){
-		
+	public void draw(ShapeRenderer shape){
+		boolean edit = state ==ControlState.EDIT;
 		if(activeSelectionRegion){
 			Color c = Color.LIGHT_GRAY;
 			c.a = 0.5f;
