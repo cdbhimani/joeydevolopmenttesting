@@ -29,9 +29,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
-import com.emptyPockets.box2d.Box2DScreen;
 import com.emptyPockets.box2d.Car;
 import com.emptyPockets.box2d.BulletLauncher;
+import com.emptyPockets.box2d.gui.Box2DScreen;
 
 public class BasicCarTestScreen extends Box2DScreen{
 	

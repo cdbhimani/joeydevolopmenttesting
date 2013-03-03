@@ -86,19 +86,7 @@ public class EntityEditorScreen extends StageScreen {
 		editorCamera.update();
 		shape.setProjectionMatrix(editorCamera.combined);
 		
-		Color major = Color.WHITE;
-		major.a = 1;
-		
-		Color minor = Color.WHITE;
-		minor.a = 0.5f;
-		
-		Color grid = Color.WHITE;
-		grid.a = 0.1f;
-		
-		GraphicsToolkit.drawGrid(shape, editorCamera,gridSize, grid);
-		GraphicsToolkit.drawGrid(shape, editorCamera,5*gridSize, minor);
-		GraphicsToolkit.drawGrid(shape, editorCamera,10*gridSize, major);
-		GraphicsToolkit.drawAxis(shape, editorCamera);
+		GraphicsToolkit.draw2DAxis(shape, editorCamera, gridSize, Color.WHITE);
 	}
 	
 	@Override
