@@ -1,4 +1,4 @@
-package com.emptyPockets.bodyEditor.main.controls.shape;
+package com.emptyPockets.box2d.shape.editor;
 
 import java.util.ArrayList;
 
@@ -7,10 +7,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.emptyPockets.bodyEditor.main.EntityEditorScreen;
+import com.emptyPockets.box2d.shape.data.PolygonShapeData;
+import com.emptyPockets.gui.ViewportConvertor;
 import com.emptyPockets.utils.maths.MathsToolkit;
 
 public class PolygonControler extends BaseShapeControler{
@@ -19,8 +19,8 @@ public class PolygonControler extends BaseShapeControler{
 	Vector2 lastMouse = new Vector2();
 	Vector2 firstDown = new Vector2();
 	
-	Polygon polygon = new Polygon(new float[6]);
-	ArrayList<Vector2> polygonPointData = new ArrayList<Vector2>();
+	PolygonShapeData polygonData = null;
+	
 	int mousePointSelectedIndex = -1;
 	int mouseLineSelectedIndex = -1;
 
@@ -35,39 +35,39 @@ public class PolygonControler extends BaseShapeControler{
 	
 	int segments = 50;
 	
-	public PolygonControler(EntityEditorScreen owner){
+	public PolygonControler(ViewportConvertor owner){
 		super(owner);
 	}
 	
 	private Vector2 getPoint(int index){
-		return polygonPointData.get(index);
+		return polygonData.getPoint(index);
 		
 	}
 	
 	private void removePoint(int index){
-		polygonPointData.remove(index);
+		polygonData.removePoint(index);
 		lineSelectionData.remove(index);
 		pointSelectionData.remove(index);
 	}
 	private void addPoint(int index, Vector2 pos){
-		polygonPointData.add(index, pos);
+		polygonData.addPoint(index, pos);
 		lineSelectionData.add(index, false);
 		pointSelectionData.add(index, false);
 	}
 	
 	private void addPoint(Vector2 pos){
-		polygonPointData.add(pos);
+		polygonData.addPoint(pos);
 		lineSelectionData.add(false);
 		pointSelectionData.add(false);
 	}
 	
 	@Override
 	public boolean tap(float x, float y, int count, int button) {
-		if(polygon == null || state==ControlState.DISABLED){
+		if(polygonData == null || state==ControlState.DISABLED){
 			return false;
 		}
 		boolean returnValue = false;
-		synchronized (polygonPointData) {
+		synchronized (polygonData) {
 			owner.camToPanel(x, y, lastMouse);
 			updateMouseSelection();
 
@@ -104,12 +104,12 @@ public class PolygonControler extends BaseShapeControler{
 	
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
-		if(polygon == null || state==ControlState.DISABLED){
+		if(polygonData == null || state==ControlState.DISABLED){
 			return false;
 		}
 		boolean returnValue = false;
 		
-		synchronized (polygonPointData) {
+		synchronized (polygonData) {
 			Vector2 currentMouse = new Vector2();
 			owner.camToPanel(x, y, currentMouse);
 			int editCount = 0;
@@ -134,11 +134,11 @@ public class PolygonControler extends BaseShapeControler{
 	
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
-		if(polygon == null || state==ControlState.DISABLED){
+		if(polygonData == null || state==ControlState.DISABLED){
 			return false;
 		}
 		boolean returnValue = false;
-		synchronized (polygonPointData) {
+		synchronized (polygonData) {
 			owner.camToPanel(x, y, lastMouse);
 			activeSelectionRegion = false;
 			clearMouseSelection();
@@ -148,12 +148,12 @@ public class PolygonControler extends BaseShapeControler{
 	
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
-		if(polygon == null || state==ControlState.DISABLED){
+		if(polygonData == null || state==ControlState.DISABLED){
 			return false;
 		}
 		boolean returnValue = false;
 		
-		synchronized (polygonPointData) {
+		synchronized (polygonData) {
 			owner.camToPanel(x, y, lastMouse);	
 			firstDown.set(lastMouse);
 			updateMouseSelection();
@@ -188,10 +188,10 @@ public class PolygonControler extends BaseShapeControler{
 	
 	@Override
 	public boolean mouseMoved(int x, int y) {
-		if(polygon == null || state==ControlState.DISABLED){
+		if(polygonData == null || state==ControlState.DISABLED){
 			return false;
 		}
-		synchronized (polygonPointData) {
+		synchronized (polygonData) {
 			owner.camToPanel(x, y, lastMouse);
 			updateMouseSelection();
 		}
@@ -200,7 +200,7 @@ public class PolygonControler extends BaseShapeControler{
 	
 	private int translateSelection(float dx, float dy){
 		int editCount = 0;
-		for(int i = 0; i < polygonPointData.size(); i++){
+		for(int i = 0; i < polygonData.getPointCount(); i++){
 			if(isPointSelected(i)){
 				getPoint(i).add(dx, dy);
 				editCount++;
@@ -210,19 +210,16 @@ public class PolygonControler extends BaseShapeControler{
 	}
 	
 	private void removeSelection(){
-		synchronized (polygonPointData) {
+		synchronized (polygonData) {
 			ArrayList<Vector2> pointToRemove = new ArrayList<Vector2>();
-			ArrayList<Boolean> pointSeltoRemove = new ArrayList<Boolean>();
-			ArrayList<Boolean> lineSeltoRemove = new ArrayList<Boolean>();
-			
-			for(int i = 0;i < polygonPointData.size(); i++){
+			for(int i = 0;i < polygonData.getPointCount(); i++){
 				if(isPointSelected(i)){
-					pointToRemove.add(polygonPointData.get(i));
+					pointToRemove.add(polygonData.getPoint(i));
 
 				}
 			}
 			
-			polygonPointData.removeAll(pointToRemove);
+			polygonData.removePoints(pointToRemove);
 			clearGroupSelection();
 			clearMouseSelection();
 		}
@@ -242,7 +239,7 @@ public class PolygonControler extends BaseShapeControler{
 		int lineA = index;
 		int lineB = index-1;
 		if(lineB < 0){
-			lineB = polygonPointData.size()-1;
+			lineB = polygonData.getPointCount()-1;
 		}
 		if(lineA == mouseLineSelectedIndex || lineB == mouseLineSelectedIndex){
 			return true;
@@ -257,7 +254,7 @@ public class PolygonControler extends BaseShapeControler{
 		int lineA = index;
 		int lineB = index-1;
 		if(lineB < 0){
-			lineB = polygonPointData.size()-1;
+			lineB = polygonData.getPointCount()-1;
 		}
 		if(lineSelectionData.get(lineA) || lineSelectionData.get(lineB)){
 			return true;
@@ -292,8 +289,8 @@ public class PolygonControler extends BaseShapeControler{
 		float mouseDistance2 = mouseDistance*mouseDistance;
 		
 		boolean pointFound = false;
-		for(int i = 0; i < polygonPointData.size(); i++){
-			Vector2 p = polygonPointData.get(i);
+		for(int i = 0; i < polygonData.getPointCount(); i++){
+			Vector2 p = polygonData.getPoint(i);
 			if(p.dst2(lastMouse) < mouseDistance2){
 				mousePointSelectedIndex = i;
 				pointFound = true;
@@ -301,15 +298,15 @@ public class PolygonControler extends BaseShapeControler{
 		}
 		
 		if(!pointFound){
-			for(int i = 0; i < polygonPointData.size() && polygonPointData.size() >= 2; i++){
+			for(int i = 0; i < polygonData.getPointCount() && polygonData.getPointCount() >= 2; i++){
 				Vector2 p1 = null;
 				Vector2 p2 = null;
-				if(i == polygonPointData.size()-1){
-					p1 = polygonPointData.get(i);
-					p2 = polygonPointData.get(0);
+				if(i == polygonData.getPointCount()-1){
+					p1 = polygonData.getPoint(i);
+					p2 = polygonData.getPoint(0);
 				}else{
-					p1 = polygonPointData.get(i);
-					p2 = polygonPointData.get(i+1);
+					p1 = polygonData.getPoint(i);
+					p2 = polygonData.getPoint(i+1);
 				}
 				if(MathsToolkit.getLineSegmentDistance(p1, p2, lastMouse) < mouseDistance){
 					mouseLineSelectedIndex = i;
@@ -328,21 +325,21 @@ public class PolygonControler extends BaseShapeControler{
 		pointSelectedCount = 0;
 		lineSelectedCount = 0;
 		
-		if(lineSelectionData.size() != polygonPointData.size()){
+		if(lineSelectionData.size() != polygonData.getPointCount()){
 			lineSelectionData.clear();
-			lineSelectionData.ensureCapacity(polygonPointData.size());
-			for(int i =0; i < polygonPointData.size(); i++){
+			lineSelectionData.ensureCapacity(polygonData.getPointCount());
+			for(int i =0; i < polygonData.getPointCount(); i++){
 				lineSelectionData.add(false);
 			}
 		}
-		if(pointSelectionData.size() != polygonPointData.size()){
+		if(pointSelectionData.size() != polygonData.getPointCount()){
 			pointSelectionData.clear();
-			pointSelectionData.ensureCapacity(polygonPointData.size());
-			for(int i =0; i < polygonPointData.size(); i++){
+			pointSelectionData.ensureCapacity(polygonData.getPointCount());
+			for(int i =0; i < polygonData.getPointCount(); i++){
 				pointSelectionData.add(false);
 			}
 		}
-		for(int i =0; i < polygonPointData.size(); i++){
+		for(int i =0; i < polygonData.getPointCount(); i++){
 			pointSelectionData.set(i, false);
 			lineSelectionData.set(i, false);
 		}
@@ -356,36 +353,36 @@ public class PolygonControler extends BaseShapeControler{
 		//Test rectangle
 		if(activeSelectionRegion){
 			//Test Points
-			for(int i =0; i < polygonPointData.size(); i++){
-				Vector2 v = polygonPointData.get(i);
+			for(int i =0; i < polygonData.getPointCount(); i++){
+				Vector2 v = polygonData.getPoint(i);
 				if(selectedRegion.contains(v.x, v.y)){
 					pointSelectionData.set(i, true);
 				}
 			}		
 			
-			for(int i = 0; i < polygonPointData.size(); i++){
+			for(int i = 0; i < polygonData.getPointCount(); i++){
 				int p1 = i;
 				int p2 = i+1;
 				
-				if(p2 > polygonPointData.size()-1){
+				if(p2 > polygonData.getPointCount()-1){
 					p2 = 0;
 				}
 				
-				if(MathsToolkit.SegmentIntersectRectangle(selectedRegion, polygonPointData.get(p1), polygonPointData.get(p2))){
+				if(MathsToolkit.SegmentIntersectRectangle(selectedRegion, polygonData.getPoint(p1), polygonData.getPoint(p2))){
 					lineSelectionData.set(i, true);
 				}
 			}
 			
 		}
 		//Determine Selected Points
-		for(int i =0; i < polygonPointData.size(); i++){
+		for(int i =0; i < polygonData.getPointCount(); i++){
 			if(pointSelectionData.get(i)){
 				pointSelectedCount++;
 			}
 		}
 		
 		//Determine Selected Lines
-		for(int i =0; i < polygonPointData.size(); i++){
+		for(int i =0; i < polygonData.getPointCount(); i++){
 			if(lineSelectionData.get(i)){
 				lineSelectedCount++;
 			}
@@ -409,11 +406,11 @@ public class PolygonControler extends BaseShapeControler{
 			shape.end();
 		}
 		
-		if(polygonPointData == null || polygonPointData.size() == 0){
+		if(polygonData == null || polygonData.getPointCount() == 0){
 			return;
 		}
 		
-		synchronized (polygonPointData) {
+		synchronized (polygonData) {
 			
 			//Draw Lines
 			Vector2 p1 = null;
@@ -421,18 +418,18 @@ public class PolygonControler extends BaseShapeControler{
 			Gdx.gl.glLineWidth(3f);
 			
 			shape.begin(ShapeType.Line);
-			for(int i = 0; i <  polygonPointData.size() && polygonPointData.size() > 1; i++){
+			for(int i = 0; i <  polygonData.getPointCount() && polygonData.getPointCount() > 1; i++){
 				if(isLineSelected(i) && edit){
 					shape.setColor(shapeHighlightColor);		
 				}else{
 					shape.setColor(shapeColor);
 				}
-				if(i < polygonPointData.size()-1){
-					p1 =  polygonPointData.get(i);
-					p2 =  polygonPointData.get(i+1);	
+				if(i < polygonData.getPointCount()-1){
+					p1 =  polygonData.getPoint(i);
+					p2 =  polygonData.getPoint(i+1);	
 				}else{
-					p1 =  polygonPointData.get( polygonPointData.size()-1);
-					p2 =  polygonPointData.get(0);
+					p1 =  polygonData.getPoint( polygonData.getPointCount()-1);
+					p2 =  polygonData.getPoint(0);
 				}
 				shape.line(p1.x, p1.y, p2.x, p2.y);
 			}
@@ -443,8 +440,8 @@ public class PolygonControler extends BaseShapeControler{
 				//Draw Nodes
 				float nodeSize = owner.panelToCam(minContactDistance)/2;
 				shape.begin(ShapeType.Rectangle);
-				for(int i = 0; i <  polygonPointData.size()-1; i++){
-					Vector2 p = polygonPointData.get(i);
+				for(int i = 0; i <  polygonData.getPointCount()-1; i++){
+					Vector2 p = polygonData.getPoint(i);
 					if(isPointSelected(i)){
 						shape.setColor(controlHighlightColor);
 					}else{
@@ -456,12 +453,12 @@ public class PolygonControler extends BaseShapeControler{
 				
 				//Draw last node as a circle
 				shape.begin(ShapeType.Circle);
-				if(isPointSelected(polygonPointData.size()-1)){
+				if(isPointSelected(polygonData.getPointCount()-1)){
 					shape.setColor(controlHighlightColor);
 				}else{
 					shape.setColor(controlColor);
 				}
-				shape.circle(polygonPointData.get(polygonPointData.size()-1).x, polygonPointData.get(polygonPointData.size()-1).y, nodeSize, segments);
+				shape.circle(polygonData.getPoint(polygonData.getPointCount()-1).x, polygonData.getPoint(polygonData.getPointCount()-1).y, nodeSize, segments);
 				shape.end();
 			}
 		}
@@ -469,20 +466,16 @@ public class PolygonControler extends BaseShapeControler{
 	
 	@Override
 	public boolean keyDown(int code) {
-		synchronized (polygonPointData) {
+		synchronized (polygonData) {
 			if(Input.Keys.DEL == code){
 				removeSelection();
 			}	
 		}
 		return super.keyDown(code);
 	}
-	public void setPolygon(ArrayList<Vector2> points){
-		this.polygonPointData = points;
-		this.pointSelectionData.ensureCapacity(points.size());
-		this.lineSelectionData.ensureCapacity(points.size());
-	}
-	
-	public ArrayList<Vector2> getPolygon(){
-		return polygonPointData;
+	public void setPolygon(PolygonShapeData points){
+		this.polygonData = points;
+		this.pointSelectionData.ensureCapacity(points.getPointCount());
+		this.lineSelectionData.ensureCapacity(points.getPointCount());
 	}
 }

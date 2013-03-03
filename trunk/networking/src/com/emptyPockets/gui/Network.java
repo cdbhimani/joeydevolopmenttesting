@@ -11,7 +11,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.emptyPockets.box2d.Box2DScreen;
+import com.emptyPockets.box2d.gui.Box2DScreen;
 
 public class Network extends Box2DScreen{
 

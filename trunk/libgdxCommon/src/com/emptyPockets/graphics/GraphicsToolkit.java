@@ -9,6 +9,21 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
 public class GraphicsToolkit {
 
+	public static void draw2DAxis(ShapeRenderer shape, OrthographicCamera camera, float gap, Color color){
+		Color major =color;
+		major.a = 1;
+		
+		Color minor = color;
+		minor.a = 0.5f;
+		
+		Color grid = color;
+		grid.a = 0.1f;
+		
+		GraphicsToolkit.drawGrid(shape, camera,gap, grid);
+		GraphicsToolkit.drawGrid(shape, camera,5*gap, minor);
+		GraphicsToolkit.drawGrid(shape, camera,10*gap, major);
+		GraphicsToolkit.drawAxis(shape, camera);
+	}
 	public static void drawGrid(ShapeRenderer shape, OrthographicCamera camera, float gap, Color color) {
         Gdx.gl.glEnable(GL10.GL_BLEND);
         Gdx.gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
