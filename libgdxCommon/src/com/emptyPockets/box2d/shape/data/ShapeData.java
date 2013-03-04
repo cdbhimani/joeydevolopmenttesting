@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Shape;
+import com.badlogic.gdx.scenes.scene2d.ui.Tree.Node;
 
 public abstract class ShapeData {
+	String name  = "";
 	Rectangle boundingBox = new Rectangle();
 	ArrayList<Shape> shapes;
 	
@@ -45,6 +47,12 @@ public abstract class ShapeData {
 			shapes.clear();
 			shapes = null;
 		}
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }
