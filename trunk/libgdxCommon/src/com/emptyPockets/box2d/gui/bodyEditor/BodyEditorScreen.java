@@ -1,5 +1,7 @@
 package com.emptyPockets.box2d.gui.bodyEditor;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
@@ -13,9 +15,12 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.emptyPockets.box2d.gui.Box2DScreen;
+import com.emptyPockets.box2d.shape.ShapeManager;
+import com.emptyPockets.box2d.shape.data.ShapeData;
 import com.emptyPockets.gui.ScreenSizeHelper;
 
 public class BodyEditorScreen extends Box2DScreen{
@@ -23,26 +28,31 @@ public class BodyEditorScreen extends Box2DScreen{
 	Table menuButtons;
 	Button showMenuButton;
 	Button hideMenuButton;
-	TextButton buttonA;
-	TextButton buttonB;
-	TextButton buttonC;
+	TextButton circleButton;
+	TextButton rectangleButton;
+	TextButton polygonButton;
 	
 	float buttonSize = 0.6f;
 	float menuAnimationTime = 1f;
 	Interpolation menuInterp = Interpolation.exp10Out;
 	
+	ArrayList<ShapeData> shapes = new ArrayList<ShapeData>();
+	
+	ShapeManager manager;
+	
 	public BodyEditorScreen(InputMultiplexer inputMultiplexer) {
 		super(inputMultiplexer);
 		setClearColor(Color.DARK_GRAY);
 		setShowDebug(true);
+		
 	}
 
 	public void createMenuBar(Stage stage){
-		showMenuButton = new TextButton("Show",getSkin());
-		hideMenuButton = new TextButton("Hide", getSkin());
-		buttonA = new TextButton("A", getSkin());
-		buttonB = new TextButton("B", getSkin());
-		buttonC = new TextButton("C", getSkin());
+		showMenuButton = new TextButton("M",getSkin());
+		hideMenuButton = new TextButton("M", getSkin());
+		circleButton = new TextButton("C", getSkin());
+		rectangleButton = new TextButton("R", getSkin());
+		polygonButton = new TextButton("P", getSkin());
 				
 		menuButtons = new Table(getSkin());
 		menuButtons.setBackground("default-rect");		
@@ -50,6 +60,13 @@ public class BodyEditorScreen extends Box2DScreen{
 		
 		stage.addActor(showMenuButton);
 		stage.addActor(menuButtons);
+		
+		manager = new ShapeManager();
+		Window win = new Window("test", getSkin());
+		win.add(manager).fill().expand().top().left();
+		win.setSize(200, 200);
+		
+		stage.addActor(win);
 		
 		showMenuButton.addListener(new ChangeListener() {
 			
@@ -78,6 +95,7 @@ public class BodyEditorScreen extends Box2DScreen{
 		
 		SequenceAction show = new SequenceAction();
 		show.addAction(move);
+		
 		
 		menuButtons.setPosition(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()-menuButtons.getHeight());
 		menuButtons.addAction(show);
@@ -114,9 +132,9 @@ public class BodyEditorScreen extends Box2DScreen{
 	public void setMenuButtonSize(float size){
 		float buttonWide = ScreenSizeHelper.getcmtoPxlX(size);
 		float buttonHigh = ScreenSizeHelper.getcmtoPxlY(size);
-		buttonA.setSize(buttonWide, buttonHigh);
-		buttonB.setSize(buttonWide, buttonHigh);
-		buttonC.setSize(buttonWide, buttonHigh);
+		circleButton.setSize(buttonWide, buttonHigh);
+		rectangleButton.setSize(buttonWide, buttonHigh);
+		polygonButton.setSize(buttonWide, buttonHigh);
 		showMenuButton.setSize(buttonWide, buttonHigh);
 		hideMenuButton.setSize(buttonWide, buttonHigh);
 		showMenuButton.setPosition(0, Gdx.graphics.getHeight()-buttonHigh);
@@ -125,13 +143,14 @@ public class BodyEditorScreen extends Box2DScreen{
 		menuButtons.clear();
 
 		menuButtons.add(hideMenuButton).size(buttonWide, buttonHigh).fillY().expandY();
-		menuButtons.add(buttonA).size(buttonWide, buttonHigh).fillY().expandY();
-		menuButtons.add(buttonB).size(buttonWide, buttonHigh).fillY().expandY();
-		menuButtons.add(buttonC).size(buttonWide, buttonHigh).fillY().expandY();
+		menuButtons.add(circleButton).size(buttonWide, buttonHigh).fillY().expandY();
+		menuButtons.add(rectangleButton).size(buttonWide, buttonHigh).fillY().expandY();
+		menuButtons.add(polygonButton).size(buttonWide, buttonHigh).fillY().expandY();
 		menuButtons.add().fill().expand();
 
 		menuButtons.invalidateHierarchy();
 	}
+	
 	@Override
 	public void drawStage(float delta) {
 		super.drawStage(delta);
@@ -140,14 +159,10 @@ public class BodyEditorScreen extends Box2DScreen{
 
 	@Override
 	public void drawScreen(float delta) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void createWorld(World world) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
