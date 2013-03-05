@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree;
@@ -76,12 +77,16 @@ public class ShapeManager extends Table{
 		rectangleButton = new TextButton("R", getSkin());
 		polygonButton = new TextButton("P", getSkin());
 		deleteButton = new TextButton("Delete", getSkin());
-		root = new Node(new Label("Shapes", getSkin()));
+		
+		Table rootTable = new Table(getSkin());
+		rootTable.add("Shapes").height(100);
+		
+		root = new Node(rootTable);
 		tree.add(root);
 		
 		
 		ScrollPane scroll = new ScrollPane(tree, getSkin());
-		
+		scroll.setFadeScrollBars(false);
 		
 		
 		add(circleButton).expandX().fillX();
