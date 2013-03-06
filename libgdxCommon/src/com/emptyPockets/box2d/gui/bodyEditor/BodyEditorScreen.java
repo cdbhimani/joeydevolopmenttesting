@@ -25,130 +25,59 @@ import com.emptyPockets.gui.ScreenSizeHelper;
 
 public class BodyEditorScreen extends Box2DScreen{
 
-	Table menuButtons;
-	Button showMenuButton;
-	Button hideMenuButton;
-	TextButton circleButton;
-	TextButton rectangleButton;
-	TextButton polygonButton;
-	
-	float buttonSize = 0.6f;
-	float menuAnimationTime = 1f;
-	Interpolation menuInterp = Interpolation.exp10Out;
-	
-	ArrayList<ShapeData> shapes = new ArrayList<ShapeData>();
-	
-	ShapeManager manager;
+	ShapeManager shapeManager;
+		
+	Button shapeManagerButton;
+	float buttonSize = .6f; 
 	
 	public BodyEditorScreen(InputMultiplexer inputMultiplexer) {
 		super(inputMultiplexer);
 		setClearColor(Color.DARK_GRAY);
 		setShowDebug(true);
-		
 	}
 
-	public void createMenuBar(Stage stage){
-		showMenuButton = new TextButton("M",getSkin());
-		hideMenuButton = new TextButton("M", getSkin());
-		circleButton = new TextButton("C", getSkin());
-		rectangleButton = new TextButton("R", getSkin());
-		polygonButton = new TextButton("P", getSkin());
-				
-		menuButtons = new Table(getSkin());
-		menuButtons.setBackground("default-rect");		
-		setMenuButtonSize(buttonSize);
+	public void createPanel(Stage stage){
+		shapeManager = new ShapeManager();
+		shapeManager.setBackground("default-rect");		
+		shapeManager.setVisible(false);
+		shapeManagerButton=shapeManager.getShowPanelButton();
 		
-		stage.addActor(showMenuButton);
-		stage.addActor(menuButtons);
+		stage.addActor(shapeManager);
+		stage.addActor(shapeManagerButton);
 		
-		manager = new ShapeManager();
-		Window win = new Window("test", getSkin());
-		win.add(manager).fill().expand().top().left();
-		win.setSize(200, 200);
+		setButtonSize(buttonSize);
 		
-		stage.addActor(win);
-		
-		showMenuButton.addListener(new ChangeListener() {
+		shapeManagerButton.addListener(new ChangeListener() {
 			
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				showButtonBar();
-			}
-		});
-		
-		hideMenuButton.addListener(new ChangeListener() {
-			
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				hideButtonBar();
+				shapeManager.showControlPanel();	
+				shapeManagerButton.setVisible(false);
 			}
 		});
 	}
 	
-	public void showButtonBar(){
-//		menuButtons.setVisible(true);
-		
-		MoveToAction move = new MoveToAction();
-		move.setDuration(menuAnimationTime);
-		move.setPosition(0, Gdx.graphics.getHeight()-menuButtons.getHeight());
-		move.setInterpolation(menuInterp);
-		
-		SequenceAction show = new SequenceAction();
-		show.addAction(move);
-		
-		
-		menuButtons.setPosition(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()-menuButtons.getHeight());
-		menuButtons.addAction(show);
-		
-		showMenuButton.setVisible(false);
-	}
 	
-	public void hideButtonBar(){
-//		menuButtons.setVisible(false);
-		
-		MoveToAction move = new MoveToAction();
-		move.setDuration(menuAnimationTime);
-		move.setInterpolation(menuInterp);
-		move.setPosition(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()-menuButtons.getHeight());
-		
-		SequenceAction hide = new SequenceAction();
-		hide.addAction(move);
-
-		menuButtons.setPosition(0, Gdx.graphics.getHeight()-menuButtons.getHeight());
-		menuButtons.addAction(hide);
-		showMenuButton.setVisible(true);
-	}
 	@Override
 	public void createStage(Stage stage) {
-		createMenuBar(stage);
+		createPanel(stage);
 	}
 	
 	@Override
 	public void resize(int width, int height) {
 		super.resize(width, height);
-		setMenuButtonSize(buttonSize);
+		setButtonSize(buttonSize);
+		shapeManager.setBounds(0, 0, shapeManager.getWidth(), Gdx.graphics.getHeight());
+		shapeManager.invalidateHierarchy();
 	}
 	
-	public void setMenuButtonSize(float size){
+	public void setButtonSize(float size){
 		float buttonWide = ScreenSizeHelper.getcmtoPxlX(size);
 		float buttonHigh = ScreenSizeHelper.getcmtoPxlY(size);
-		circleButton.setSize(buttonWide, buttonHigh);
-		rectangleButton.setSize(buttonWide, buttonHigh);
-		polygonButton.setSize(buttonWide, buttonHigh);
-		showMenuButton.setSize(buttonWide, buttonHigh);
-		hideMenuButton.setSize(buttonWide, buttonHigh);
-		showMenuButton.setPosition(0, Gdx.graphics.getHeight()-buttonHigh);
-		menuButtons.setBounds(0, Gdx.graphics.getHeight()-buttonHigh, Gdx.graphics.getWidth(), buttonHigh);
 		
-		menuButtons.clear();
-
-		menuButtons.add(hideMenuButton).size(buttonWide, buttonHigh).fillY().expandY();
-		menuButtons.add(circleButton).size(buttonWide, buttonHigh).fillY().expandY();
-		menuButtons.add(rectangleButton).size(buttonWide, buttonHigh).fillY().expandY();
-		menuButtons.add(polygonButton).size(buttonWide, buttonHigh).fillY().expandY();
-		menuButtons.add().fill().expand();
-
-		menuButtons.invalidateHierarchy();
+		shapeManagerButton.setSize(buttonWide, buttonHigh);
+		shapeManagerButton.setPosition(0, 0);
+		shapeManager.setButtonSize(size);
 	}
 	
 	@Override

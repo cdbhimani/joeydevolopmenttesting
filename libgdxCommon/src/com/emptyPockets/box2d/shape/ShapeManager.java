@@ -3,15 +3,22 @@ package com.emptyPockets.box2d.shape;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree.Node;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.emptyPockets.box2d.shape.data.RectangleShapeData;
 import com.emptyPockets.box2d.shape.data.ShapeData;
 import com.emptyPockets.box2d.shape.editor.CircleControler;
@@ -23,7 +30,14 @@ import com.emptyPockets.gui.ScreenSizeHelper;
 
 public class ShapeManager extends Table{
 	Tree tree;
+	ScrollPane treeScroll;
+	
+
+	Button hidePanelButton;
+	Button showPanelButton;
+	
 	Button deleteButton;
+
 	TextButton circleButton;
 	TextButton rectangleButton;
 	TextButton polygonButton;
@@ -36,13 +50,15 @@ public class ShapeManager extends Table{
 	PolygonControler polyonControl;
 	CircleControler circleControl;
 
+	float menuAnimationTime = 1f;
+	Interpolation menuInterp = Interpolation.exp10Out;
+	
 	public ShapeManager(){
+		super(Scene2DToolkit.getToolkit().getSkin());
 		createPanel();
 		createFakeData();
 		updateTree();
 		debug();
-		float size = ScreenSizeHelper.getcmtoPxlX(2);
-		setIconSize(size, size);
 	}
 	
 	public Skin getSkin(){
@@ -57,17 +73,6 @@ public class ShapeManager extends Table{
 		}
 	}
 	
-	public void setIconSize(float sizeX, float sizeY){
-		setNodeHeight(root, sizeY);
-		tree.invalidateHierarchy();
-	}
-	
-	public void setNodeHeight(Node node, float high){
-		node.getActor().setHeight(high);
-		for(Node n : node.getChildren()){
-			setNodeHeight(n, high);
-		}
-	}
 	public void createPanel(){
 		tree = new Tree(getSkin());
 		shapes = new ArrayList<ShapeData>();
@@ -78,25 +83,70 @@ public class ShapeManager extends Table{
 		polygonButton = new TextButton("P", getSkin());
 		deleteButton = new TextButton("Delete", getSkin());
 		
-		Table rootTable = new Table(getSkin());
-		rootTable.add("Shapes").height(100);
+		hidePanelButton = new TextButton("Hide", getSkin());
+		showPanelButton = new TextButton("Show", getSkin());
 		
-		root = new Node(rootTable);
+		root = new Node(new Label("Shapes", getSkin()));
 		tree.add(root);
 		
 		
-		ScrollPane scroll = new ScrollPane(tree, getSkin());
-		scroll.setFadeScrollBars(false);
+		treeScroll = new ScrollPane(tree, getSkin());
+		treeScroll.setFadeScrollBars(false);
+		setButtonSize(1f);
+		
+		hidePanelButton.addListener(new ChangeListener() {
+			
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				hideControlPanel();
+			}
+		});
+		
+		showPanelButton.addListener(new ChangeListener() {
+			
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				showControlPanel();
+			}
+		});
+	}
+	
+	public void showControlPanel(){
+		MoveToAction move = new MoveToAction();
+		move.setDuration(menuAnimationTime);
+		move.setPosition(0, Gdx.graphics.getHeight()-getHeight());
+		move.setInterpolation(menuInterp);
+		
+		SequenceAction show = new SequenceAction();
+		show.addAction(move);
 		
 		
-		add(circleButton).expandX().fillX();
-		add(rectangleButton).expandX().fillX();
-		add(polygonButton).expandX().fillX();
-		row();
-		add(scroll).colspan(3).left().fill().expand();
-		row();
-		add(deleteButton).colspan(3).expandX().fillX();
+		setPosition(-getWidth(), Gdx.graphics.getHeight()-getHeight());
+		setVisible(true);
+
+		addAction(show);
+	}
+	
+	public void hideControlPanel(){
+		showPanelButton.setVisible(false);
+		MoveToAction move = new MoveToAction();
+		move.setDuration(menuAnimationTime);
+		move.setInterpolation(menuInterp);
+		move.setPosition(-getWidth(), Gdx.graphics.getHeight()-getHeight());
 		
+		SequenceAction hide = new SequenceAction();
+		hide.addAction(move);
+		hide.addAction(new Action() {
+			@Override
+			public boolean act(float delta) {
+				setVisible(false);
+				showPanelButton.setVisible(true);
+				return true;
+			}
+		});
+		
+		setPosition(0, Gdx.graphics.getHeight()-getHeight());
+		addAction(hide);
 	}
 	
 	public void updateTree(){
@@ -109,5 +159,28 @@ public class ShapeManager extends Table{
 			}
 			root.add(node);
 		}
+	}
+
+	public void setButtonSize(float size) {
+		float buttonHigh = ScreenSizeHelper.getcmtoPxlY(size);
+		float buttonWide = ScreenSizeHelper.getcmtoPxlX(size);
+		showPanelButton.setSize(buttonWide, buttonHigh);
+		clear();
+		add(circleButton).height(buttonHigh).expandX().fillX();
+		add(rectangleButton).height(buttonHigh).expandX().fillX();
+		add(polygonButton).height(buttonHigh).expandX().fillX();
+		row();
+		add(treeScroll).colspan(3).left().fill().expand();
+		row();
+		add(deleteButton).height(buttonHigh).colspan(3).expandX().fillX();
+		row();
+		add(hidePanelButton).height(buttonHigh).colspan(3).expandX().fillX();
+		setWidth(buttonWide*3);
+		invalidateHierarchy();
+		
+	}
+
+	public Button getShowPanelButton() {
+		return showPanelButton;
 	}
 }
