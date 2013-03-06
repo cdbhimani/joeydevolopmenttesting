@@ -14,12 +14,4 @@ public class ShapeDataActor extends Table{
 		text = new Label(shape.getName(), Scene2DToolkit.getToolkit().getSkin());
 		
 	}
-	
-	@Override
-	public void setHeight(float height) {
-		super.setHeight(height);
-		
-		clear();
-		add(text).height(height).fill().expand();
-	}
 }
