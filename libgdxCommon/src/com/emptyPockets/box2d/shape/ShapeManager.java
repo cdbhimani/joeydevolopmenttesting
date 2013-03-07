@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -22,14 +25,16 @@ import com.emptyPockets.box2d.shape.data.CircleShapeData;
 import com.emptyPockets.box2d.shape.data.PolygonShapeData;
 import com.emptyPockets.box2d.shape.data.RectangleShapeData;
 import com.emptyPockets.box2d.shape.data.ShapeData;
+import com.emptyPockets.box2d.shape.editor.BaseShapeControler.ControlState;
 import com.emptyPockets.box2d.shape.editor.CircleControler;
 import com.emptyPockets.box2d.shape.editor.PolygonControler;
 import com.emptyPockets.box2d.shape.editor.RectangleControler;
 import com.emptyPockets.box2d.shape.editor.ShapeDataActor;
-import com.emptyPockets.box2d.shape.editor.BaseShapeControler.ControlState;
+import com.emptyPockets.gui.OrthographicsCameraConvertor;
 import com.emptyPockets.gui.Scene2DToolkit;
 import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.gui.ViewportConvertor;
+import com.emptyPockets.utils.OrthoCamController;
 
 public class ShapeManager extends Table{
 	float menuAnimationTime = 1f;
@@ -47,25 +52,40 @@ public class ShapeManager extends Table{
 	ArrayList<ShapeData> shapes;
 	HashMap<ShapeData, Node> treeData;
 	
+	InputMultiplexer input;
+	OrthoCamController positionControler;
 	RectangleControler rectangleControl;
 	PolygonControler polygonControl;
 	CircleControler circleControl;
 
 	ShapeData selectedShape = null;
-	ViewportConvertor owner;
-	public ShapeManager(ViewportConvertor owner){
+	ViewportConvertor viewConvertor;
+	public ShapeManager(OrthographicCamera camera){
 		super(Scene2DToolkit.getToolkit().getSkin());
-		this.owner = owner;
+		this.viewConvertor = new OrthographicsCameraConvertor(camera);
+		this.positionControler = new OrthoCamController(camera);
+		this.input = new InputMultiplexer();
+		
 		createPanel();
 		createListeners();
+		updateMouseListeners();
 		updateTree();
 		debug();
 	}
 	
+	public void attach(InputMultiplexer control){
+		control.addProcessor(input);
+	}
+	
+	public void detatch(InputMultiplexer control){
+		control.removeProcessor(input);
+	}
+	
+	
 	public void createListeners(){
-		rectangleControl = new RectangleControler(owner);
-		circleControl = new CircleControler(owner);
-		polygonControl = new PolygonControler(owner);
+		rectangleControl = new RectangleControler(viewConvertor);
+		circleControl = new CircleControler(viewConvertor);
+		polygonControl = new PolygonControler(viewConvertor);
 	}
 	public void setSelectedShape(ShapeData shape){
 		this.selectedShape = shape;
@@ -80,14 +100,34 @@ public class ShapeManager extends Table{
 		rectangleControl.setState(ControlState.DISABLED);
 		polygonControl.setState(ControlState.DISABLED);
 		circleControl.setState(ControlState.DISABLED);
+		
+		input.clear();
 	}
 	
 	public void updateMouseListeners(){
 		clearMouseListeners();
 		
 		if(selectedShape != null){
+			if(selectedShape instanceof CircleShapeData){
+				circleControl.setCircle((CircleShapeData) selectedShape);
+				circleControl.setState(ControlState.EDIT);
+				circleControl.attach(input);
+			}
 			
+			if(selectedShape instanceof RectangleShapeData){
+				rectangleControl.setRectangle((RectangleShapeData) selectedShape);
+				rectangleControl.setState(ControlState.EDIT);
+				rectangleControl.attach(input);
+			}
+			
+			if(selectedShape instanceof PolygonShapeData){
+				polygonControl.setPolygon((PolygonShapeData) selectedShape);
+				polygonControl.setState(ControlState.EDIT);
+				polygonControl.attach(input);
+			}
 		}
+		input.addProcessor(positionControler);
+
 	}
 	
 	public Skin getSkin(){
@@ -124,7 +164,6 @@ public class ShapeManager extends Table{
 		});
 		
 		showPanelButton.addListener(new ChangeListener() {
-			
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				showControlPanel();
@@ -135,18 +174,33 @@ public class ShapeManager extends Table{
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				addCircle();
-			}});
+		}});
 		
 		rectangleButton.addListener(new ChangeListener(){
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				addCircle();
-			}});
+				addRectangle();
+		}});
 		
 		polygonButton.addListener(new ChangeListener(){
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				addCircle();
+				addPolygon();
+		}});
+		
+		tree.addListener(new ChangeListener(){
+
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				if(tree != null && tree.getSelection().size > 0){
+					Node nodeData = tree.getSelection().get(0);
+					if(nodeData.getObject() instanceof ShapeData){
+						setSelectedShape(((ShapeData)nodeData.getObject()));	
+					}else{
+						setSelectedShape(null);
+					}
+					
+				}
 			}});
 	}
 	
@@ -193,19 +247,24 @@ public class ShapeManager extends Table{
 		for(ShapeData shape : shapes){
 			Node node = treeData.get(shape);
 			if(node == null){
-				node = new Node(new ShapeDataActor(shape));
+				ShapeDataActor data = new ShapeDataActor(shape);
+				node = new Node(data);
+				node.setObject(shape);
 				treeData.put(shape, node);
 			}
 			root.add(node);
+			if(node.getObject() == selectedShape){
+				tree.setSelection(node);
+			}
+
 		}
 		root.setExpanded(true);
 	}
 
 	private void addShape(ShapeData shape){
 		shapes.add(shape);
-		updateTree();
-		
 		setSelectedShape(shape);
+		updateTree();
 	}
 	public void addCircle(){
 		addShape(new CircleShapeData());
@@ -233,12 +292,34 @@ public class ShapeManager extends Table{
 		add(deleteButton).height(buttonHigh).colspan(3).expandX().fillX();
 		row();
 		add(hidePanelButton).height(buttonHigh).colspan(3).expandX().fillX();
-		setWidth(buttonWide*3);
+		setWidth(300);
 		invalidateHierarchy();
 		
 	}
 
 	public Button getShowPanelButton() {
 		return showPanelButton;
+	}
+
+	public void drawShapes(ShapeRenderer shapeRender) {
+		synchronized (shapes) {
+			rectangleControl.draw(shapeRender);
+			circleControl.draw(shapeRender);
+			polygonControl.draw(shapeRender);
+
+			for(ShapeData shape : shapes){
+				if(shape instanceof RectangleShapeData){
+					rectangleControl.draw(shapeRender, (RectangleShapeData) shape);
+				}
+				
+				if(shape instanceof CircleShapeData){
+					circleControl.draw(shapeRender, (CircleShapeData) shape);
+				}
+				
+				if(shape instanceof PolygonShapeData){
+					polygonControl.draw(shapeRender, (PolygonShapeData)shape);
+				}
+			}
+		}
 	}
 }

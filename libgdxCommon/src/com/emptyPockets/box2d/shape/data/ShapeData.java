@@ -8,7 +8,8 @@ import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree.Node;
 
 public abstract class ShapeData {
-	String name  = "";
+	public static int count = 0;
+	String name  = "Shape "+count++;
 	Rectangle boundingBox = new Rectangle();
 	ArrayList<Shape> shapes;
 	
