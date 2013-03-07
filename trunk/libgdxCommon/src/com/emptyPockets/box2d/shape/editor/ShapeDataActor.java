@@ -12,6 +12,9 @@ public class ShapeDataActor extends Table{
 	public ShapeDataActor(ShapeData shape){
 		this.data = shape;
 		text = new Label(shape.getName(), Scene2DToolkit.getToolkit().getSkin());
-		
+		add(text).expandX().fillX();
+	}
+	public ShapeData getShape() {
+		return data;
 	}
 }

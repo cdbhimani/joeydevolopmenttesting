@@ -1,6 +1,7 @@
 package com.emptyPockets.box2d.shape.editor;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
@@ -248,6 +249,20 @@ public class RectangleControler extends BaseShapeControler{
 		return returnValue||super.touchUp(x, y, pointer, button);
 	}
 	
+	public void draw(ShapeRenderer rend, RectangleShapeData rectangleShape){
+		draw(rend, rectangleShape, shapeColor);
+	}
+	
+	public void draw(ShapeRenderer rend, RectangleShapeData rectangleShape, Color shapeColor){
+		//Draw Shape
+		Gdx.gl.glLineWidth(2f);
+		rend.begin(ShapeType.Rectangle);
+		rend.setColor(shapeColor);
+		rend.rect(rectangleShape.getRectangle().x, rectangleShape.getRectangle().y, rectangleShape.getRectangle().width,rectangleShape.getRectangle().height);
+		rend.end();
+		Gdx.gl.glLineWidth(1f);
+	}
+	
 	public void draw(ShapeRenderer shape){
 		if(rectangleShape == null){
 			return;
@@ -304,13 +319,9 @@ public class RectangleControler extends BaseShapeControler{
 				if(hold.width > 0 && hold.height > 0)
 					shape.rect(hold.x, hold.y, hold.width, hold.height);
 			}
-			//Draw Shape
-			Gdx.gl.glLineWidth(2f);
-			shape.setColor(shapeColor);
-			shape.setColor(mouseCenterDrag?shapeHighlightColor:shapeColor);
-			shape.rect(rectangleShape.getRectangle().x, rectangleShape.getRectangle().y, rectangleShape.getRectangle().width,rectangleShape.getRectangle().height);
-			Gdx.gl.glLineWidth(1f);
 			shape.end();
+			
+			draw(shape, rectangleShape, (mouseCenterDrag?shapeHighlightColor:shapeColor));
 		}
 	}
 	public void getTR(Rectangle hold, float mouseWidth, float borderGap){

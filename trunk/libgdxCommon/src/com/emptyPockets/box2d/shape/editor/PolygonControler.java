@@ -388,7 +388,29 @@ public class PolygonControler extends BaseShapeControler{
 			}
 		}
 	}
-	
+	public void draw(ShapeRenderer rend, PolygonShapeData shape){
+		draw(rend, shape, shapeColor);
+	}
+	public void draw(ShapeRenderer rend, PolygonShapeData shape, Color shapeColor){
+		//Draw Lines
+		Vector2 p1 = null;
+		Vector2 p2 = null;
+		Gdx.gl.glLineWidth(3f);
+		rend.begin(ShapeType.Line);
+		for(int i = 0; i <  shape.getPointCount() && shape.getPointCount() > 1; i++){
+			rend.setColor(shapeColor);
+			if(i < shape.getPointCount()-1){
+				p1 =  shape.getPoint(i);
+				p2 =  shape.getPoint(i+1);	
+			}else{
+				p1 =  shape.getPoint( shape.getPointCount()-1);
+				p2 =  shape.getPoint(0);
+			}
+			rend.line(p1.x, p1.y, p2.x, p2.y);
+		}
+		rend.end();
+		Gdx.gl.glLineWidth(1f);
+	}
 	public void draw(ShapeRenderer shape){
 		boolean edit = state ==ControlState.EDIT;
 		if(activeSelectionRegion){
@@ -475,8 +497,16 @@ public class PolygonControler extends BaseShapeControler{
 	}
 	public void setPolygon(PolygonShapeData points){
 		this.polygonData = points;
-		if(points == )
-		this.pointSelectionData.ensureCapacity(points.getPointCount());
-		this.lineSelectionData.ensureCapacity(points.getPointCount());
+		if(points == null){
+			this.pointSelectionData.clear();
+			this.pointSelectionData.trimToSize();
+			this.lineSelectionData.clear();
+			this.lineSelectionData.trimToSize();
+			
+		}else{
+			this.pointSelectionData.ensureCapacity(points.getPointCount());
+			this.lineSelectionData.ensureCapacity(points.getPointCount());
+			clearGroupSelection();
+		}
 	}
 }

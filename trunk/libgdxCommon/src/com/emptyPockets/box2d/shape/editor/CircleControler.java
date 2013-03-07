@@ -1,6 +1,7 @@
 package com.emptyPockets.box2d.shape.editor;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
@@ -141,19 +142,24 @@ public class CircleControler extends  BaseShapeControler{
 		return returnValue||super.touchUp(x, y, pointer, button);
 	}
 	
+	public void draw(ShapeRenderer rend, CircleShapeData circleShape){
+		draw(rend,circleShape, this.shapeColor);
+	}
+	public void draw(ShapeRenderer rend, CircleShapeData circleShape, Color shapeColor){
+		Gdx.gl.glLineWidth(2f);
+		rend.begin(ShapeType.Circle);
+		rend.setColor(shapeColor);
+		rend.circle(circleShape.getCircle().x, circleShape.getCircle().y, circleShape.getCircle().radius,segmentCount);
+		rend.end();
+		Gdx.gl.glLineWidth(1f);
+	}
 	public void draw(ShapeRenderer shape){
 		if(circleShape == null){
 			return;
 		}
 		float mouseTouchSize= owner.panelToCam(minContactDistance);
 		synchronized (circleShape.getCircle()) {
-			Gdx.gl.glLineWidth(2f);
-			shape.begin(ShapeType.Circle);
-			shape.setColor(mouseInsideCircle?shapeHighlightColor:shapeColor);
-			shape.circle(circleShape.getCircle().x, circleShape.getCircle().y, circleShape.getCircle().radius,segmentCount);
-			shape.end();
-			
-			Gdx.gl.glLineWidth(1f);
+			draw(shape, circleShape,mouseInsideCircle?shapeHighlightColor:shapeColor);
 			if(state == ControlState.EDIT)
 			{
 				shape.begin(ShapeType.Circle);

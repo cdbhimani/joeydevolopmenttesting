@@ -3,6 +3,7 @@ package com.emptyPockets.box2d.gui.bodyEditor;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -16,18 +17,31 @@ import com.emptyPockets.gui.ScreenSizeHelper;
 public class BodyEditorScreen extends Box2DScreen{
 
 	ShapeManager shapeManager;
-		
+	ShapeRenderer shapeRender;
 	Button shapeManagerButton;
 	float buttonSize = .6f; 
 	
 	public BodyEditorScreen(InputMultiplexer inputMultiplexer) {
 		super(inputMultiplexer);
+		shapeRender  = new ShapeRenderer();
 		setClearColor(Color.DARK_GRAY);
 		setShowDebug(true);
+		shapeManager = new ShapeManager(getBox2DWorldCamera());
 	}
 
+	@Override
+	public void addInputMultiplexer(InputMultiplexer input) {
+		super.addInputMultiplexer(input);
+		shapeManager.attach(input);
+	}
+	
+	@Override
+	public void removeInputMultiplexer(InputMultiplexer input) {
+		super.removeInputMultiplexer(input);
+		shapeManager.detatch(input);
+	}
+	
 	public void createPanel(Stage stage){
-		shapeManager = new ShapeManager(getBox2DWorldCameraConvertor());
 		shapeManager.setBackground("default-rect");		
 		shapeManager.setVisible(false);
 		shapeManagerButton=shapeManager.getShowPanelButton();
@@ -38,7 +52,6 @@ public class BodyEditorScreen extends Box2DScreen{
 		setButtonSize(buttonSize);
 		
 		shapeManagerButton.addListener(new ChangeListener() {
-			
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				shapeManager.showControlPanel();	
@@ -78,6 +91,8 @@ public class BodyEditorScreen extends Box2DScreen{
 
 	@Override
 	public void drawScreen(float delta) {
+		shapeRender.setProjectionMatrix(getBox2DWorldCamera().combined);
+		shapeManager.drawShapes(shapeRender);
 	}
 
 	@Override

@@ -26,7 +26,6 @@ public abstract class Box2DScreen extends StageScreen{
 	boolean showDebug = false;
 	Box2DDebugRenderer debugRender;
 	OrthographicCamera box2DWorldCamera;
-	OrthographicsCameraConvertor box2DWorldCameraConvertor;
 	float worldScale = 0.1f;
 	ShapeRenderer background;
 	
@@ -35,7 +34,6 @@ public abstract class Box2DScreen extends StageScreen{
 		super(inputMultiplexer);
 		gravity = new Vector2();
 		box2DWorldCamera = new OrthographicCamera();
-		box2DWorldCameraConvertor = new OrthographicsCameraConvertor(box2DWorldCamera);
 		bodiesToRemove = new ArrayList<Body>();
 	}
 
@@ -79,8 +77,6 @@ public abstract class Box2DScreen extends StageScreen{
 		super.resize(width, height);
 		box2DWorldCamera.viewportWidth = width;
 		box2DWorldCamera.viewportHeight= height;
-		box2DWorldCamera.position.x =width/2;
-		box2DWorldCamera.position.y =height/2;
 	}
 	
 	public void updateWorld(float delta){
@@ -118,6 +114,7 @@ public abstract class Box2DScreen extends StageScreen{
 	@Override
 	public void drawBackground(float delta) {
 		if(isShowDebug()){
+			box2DWorldCamera.update();
 			background.setProjectionMatrix(box2DWorldCamera.combined);
 			GraphicsToolkit.draw2DAxis(background, box2DWorldCamera, 1, Color.WHITE);
 		}
@@ -152,9 +149,9 @@ public abstract class Box2DScreen extends StageScreen{
 	public void setWorldScale(float worldScale) {
 		this.worldScale = worldScale;
 	}
-
-	public OrthographicsCameraConvertor getBox2DWorldCameraConvertor() {
-		return box2DWorldCameraConvertor;
+	
+	public OrthographicCamera getBox2DWorldCamera() {
+		return box2DWorldCamera;
 	}
 
 
