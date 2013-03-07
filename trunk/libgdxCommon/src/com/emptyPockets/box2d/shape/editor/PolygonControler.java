@@ -475,6 +475,7 @@ public class PolygonControler extends BaseShapeControler{
 	}
 	public void setPolygon(PolygonShapeData points){
 		this.polygonData = points;
+		if(points == )
 		this.pointSelectionData.ensureCapacity(points.getPointCount());
 		this.lineSelectionData.ensureCapacity(points.getPointCount());
 	}

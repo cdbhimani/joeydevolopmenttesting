@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.emptyPockets.box2d.body.BodyData;
 import com.emptyPockets.graphics.GraphicsToolkit;
+import com.emptyPockets.gui.OrthographicsCameraConvertor;
 import com.emptyPockets.gui.StageScreen;
 
 public abstract class Box2DScreen extends StageScreen{
@@ -24,7 +25,8 @@ public abstract class Box2DScreen extends StageScreen{
 	int positionIterations = 2;
 	boolean showDebug = false;
 	Box2DDebugRenderer debugRender;
-	OrthographicCamera worldCamera;
+	OrthographicCamera box2DWorldCamera;
+	OrthographicsCameraConvertor box2DWorldCameraConvertor;
 	float worldScale = 0.1f;
 	ShapeRenderer background;
 	
@@ -32,7 +34,8 @@ public abstract class Box2DScreen extends StageScreen{
 	public Box2DScreen(InputMultiplexer inputMultiplexer) {
 		super(inputMultiplexer);
 		gravity = new Vector2();
-		worldCamera = new OrthographicCamera();
+		box2DWorldCamera = new OrthographicCamera();
+		box2DWorldCameraConvertor = new OrthographicsCameraConvertor(box2DWorldCamera);
 		bodiesToRemove = new ArrayList<Body>();
 	}
 
@@ -74,10 +77,10 @@ public abstract class Box2DScreen extends StageScreen{
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
 		super.resize(width, height);
-		worldCamera.viewportWidth = width;
-		worldCamera.viewportHeight= height;
-		worldCamera.position.x =width/2;
-		worldCamera.position.y =height/2;
+		box2DWorldCamera.viewportWidth = width;
+		box2DWorldCamera.viewportHeight= height;
+		box2DWorldCamera.position.x =width/2;
+		box2DWorldCamera.position.y =height/2;
 	}
 	
 	public void updateWorld(float delta){
@@ -92,8 +95,8 @@ public abstract class Box2DScreen extends StageScreen{
 			}
 			bodiesToRemove.clear();
 		}
-		updateWorldCamera(worldCamera);
-		worldCamera.update();
+		updateWorldCamera(box2DWorldCamera);
+		box2DWorldCamera.update();
 	}
 	
 	public void drawDebugWorld(float delta){
@@ -101,7 +104,7 @@ public abstract class Box2DScreen extends StageScreen{
 			if(debugRender == null){
 				debugRender = new Box2DDebugRenderer();
 			}
-			debugRender.render(getWorld(), worldCamera.combined);
+			debugRender.render(getWorld(), box2DWorldCamera.combined);
 		}
 	}
 	
@@ -115,8 +118,8 @@ public abstract class Box2DScreen extends StageScreen{
 	@Override
 	public void drawBackground(float delta) {
 		if(isShowDebug()){
-			background.setProjectionMatrix(worldCamera.combined);
-			GraphicsToolkit.draw2DAxis(background, worldCamera, 1, Color.WHITE);
+			background.setProjectionMatrix(box2DWorldCamera.combined);
+			GraphicsToolkit.draw2DAxis(background, box2DWorldCamera, 1, Color.WHITE);
 		}
 
 	}
@@ -148,6 +151,10 @@ public abstract class Box2DScreen extends StageScreen{
 
 	public void setWorldScale(float worldScale) {
 		this.worldScale = worldScale;
+	}
+
+	public OrthographicsCameraConvertor getBox2DWorldCameraConvertor() {
+		return box2DWorldCameraConvertor;
 	}
 
 

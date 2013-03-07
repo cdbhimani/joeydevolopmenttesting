@@ -9,10 +9,11 @@ public abstract class StageScreen extends GameScreen {
 
 	private Stage stage;
 	OrthographicCamera stageCamera;
-	
+	private OrthographicsCameraConvertor stageCameraConvertor;
 	public StageScreen(InputMultiplexer inputMultiplexer) {
 		super(inputMultiplexer);
 		stageCamera = new OrthographicCamera();
+		stageCameraConvertor = new OrthographicsCameraConvertor(stageCamera);
 	}
 
 	public abstract void createStage(Stage stage);
@@ -86,5 +87,7 @@ public abstract class StageScreen extends GameScreen {
 		this.stage = stage;
 	}
 
-
+	public OrthographicsCameraConvertor getStageCameraConvertor() {
+		return stageCameraConvertor;
+	}
 }

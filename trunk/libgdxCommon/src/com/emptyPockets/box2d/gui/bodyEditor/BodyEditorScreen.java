@@ -1,26 +1,16 @@
 package com.emptyPockets.box2d.gui.bodyEditor;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
-import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.emptyPockets.box2d.gui.Box2DScreen;
 import com.emptyPockets.box2d.shape.ShapeManager;
-import com.emptyPockets.box2d.shape.data.ShapeData;
 import com.emptyPockets.gui.ScreenSizeHelper;
 
 public class BodyEditorScreen extends Box2DScreen{
@@ -37,7 +27,7 @@ public class BodyEditorScreen extends Box2DScreen{
 	}
 
 	public void createPanel(Stage stage){
-		shapeManager = new ShapeManager();
+		shapeManager = new ShapeManager(getBox2DWorldCameraConvertor());
 		shapeManager.setBackground("default-rect");		
 		shapeManager.setVisible(false);
 		shapeManagerButton=shapeManager.getShowPanelButton();

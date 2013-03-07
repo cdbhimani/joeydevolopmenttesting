@@ -18,26 +18,27 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree.Node;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
+import com.emptyPockets.box2d.shape.data.CircleShapeData;
+import com.emptyPockets.box2d.shape.data.PolygonShapeData;
 import com.emptyPockets.box2d.shape.data.RectangleShapeData;
 import com.emptyPockets.box2d.shape.data.ShapeData;
 import com.emptyPockets.box2d.shape.editor.CircleControler;
 import com.emptyPockets.box2d.shape.editor.PolygonControler;
 import com.emptyPockets.box2d.shape.editor.RectangleControler;
 import com.emptyPockets.box2d.shape.editor.ShapeDataActor;
+import com.emptyPockets.box2d.shape.editor.BaseShapeControler.ControlState;
 import com.emptyPockets.gui.Scene2DToolkit;
 import com.emptyPockets.gui.ScreenSizeHelper;
+import com.emptyPockets.gui.ViewportConvertor;
 
 public class ShapeManager extends Table{
+	float menuAnimationTime = 1f;
+	Interpolation menuInterp = Interpolation.exp10Out;
 	Tree tree;
 	ScrollPane treeScroll;
-	
-
 	Button hidePanelButton;
 	Button showPanelButton;
-	
 	Button deleteButton;
-
 	TextButton circleButton;
 	TextButton rectangleButton;
 	TextButton polygonButton;
@@ -47,32 +48,52 @@ public class ShapeManager extends Table{
 	HashMap<ShapeData, Node> treeData;
 	
 	RectangleControler rectangleControl;
-	PolygonControler polyonControl;
+	PolygonControler polygonControl;
 	CircleControler circleControl;
 
-	float menuAnimationTime = 1f;
-	Interpolation menuInterp = Interpolation.exp10Out;
-	
-	public ShapeManager(){
+	ShapeData selectedShape = null;
+	ViewportConvertor owner;
+	public ShapeManager(ViewportConvertor owner){
 		super(Scene2DToolkit.getToolkit().getSkin());
+		this.owner = owner;
 		createPanel();
-		createFakeData();
+		createListeners();
 		updateTree();
 		debug();
+	}
+	
+	public void createListeners(){
+		rectangleControl = new RectangleControler(owner);
+		circleControl = new CircleControler(owner);
+		polygonControl = new PolygonControler(owner);
+	}
+	public void setSelectedShape(ShapeData shape){
+		this.selectedShape = shape;
+		updateMouseListeners();
+	}
+	
+	public void clearMouseListeners(){
+		rectangleControl.setRectangle(null);
+		circleControl.setCircle(null);
+		polygonControl.setPolygon(null);
+		
+		rectangleControl.setState(ControlState.DISABLED);
+		polygonControl.setState(ControlState.DISABLED);
+		circleControl.setState(ControlState.DISABLED);
+	}
+	
+	public void updateMouseListeners(){
+		clearMouseListeners();
+		
+		if(selectedShape != null){
+			
+		}
 	}
 	
 	public Skin getSkin(){
 		return Scene2DToolkit.getToolkit().getSkin();
 	}
-		
-	public void createFakeData(){
-		for(int i = 0;i < 10; i++){
-			RectangleShapeData data= new RectangleShapeData();
-			data.setName("Rectangle : "+i);
-			shapes.add(data);
-		}
-	}
-	
+			
 	public void createPanel(){
 		tree = new Tree(getSkin());
 		shapes = new ArrayList<ShapeData>();
@@ -109,6 +130,24 @@ public class ShapeManager extends Table{
 				showControlPanel();
 			}
 		});
+		
+		circleButton.addListener(new ChangeListener(){
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				addCircle();
+			}});
+		
+		rectangleButton.addListener(new ChangeListener(){
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				addCircle();
+			}});
+		
+		polygonButton.addListener(new ChangeListener(){
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				addCircle();
+			}});
 	}
 	
 	public void showControlPanel(){
@@ -159,8 +198,27 @@ public class ShapeManager extends Table{
 			}
 			root.add(node);
 		}
+		root.setExpanded(true);
 	}
 
+	private void addShape(ShapeData shape){
+		shapes.add(shape);
+		updateTree();
+		
+		setSelectedShape(shape);
+	}
+	public void addCircle(){
+		addShape(new CircleShapeData());
+	}
+	
+	public void addRectangle(){
+		addShape(new RectangleShapeData());
+	}
+	
+	public void addPolygon(){
+		addShape(new PolygonShapeData());
+	}
+	
 	public void setButtonSize(float size) {
 		float buttonHigh = ScreenSizeHelper.getcmtoPxlY(size);
 		float buttonWide = ScreenSizeHelper.getcmtoPxlX(size);
