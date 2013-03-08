@@ -3,10 +3,13 @@ package com.emptyPockets.box2d.body;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.emptyPockets.box2d.shape.data.CircleShapeData;
@@ -18,7 +21,8 @@ public class BodyData {
 	Body body;
 	
 	BodyType type;
-	ArrayList<ShapeData> shapes;
+	Rectangle aaBoundingBox;
+	private ArrayList<ShapeData> shapes;
 
 	Vector2 pos;
 	Vector2 vel;
@@ -28,19 +32,20 @@ public class BodyData {
 	
 	public BodyData(){
 		type = BodyType.DynamicBody;
-		shapes = new ArrayList<ShapeData>();
-		shapes.add(new CircleShapeData(new Circle(0,0,10)));
+		setShapes(new ArrayList<ShapeData>());
+		getShapes().add(new CircleShapeData(new Circle(0,0,10)));
 		pos = new Vector2(10,10);
 		vel = new Vector2(0,0);
 		ang = 0f;
 		angVel = 0f;
 		density= 1f;
+		aaBoundingBox= new Rectangle();
 	}
 	
 	public BodyData(ArrayList<ShapeData> shape){
 		this();
 		dispose();
-		shapes = shape;
+		setShapes(shape);
 	}
 	public BodyDef createBodyDef(){
 		BodyDef bodyDef = new BodyDef();
@@ -56,9 +61,30 @@ public class BodyData {
 		BodyDef def = createBodyDef();
 		body = world.createBody(def);
 		body.setUserData(this);
-		for(ShapeData shape : shapes){
+		for(ShapeData shape : getShapes()){
 			for(Shape s : shape.getShape()){
-				body.createFixture(s, density);
+				Fixture f = body.createFixture(s, density);
+				
+			}
+		}
+	}
+	
+	public void updateAABoundingBox(){
+		synchronized (getShapes()) {
+			boolean first = true;
+			
+			for(ShapeData s : getShapes()){
+				if(first){
+					aaBoundingBox.set(s.getAABoundingBox());
+					first = false;
+				}else
+				{
+					aaBoundingBox.merge(s.getAABoundingBox());
+				}
+			}	
+			
+			if(first){
+				aaBoundingBox.set(0,0,0,0);
 			}
 		}
 	}
@@ -74,13 +100,33 @@ public class BodyData {
 		}
 	}
 	
+	public boolean inside(float x, float y){
+		for(ShapeData s : getShapes()){
+			if(s.contains(x,y)){
+				return true;
+			}
+		}
+		return false;
+	}
 	public void disposeShape(){
-		if(shapes != null){
-			for(ShapeData shape : shapes){
+		if(getShapes() != null){
+			for(ShapeData shape : getShapes()){
 				shape.dispose();
 			}
-			shapes.clear();
-			shapes = null;
+			getShapes().clear();
+			setShapes(null);
 		}
+	}
+
+	public ArrayList<ShapeData> getShapes() {
+		return shapes;
+	}
+
+	public void setShapes(ArrayList<ShapeData> shapes) {
+		this.shapes = shapes;
+	}
+
+	public Rectangle getAABoundingBox() {
+		return aaBoundingBox;
 	}
 }

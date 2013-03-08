@@ -28,7 +28,7 @@ public class RectangleShapeData extends ShapeData{
 	}
 	@Override
 	public void updateBoundingBox() {
-		boundingBox.set(rectangle);
+		aaBoundingBox.set(rectangle);
 	}
 
 	@Override

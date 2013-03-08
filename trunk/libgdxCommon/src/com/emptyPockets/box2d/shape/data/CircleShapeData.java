@@ -34,7 +34,7 @@ public class CircleShapeData extends ShapeData{
 	}
 	@Override
 	public void updateBoundingBox() {
-		boundingBox.set(circle.x-circle.radius, circle.x-circle.radius, 2*circle.radius, 2*circle.radius);
+		aaBoundingBox.set(circle.x-circle.radius, circle.y-circle.radius, 2*circle.radius, 2*circle.radius);
 	}
 
 	@Override

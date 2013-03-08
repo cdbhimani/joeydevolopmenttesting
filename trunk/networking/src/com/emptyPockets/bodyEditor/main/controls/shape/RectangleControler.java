@@ -234,7 +234,6 @@ public class RectangleControler extends BaseShapeControler{
 		boolean returnValue = false;
 		synchronized (rectangle) {
 			owner.camToPanel(x, y, lastMouse);	
-			clearMouseState();
 			
 			if(newRectangle){
 				newRectangle = false;
@@ -245,6 +244,9 @@ public class RectangleControler extends BaseShapeControler{
 				MathsToolkit.validateRectangle(rectangle);
 				returnValue=true;
 			}
+			
+			
+			clearMouseState();
 		}
 		return returnValue||super.touchUp(x, y, pointer, button);
 	}

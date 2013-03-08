@@ -62,26 +62,31 @@ public class PolygonShapeData extends ShapeData {
 			for(int i = 0; i < points.size(); i++){
 				p = points.get(i);
 				if(i == 0){
-					boundingBox.x = p.x;
-					boundingBox.y = p.y;
-				}else{
-					//Check X
-					if(p.x < boundingBox.x){
-						boundingBox.width += boundingBox.x-p.x;
-						boundingBox.x = p.x;
-					}else if (p.x > boundingBox.x+boundingBox.width){
-						boundingBox.width = p.x-boundingBox.x;
-					}
-					
-					//Check Y
-					if(p.y < boundingBox.y){
-						boundingBox.height += boundingBox.y-p.y;
-						boundingBox.x = p.x;
-					}else if (p.y > boundingBox.y+boundingBox.height){
-						boundingBox.height= p.y-boundingBox.y;
-					}
+					aaBoundingBox.x = p.x;
+					aaBoundingBox.y = p.y;
+					aaBoundingBox.width =p.x;
+					aaBoundingBox.height =p.y;
+				}
+				
+				if(aaBoundingBox.x < p.x){
+					aaBoundingBox.x = p.x;
+				}
+				
+				if(aaBoundingBox.y < p.y){
+					aaBoundingBox.y = p.y;
+				}
+				
+				if(aaBoundingBox.width > p.x){
+					aaBoundingBox.width = p.x;
+				}
+				
+				if(aaBoundingBox.height > p.y){
+					aaBoundingBox.height = p.y;
 				}
 			}
+			
+			aaBoundingBox.width-=aaBoundingBox.x;
+			aaBoundingBox.height-=aaBoundingBox.y;
 			
 		}
 	}
