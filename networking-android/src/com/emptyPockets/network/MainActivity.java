@@ -7,13 +7,13 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.emptyPockets.main.ProgramMain;
 
 public class MainActivity extends AndroidApplication {
-	@Override  
+	@Override        
 	public void onCreate(Bundle savedInstanceState) { 
-		super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState);  
                  
 		AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
 		cfg.useGL20 = true;
-  
-		initialize(new ProgramMain(), cfg);
+   
+		initialize(new ProgramMain(), cfg);          
 	 }
-}  
+}     

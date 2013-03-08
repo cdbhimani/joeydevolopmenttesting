@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptyPockets.box2d.shape.data.PolygonShapeData;
+import com.emptyPockets.box2d.shape.data.ShapeData;
 import com.emptyPockets.gui.ViewportConvertor;
 import com.emptyPockets.utils.maths.MathsToolkit;
 
@@ -82,8 +83,10 @@ public class PolygonControler extends BaseShapeControler{
 					Vector2 pos = lastMouse.cpy();
 					if(mouseLineSelectedIndex != -1){
 						addPoint(mouseLineSelectedIndex+1, pos);
+						notifyShapeDataChange(true);
 					}else{
 						addPoint(pos);
+						notifyShapeDataChange(true);
 					}
 					returnValue = true;
 				}
@@ -93,6 +96,7 @@ public class PolygonControler extends BaseShapeControler{
 				if(mousePointSelectedIndex != -1){
 					//Deal with a case where 
 					removePoint(mousePointSelectedIndex);
+					notifyShapeDataChange(true);
 					returnValue = true;
 				}
 			}
@@ -126,6 +130,7 @@ public class PolygonControler extends BaseShapeControler{
 			lastMouse.set(currentMouse);
 			
 			if(editCount > 0){
+				notifyShapeDataChange(false);
 				returnValue = true;
 			}
 		}
@@ -141,6 +146,9 @@ public class PolygonControler extends BaseShapeControler{
 		synchronized (polygonData) {
 			owner.camToPanel(x, y, lastMouse);
 			activeSelectionRegion = false;
+			
+			notifyShapeDataChange(true);
+			
 			clearMouseSelection();
 		}
 		return returnValue || super.touchUp(x, y, pointer, button);
@@ -491,6 +499,7 @@ public class PolygonControler extends BaseShapeControler{
 		synchronized (polygonData) {
 			if(Input.Keys.DEL == code){
 				removeSelection();
+				notifyShapeDataChange(true);
 			}	
 		}
 		return super.keyDown(code);
@@ -508,5 +517,10 @@ public class PolygonControler extends BaseShapeControler{
 			this.lineSelectionData.ensureCapacity(points.getPointCount());
 			clearGroupSelection();
 		}
+	}
+
+	@Override
+	public ShapeData getShape() {
+		return polygonData;
 	}
 }

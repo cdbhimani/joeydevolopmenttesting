@@ -1,17 +1,20 @@
 package com.emptyPockets.box2d.shape;
 
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
-import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -21,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree;
 import com.badlogic.gdx.scenes.scene2d.ui.Tree.Node;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.emptyPockets.box2d.body.BodyData;
 import com.emptyPockets.box2d.shape.data.CircleShapeData;
 import com.emptyPockets.box2d.shape.data.PolygonShapeData;
 import com.emptyPockets.box2d.shape.data.RectangleShapeData;
@@ -30,13 +34,14 @@ import com.emptyPockets.box2d.shape.editor.CircleControler;
 import com.emptyPockets.box2d.shape.editor.PolygonControler;
 import com.emptyPockets.box2d.shape.editor.RectangleControler;
 import com.emptyPockets.box2d.shape.editor.ShapeDataActor;
+import com.emptyPockets.box2d.shape.editor.ShapeDataChangeListener;
 import com.emptyPockets.gui.OrthographicsCameraConvertor;
 import com.emptyPockets.gui.Scene2DToolkit;
 import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.gui.ViewportConvertor;
 import com.emptyPockets.utils.OrthoCamController;
 
-public class ShapeManager extends Table{
+public class BodyEditor extends Table implements ShapeDataChangeListener{
 	float menuAnimationTime = 1f;
 	Interpolation menuInterp = Interpolation.exp10Out;
 	Tree tree;
@@ -49,7 +54,6 @@ public class ShapeManager extends Table{
 	TextButton polygonButton;
 	
 	Node root;
-	ArrayList<ShapeData> shapes;
 	HashMap<ShapeData, Node> treeData;
 	
 	InputMultiplexer input;
@@ -60,7 +64,10 @@ public class ShapeManager extends Table{
 
 	ShapeData selectedShape = null;
 	ViewportConvertor viewConvertor;
-	public ShapeManager(OrthographicCamera camera){
+	
+	
+	BodyData bodyData;
+	public BodyEditor(OrthographicCamera camera){
 		super(Scene2DToolkit.getToolkit().getSkin());
 		this.viewConvertor = new OrthographicsCameraConvertor(camera);
 		this.positionControler = new OrthoCamController(camera);
@@ -71,6 +78,8 @@ public class ShapeManager extends Table{
 		updateMouseListeners();
 		updateTree();
 		debug();
+		
+		bodyData = new BodyData(new ArrayList<ShapeData>());
 	}
 	
 	public void attach(InputMultiplexer control){
@@ -86,6 +95,10 @@ public class ShapeManager extends Table{
 		rectangleControl = new RectangleControler(viewConvertor);
 		circleControl = new CircleControler(viewConvertor);
 		polygonControl = new PolygonControler(viewConvertor);
+		
+		rectangleControl.addListener(this);
+		circleControl.addListener(this);
+		polygonControl.addListener(this);
 	}
 	public void setSelectedShape(ShapeData shape){
 		this.selectedShape = shape;
@@ -127,7 +140,6 @@ public class ShapeManager extends Table{
 			}
 		}
 		input.addProcessor(positionControler);
-
 	}
 	
 	public Skin getSkin(){
@@ -136,7 +148,6 @@ public class ShapeManager extends Table{
 			
 	public void createPanel(){
 		tree = new Tree(getSkin());
-		shapes = new ArrayList<ShapeData>();
 		treeData = new HashMap<ShapeData, Node>();
 		
 		circleButton = new TextButton("C", getSkin());
@@ -188,6 +199,11 @@ public class ShapeManager extends Table{
 				addPolygon();
 		}});
 		
+		deleteButton.addListener(new ChangeListener(){
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				deleteSelectedShape();
+			}});
 		tree.addListener(new ChangeListener(){
 
 			@Override
@@ -204,65 +220,76 @@ public class ShapeManager extends Table{
 			}});
 	}
 	
+	public void deleteSelectedShape(){
+		if(selectedShape != null){
+			synchronized (bodyData.getShapes()) {
+				Node node = treeData.get(selectedShape);
+				tree.remove(node);
+				treeData.remove(node);
+				node.setObject(null);
+				node.removeAll();
+				bodyData.getShapes().remove(selectedShape);
+				bodyData.updateAABoundingBox();
+				updateTree();
+				setSelectedShape(null);
+			}
+		}
+	}
 	public void showControlPanel(){
-		MoveToAction move = new MoveToAction();
-		move.setDuration(menuAnimationTime);
-		move.setPosition(0, Gdx.graphics.getHeight()-getHeight());
-		move.setInterpolation(menuInterp);
-		
-		SequenceAction show = new SequenceAction();
-		show.addAction(move);
-		
-		
 		setPosition(-getWidth(), Gdx.graphics.getHeight()-getHeight());
 		setVisible(true);
-
-		addAction(show);
+		addAction(sequence(moveTo(0, Gdx.graphics.getHeight()-getHeight(),menuAnimationTime,menuInterp)));
 	}
 	
 	public void hideControlPanel(){
 		showPanelButton.setVisible(false);
-		MoveToAction move = new MoveToAction();
-		move.setDuration(menuAnimationTime);
-		move.setInterpolation(menuInterp);
-		move.setPosition(-getWidth(), Gdx.graphics.getHeight()-getHeight());
 		
-		SequenceAction hide = new SequenceAction();
-		hide.addAction(move);
-		hide.addAction(new Action() {
+		
+		Runnable finishedRun = new Runnable() {
 			@Override
-			public boolean act(float delta) {
+			public void run() {
 				setVisible(false);
 				showPanelButton.setVisible(true);
-				return true;
 			}
-		});
+		};
 		
 		setPosition(0, Gdx.graphics.getHeight()-getHeight());
-		addAction(hide);
+		addAction(
+		   sequence(
+				moveTo(-getWidth(), Gdx.graphics.getHeight()-getHeight(),menuAnimationTime,menuInterp),
+				run(finishedRun)
+				));
 	}
 	
 	public void updateTree(){
 		root.removeAll();
-		for(ShapeData shape : shapes){
-			Node node = treeData.get(shape);
-			if(node == null){
-				ShapeDataActor data = new ShapeDataActor(shape);
-				node = new Node(data);
-				node.setObject(shape);
-				treeData.put(shape, node);
+		if(bodyData != null){
+			synchronized (bodyData.getShapes()) {
+				for(ShapeData shape : bodyData.getShapes()){
+					Node node = treeData.get(shape);
+					if(node == null){
+						ShapeDataActor data = new ShapeDataActor(shape);
+						node = new Node(data);
+						node.setObject(shape);
+						treeData.put(shape, node);
+					}
+					root.add(node);
+					if(node.getObject() == selectedShape){
+						tree.setSelection(node);
+					}
+		
+				}
+				root.setExpanded(true);
 			}
-			root.add(node);
-			if(node.getObject() == selectedShape){
-				tree.setSelection(node);
-			}
-
 		}
-		root.setExpanded(true);
 	}
+		
 
 	private void addShape(ShapeData shape){
-		shapes.add(shape);
+		synchronized (bodyData.getShapes()) {
+			bodyData.getShapes().add(shape);	
+			bodyData.updateAABoundingBox();
+		}
 		setSelectedShape(shape);
 		updateTree();
 	}
@@ -302,12 +329,16 @@ public class ShapeManager extends Table{
 	}
 
 	public void drawShapes(ShapeRenderer shapeRender) {
-		synchronized (shapes) {
+		if(bodyData == null){
+			return;
+		}
+		synchronized (bodyData.getShapes()) {
 			rectangleControl.draw(shapeRender);
 			circleControl.draw(shapeRender);
 			polygonControl.draw(shapeRender);
 
-			for(ShapeData shape : shapes){
+			for(ShapeData shape : bodyData.getShapes()){
+				rectangleControl.draw(shapeRender, shape.getAABoundingBox(),Color.MAGENTA);
 				if(shape instanceof RectangleShapeData){
 					rectangleControl.draw(shapeRender, (RectangleShapeData) shape);
 				}
@@ -320,6 +351,18 @@ public class ShapeManager extends Table{
 					polygonControl.draw(shapeRender, (PolygonShapeData)shape);
 				}
 			}
+			
+			rectangleControl.draw(shapeRender, bodyData.getAABoundingBox(),Color.CYAN);
 		}
+	}
+	
+	public void createBody(World world){
+		bodyData.createBody(world);
+	}
+
+	@Override
+	public void shapeDataChanged(ShapeData data, boolean finished) {
+		data.updateBoundingBox();
+		bodyData.updateAABoundingBox();
 	}
 }

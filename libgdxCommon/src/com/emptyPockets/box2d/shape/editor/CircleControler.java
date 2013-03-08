@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptyPockets.box2d.shape.data.CircleShapeData;
+import com.emptyPockets.box2d.shape.data.ShapeData;
 import com.emptyPockets.gui.ViewportConvertor;
 
 public class CircleControler extends  BaseShapeControler{
@@ -107,10 +108,12 @@ public class CircleControler extends  BaseShapeControler{
 					float dy = currentMouse.y-lastMouse.y;
 					circleShape.getCircle().x += dx;
 					circleShape.getCircle().y += dy;
+					notifyShapeDataChange(false);
 					returnValue = true;
-				}else if(mouseOnBorder){
+				}else if((mouseOnBorder&&state==ControlState.EDIT)){
 					float rN = currentMouse.dst(circleShape.getCircle().x, circleShape.getCircle().y)-circleShape.getCircle().radius;
 					circleShape.getCircle().radius -= mouseEdgeDist-rN;
+					notifyShapeDataChange(false);
 					returnValue = true;
 				}
 				
@@ -129,15 +132,19 @@ public class CircleControler extends  BaseShapeControler{
 		
 		synchronized (circleShape.getCircle()) {
 			owner.camToPanel(x, y, lastMouse);	
-			clearMouseState();
 			
 			if(newShape){
 				newShape = false;
 				circleShape.getCircle().x = firstMouse.x;
 				circleShape.getCircle().y = firstMouse.y;
 				circleShape.getCircle().radius = lastMouse.dst(firstMouse);
+				notifyShapeDataChange(true);
 				returnValue = true;
+			} else if(mouseInsideCircle || (mouseOnBorder&&state==ControlState.EDIT)){
+				notifyShapeDataChange(true);
 			}
+			
+			clearMouseState();
 		}
 		return returnValue||super.touchUp(x, y, pointer, button);
 	}
@@ -177,6 +184,11 @@ public class CircleControler extends  BaseShapeControler{
 
 	public void setCircle(CircleShapeData circle) {
 		this.circleShape = circle;
+	}
+
+	@Override
+	public ShapeData getShape() {
+		return circleShape;
 	}
 	
 }

@@ -1,11 +1,14 @@
 package com.emptyPockets.box2d.shape.editor;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
+import com.emptyPockets.box2d.shape.data.ShapeData;
 import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.gui.ViewportConvertor;
 
@@ -28,8 +31,10 @@ public abstract class BaseShapeControler  implements InputProcessor, GestureList
 	boolean shapeValid = true;
 	
 	ControlState state = ControlState.DISABLED;
+	ArrayList<ShapeDataChangeListener> listeners;
 	
 	public BaseShapeControler(ViewportConvertor owner){
+		listeners = new ArrayList<ShapeDataChangeListener>();
 		gestureDetector = new GestureDetector(this);
 		this.owner = owner;
 		
@@ -38,6 +43,21 @@ public abstract class BaseShapeControler  implements InputProcessor, GestureList
 		controlHighlightColor.a = 0.8f;
 	}
 
+	public abstract ShapeData getShape();
+	
+	public void addListener(ShapeDataChangeListener list){
+		listeners.add(list);
+	}
+	
+	public void removeListener(ShapeDataChangeListener list){
+		listeners.remove(list);
+	}
+	
+	public void notifyShapeDataChange(boolean finished){
+		for(ShapeDataChangeListener list : listeners){
+			list.shapeDataChanged(getShape(), finished);
+		}
+	}
 	public void setState(ControlState state){
 		this.state = state;
 	}
@@ -144,8 +164,9 @@ public abstract class BaseShapeControler  implements InputProcessor, GestureList
 
 	@Override
 	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
 		return false;
 	}
+	
+
 
 }

@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Tree.Node;
 public abstract class ShapeData {
 	public static int count = 0;
 	String name  = "Shape "+count++;
-	Rectangle boundingBox = new Rectangle();
+	Rectangle aaBoundingBox = new Rectangle();
 	ArrayList<Shape> shapes;
 	
 	public abstract void updateShapes();
@@ -26,7 +26,7 @@ public abstract class ShapeData {
 	}
 	
 	public boolean containsAABB(float x, float y){
-		return boundingBox.contains(x, y);
+		return aaBoundingBox.contains(x, y);
 	}
 	
 	public boolean containsAABB(Vector2 p){
@@ -34,10 +34,10 @@ public abstract class ShapeData {
 	}
 	
 	public boolean containsAABB(Rectangle rec){
-		return boundingBox.contains(rec);
+		return aaBoundingBox.contains(rec);
 	}
 	public boolean intersectsAABB(Rectangle rec){
-		return boundingBox.overlaps(rec);
+		return aaBoundingBox.overlaps(rec);
 	}
 	
 	public void dispose(){
@@ -55,5 +55,7 @@ public abstract class ShapeData {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+	public Rectangle getAABoundingBox() {
+		return aaBoundingBox;
+	}
 }

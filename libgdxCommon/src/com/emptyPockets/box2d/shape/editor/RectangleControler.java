@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.emptyPockets.box2d.shape.data.RectangleShapeData;
+import com.emptyPockets.box2d.shape.data.ShapeData;
 import com.emptyPockets.gui.ViewportConvertor;
 import com.emptyPockets.utils.maths.MathsToolkit;
 
@@ -120,6 +121,7 @@ public class RectangleControler extends BaseShapeControler{
 				rectangleShape.getRectangle().y = firstMouse.y;
 				rectangleShape.getRectangle().width  = 1;
 				rectangleShape.getRectangle().height = 1;
+				notifyShapeDataChange(false);
 				MathsToolkit.validateRectangle(rectangleShape.getRectangle());
 				returnValue=true;
 			}
@@ -149,6 +151,7 @@ public class RectangleControler extends BaseShapeControler{
 				rectangleShape.getRectangle().width = lastMouse.x - firstMouse.x;
 				rectangleShape.getRectangle().height = lastMouse.y - firstMouse.y;
 				MathsToolkit.validateRectangle(rectangleShape.getRectangle());
+				notifyShapeDataChange(false);
 				returnValue = true;
 			}else{
 				//Change occouring
@@ -160,6 +163,7 @@ public class RectangleControler extends BaseShapeControler{
 				
 				if(mouseCenterDrag ||((mouseBLDrag||mouseBMDrag||mouseBRDrag||mouseTLDrag||mouseTMDrag||mouseTRDrag||mouseCLDrag||mouseCRDrag)&&state==ControlState.EDIT)){
 					returnValue = true;
+					notifyShapeDataChange(false);
 				}
 				
 				if(mouseCenterDrag){
@@ -234,7 +238,6 @@ public class RectangleControler extends BaseShapeControler{
 		boolean returnValue = false;
 		synchronized (rectangleShape.getRectangle()) {
 			owner.camToPanel(x, y, lastMouse);	
-			clearMouseState();
 			
 			if(newRectangle){
 				newRectangle = false;
@@ -243,8 +246,13 @@ public class RectangleControler extends BaseShapeControler{
 				rectangleShape.getRectangle().width = lastMouse.x - firstMouse.x;
 				rectangleShape.getRectangle().height = lastMouse.y - firstMouse.y;
 				MathsToolkit.validateRectangle(rectangleShape.getRectangle());
+				notifyShapeDataChange(true);
 				returnValue=true;
+			} else if(mouseCenterDrag ||((mouseBLDrag||mouseBMDrag||mouseBRDrag||mouseTLDrag||mouseTMDrag||mouseTRDrag||mouseCLDrag||mouseCRDrag)&&state==ControlState.EDIT)){
+				notifyShapeDataChange(true);
 			}
+			
+			clearMouseState();
 		}
 		return returnValue||super.touchUp(x, y, pointer, button);
 	}
@@ -254,11 +262,15 @@ public class RectangleControler extends BaseShapeControler{
 	}
 	
 	public void draw(ShapeRenderer rend, RectangleShapeData rectangleShape, Color shapeColor){
+		draw(rend,rectangleShape.getRectangle(), shapeColor);
+	}
+	
+	public void draw(ShapeRenderer rend, Rectangle rectangleShape, Color shapeColor){		
 		//Draw Shape
 		Gdx.gl.glLineWidth(2f);
 		rend.begin(ShapeType.Rectangle);
 		rend.setColor(shapeColor);
-		rend.rect(rectangleShape.getRectangle().x, rectangleShape.getRectangle().y, rectangleShape.getRectangle().width,rectangleShape.getRectangle().height);
+		rend.rect(rectangleShape.x, rectangleShape.y, rectangleShape.width,rectangleShape.height);
 		rend.end();
 		Gdx.gl.glLineWidth(1f);
 	}
@@ -355,5 +367,10 @@ public class RectangleControler extends BaseShapeControler{
 
 	public void setRectangle(RectangleShapeData rectangle) {
 		this.rectangleShape = rectangle;
+	}
+
+	@Override
+	public ShapeData getShape() {
+		return rectangleShape;
 	}
 }
