@@ -18,7 +18,7 @@ import com.emptyPockets.box2d.shape.data.ShapeData;
 public class BodyData {
 	boolean flaggedForRemoval = false;
 
-	Body body;
+	private Body body;
 	
 	BodyType type;
 	Rectangle aaBoundingBox;
@@ -59,11 +59,11 @@ public class BodyData {
 	
 	public void createBody(World world){
 		BodyDef def = createBodyDef();
-		body = world.createBody(def);
-		body.setUserData(this);
+		setBody(world.createBody(def));
+		getBody().setUserData(this);
 		for(ShapeData shape : getShapes()){
 			for(Shape s : shape.getShape()){
-				Fixture f = body.createFixture(s, density);
+				Fixture f = getBody().createFixture(s, density);
 				
 			}
 		}
@@ -93,10 +93,10 @@ public class BodyData {
 	}
 	
 	public void dispose(){
-		if(body != null){
-			body.getWorld().destroyBody(body);
-			body.setUserData(null);
-			body = null;
+		if(getBody() != null){
+			getBody().getWorld().destroyBody(getBody());
+			getBody().setUserData(null);
+			setBody(null);
 		}
 	}
 	
@@ -128,5 +128,13 @@ public class BodyData {
 
 	public Rectangle getAABoundingBox() {
 		return aaBoundingBox;
+	}
+
+	public Body getBody() {
+		return body;
+	}
+
+	public void setBody(Body body) {
+		this.body = body;
 	}
 }
