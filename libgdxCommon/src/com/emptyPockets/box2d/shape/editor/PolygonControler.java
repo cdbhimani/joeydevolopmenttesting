@@ -25,6 +25,7 @@ public class PolygonControler extends BaseShapeControler{
 	int mousePointSelectedIndex = -1;
 	int mouseLineSelectedIndex = -1;
 
+	int maximumPoints = 1;
 	ArrayList<Boolean> pointSelectionData = new ArrayList<Boolean>();
 	int pointSelectedCount = 0;
 	
@@ -54,12 +55,20 @@ public class PolygonControler extends BaseShapeControler{
 		polygonData.addPoint(index, pos);
 		lineSelectionData.add(index, false);
 		pointSelectionData.add(index, false);
+		
+		if(maximumPoints > 0 && polygonData.getPointCount() > maximumPoints){
+			removePoint(0);
+		}
 	}
 	
 	private void addPoint(Vector2 pos){
 		polygonData.addPoint(pos);
 		lineSelectionData.add(false);
 		pointSelectionData.add(false);
+		
+		if(maximumPoints > 0 && polygonData.getPointCount() > maximumPoints){
+			removePoint(0);
+		}
 	}
 	
 	@Override
@@ -522,5 +531,13 @@ public class PolygonControler extends BaseShapeControler{
 	@Override
 	public ShapeData getShape() {
 		return polygonData;
+	}
+
+	public int getMaximumPoints() {
+		return maximumPoints;
+	}
+
+	public void setMaximumPoints(int maximumPoints) {
+		this.maximumPoints = maximumPoints;
 	}
 }

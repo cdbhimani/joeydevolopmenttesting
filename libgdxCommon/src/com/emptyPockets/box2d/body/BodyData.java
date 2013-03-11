@@ -34,7 +34,7 @@ public class BodyData {
 		type = BodyType.DynamicBody;
 		setShapes(new ArrayList<ShapeData>());
 		getShapes().add(new CircleShapeData(new Circle(0,0,10)));
-		pos = new Vector2(10,10);
+		pos = new Vector2(0,0);
 		vel = new Vector2(0,0);
 		ang = 0f;
 		angVel = 0f;
