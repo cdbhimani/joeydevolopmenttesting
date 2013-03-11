@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.Shape.Type;
 import com.emptyPockets.box2d.utils.Box2DShapeConvertor;
+import com.emptyPockets.utils.maths.MathsToolkit;
 
 public class PolygonShapeData extends ShapeData {
 	ArrayList<Vector2> points;
@@ -87,6 +88,8 @@ public class PolygonShapeData extends ShapeData {
 			
 			aaBoundingBox.width-=aaBoundingBox.x;
 			aaBoundingBox.height-=aaBoundingBox.y;
+			
+			MathsToolkit.validateRectangle(aaBoundingBox);
 			
 		}
 	}

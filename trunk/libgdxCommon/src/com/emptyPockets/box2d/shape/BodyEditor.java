@@ -114,7 +114,10 @@ public class BodyEditor extends Table implements ShapeDataChangeListener{
 		polygonControl.setState(ControlState.DISABLED);
 		circleControl.setState(ControlState.DISABLED);
 		
-		input.clear();
+		rectangleControl.detach(input);
+		polygonControl.detach(input);
+		circleControl.detach(input);
+		input.removeProcessor(positionControler);
 	}
 	
 	public void updateMouseListeners(){
