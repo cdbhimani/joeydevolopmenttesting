@@ -1,0 +1,143 @@
+
+SpaceTest.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+lasers/default/end
+  rotate: false
+  xy: 1, 1
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+lasers/default/end_overlay
+  rotate: false
+  xy: 67, 1
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+lasers/default/laser
+  rotate: false
+  xy: 133, 1
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+lasers/default/laserOverlayStatic
+  rotate: false
+  xy: 199, 1
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+lasers/default/start
+  rotate: false
+  xy: 265, 1
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+lasers/default/start_overlay
+  rotate: false
+  xy: 331, 1
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+
+SpaceTest2.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+ships/5
+  rotate: false
+  xy: 1, 616
+  size: 523, 390
+  orig: 523, 390
+  offset: 0, 0
+  index: -1
+ships/4
+  rotate: false
+  xy: 1, 473
+  size: 318, 141
+  orig: 318, 141
+  offset: 0, 0
+  index: -1
+ships/3
+  rotate: false
+  xy: 526, 882
+  size: 290, 124
+  orig: 290, 124
+  offset: 0, 0
+  index: -1
+ships/12
+  rotate: false
+  xy: 1, 336
+  size: 289, 135
+  orig: 289, 135
+  offset: 0, 0
+  index: -1
+ships/7
+  rotate: false
+  xy: 526, 744
+  size: 288, 136
+  orig: 288, 136
+  offset: 0, 0
+  index: -1
+ships/6
+  rotate: false
+  xy: 1, 234
+  size: 234, 100
+  orig: 234, 100
+  offset: 0, 0
+  index: -1
+ships/1
+  rotate: false
+  xy: 526, 647
+  size: 227, 95
+  orig: 227, 95
+  offset: 0, 0
+  index: -1
+ships/13
+  rotate: false
+  xy: 1, 119
+  size: 223, 113
+  orig: 223, 113
+  offset: 0, 0
+  index: -1
+ships/10
+  rotate: false
+  xy: 321, 457
+  size: 213, 157
+  orig: 213, 157
+  offset: 0, 0
+  index: -1
+ships/11
+  rotate: false
+  xy: 818, 959
+  size: 127, 47
+  orig: 127, 47
+  offset: 0, 0
+  index: -1
+ships/8
+  rotate: false
+  xy: 1, 72
+  size: 127, 45
+  orig: 127, 45
+  offset: 0, 0
+  index: -1
+ships/9
+  rotate: false
+  xy: 818, 912
+  size: 127, 45
+  orig: 127, 45
+  offset: 0, 0
+  index: -1
+ships/2
+  rotate: false
+  xy: 1, 1
+  size: 105, 69
+  orig: 105, 69
+  offset: 0, 0
+  index: -1
