@@ -9,7 +9,7 @@ import com.emptyPockets.gui.GameScreen;
 import com.emptyPockets.gui.BasicCarTestScreen;
 import com.emptyPockets.gui.Network;
 import com.emptyPockets.gui.NetworkScreen;
-import com.emptyPockets.test.LasersTesting;
+import com.emptyPockets.test.ErrorTesting;
 import com.emptyPockets.utils.file.FileSelector;
 
 public class ProgramMain extends Game{
@@ -25,7 +25,7 @@ public class ProgramMain extends Game{
 //		Network screen = new Network(input);
 //		EntityEditorScreen screen = new EntityEditorScreen(input);
 //		BodyEditorScreen screen = new BodyEditorScreen(input);
-		LasersTesting screen = new LasersTesting(input);
+		ErrorTesting screen = new ErrorTesting(input);
 		setScreen(screen);
 	}
 	
