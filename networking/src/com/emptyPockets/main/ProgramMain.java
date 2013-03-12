@@ -3,13 +3,7 @@ package com.emptyPockets.main;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.emptyPockets.bodyEditor.main.EntityEditorScreen;
-import com.emptyPockets.box2d.gui.bodyEditor.BodyEditorScreen;
-import com.emptyPockets.gui.GameScreen;
-import com.emptyPockets.gui.BasicCarTestScreen;
-import com.emptyPockets.gui.Network;
-import com.emptyPockets.gui.NetworkScreen;
-import com.emptyPockets.test.ErrorTesting;
+import com.emptyPockets.test.LaserTesting;
 import com.emptyPockets.utils.file.FileSelector;
 
 public class ProgramMain extends Game{
@@ -25,7 +19,8 @@ public class ProgramMain extends Game{
 //		Network screen = new Network(input);
 //		EntityEditorScreen screen = new EntityEditorScreen(input);
 //		BodyEditorScreen screen = new BodyEditorScreen(input);
-		ErrorTesting screen = new ErrorTesting(input);
+//		SpaceShipTesting screen = new SpaceShipTesting(input);
+		LaserTesting screen = new LaserTesting(input);
 		setScreen(screen);
 	}
 	
