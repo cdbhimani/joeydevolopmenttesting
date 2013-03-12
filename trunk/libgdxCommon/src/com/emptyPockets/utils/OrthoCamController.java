@@ -26,7 +26,7 @@ public class OrthoCamController implements InputProcessor {
 		this.pointers = new HashMap<Integer, Vector2>();
 		distance = 0f;
 	}
-
+	
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
 		if (pointers.size() == 0) {
