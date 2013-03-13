@@ -3,7 +3,7 @@ package com.emptyPockets.main;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.emptyPockets.test.LaserTesting;
+import com.emptyPockets.test.ErrorTesting;
 import com.emptyPockets.utils.file.FileSelector;
 
 public class ProgramMain extends Game{
@@ -20,7 +20,7 @@ public class ProgramMain extends Game{
 //		EntityEditorScreen screen = new EntityEditorScreen(input);
 //		BodyEditorScreen screen = new BodyEditorScreen(input);
 //		SpaceShipTesting screen = new SpaceShipTesting(input);
-		LaserTesting screen = new LaserTesting(input);
+		ErrorTesting screen = new ErrorTesting(input);
 		setScreen(screen);
 	}
 	

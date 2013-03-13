@@ -2,29 +2,32 @@ package com.emptyPockets.test;
 
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix3;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.emptyPockets.box2d.gui.Box2DScreen;
 import com.emptyPockets.utils.OrthoCamController;
 
-public class LaserTesting extends Box2DScreen{
-	TextureAtlas atlas;
+public class ErrorTesting extends Box2DScreen{
 	SpriteBatch spriteBatch;
 	ShapeRenderer shapeRender;
 	OrthoCamController control;
+	VertexTool vertex;
 	
-	public LaserTesting(InputMultiplexer inputMultiplexer) {
+	public ErrorTesting(InputMultiplexer inputMultiplexer) {
 		super(inputMultiplexer);
 		setClearColor(Color.BLACK);
-		atlas = new TextureAtlas("pack/SpaceTest.pack");
 		setShowDebug(true);
 		control = new OrthoCamController(getBox2DWorldCamera());
+		vertex = new VertexTool();
 	}
 
 	@Override
@@ -43,6 +46,7 @@ public class LaserTesting extends Box2DScreen{
 		super.show();
 		spriteBatch = new SpriteBatch();
 		shapeRender = new ShapeRenderer();
+		vertex.create();
 	}
 
 	@Override
@@ -52,7 +56,8 @@ public class LaserTesting extends Box2DScreen{
 		spriteBatch = null;
 		shapeRender.dispose();
 		shapeRender = null;
-		atlas.dispose();
+		vertex.dispose();
+		vertex = null;
 	}
 	
 	@Override
@@ -67,18 +72,26 @@ public class LaserTesting extends Box2DScreen{
 		
 	}
 
-	float[] vertex = new float[5*4];
+	public void transform(float[] vertix, int vertixCount, int vertixLength, Matrix3 mat){
+		float x;
+		float y;
+		
+		for(int i = 0; i < vertixCount; i++){
+			x = vertix[i*vertixLength];
+			y = vertix[i*vertixLength+1];
+			vertix[i*vertixLength] = x * mat.val[0] + y * mat.val[3] + mat.val[6];
+			vertix[i*vertixLength+1]= x * mat.val[1] + y * mat.val[4] + mat.val[7];
+		}
+	}
+	
+	int angle = 0;
 	@Override
 	public void drawScreen(float delta) {
 		spriteBatch.setProjectionMatrix(getBox2DWorldCamera().combined);
-		AtlasRegion region = atlas.findRegion("lasers/default/start");
+		vertex.draw(spriteBatch, null, null);
 		
-		constructMesh(vertex, region, 1, 0, 0, 10, 0, 100, 100, 1, 1, 0, Color.RED, 1);
-		region.getTexture().setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-		spriteBatch.begin();
-		spriteBatch.draw(region.getTexture(), vertex,0,vertex.length);
-		spriteBatch.end();
 	}
+
 
 	/**
 	    * Creates a mesh which will draw a repeated texture. To be used whenever we are dealing with a region of a TextureAtlas
