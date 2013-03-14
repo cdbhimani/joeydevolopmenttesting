@@ -85,4 +85,12 @@ public abstract class StageScreen extends GameScreen {
 		this.stage = stage;
 	}
 
+	public OrthographicCamera getStageCamera() {
+		return stageCamera;
+	}
+
+	public void setStageCamera(OrthographicCamera stageCamera) {
+		this.stageCamera = stageCamera;
+	}
+
 }
