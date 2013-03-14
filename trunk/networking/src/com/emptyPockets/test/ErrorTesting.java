@@ -25,7 +25,7 @@ public class ErrorTesting extends Box2DScreen{
 	public ErrorTesting(InputMultiplexer inputMultiplexer) {
 		super(inputMultiplexer);
 		setClearColor(Color.BLACK);
-		setShowDebug(true);
+//		setShowDebug(true);
 		control = new OrthoCamController(getBox2DWorldCamera());
 		vertex = new VertexTool();
 	}
@@ -71,182 +71,42 @@ public class ErrorTesting extends Box2DScreen{
 		// TODO Auto-generated method stub
 		
 	}
-
-	public void transform(float[] vertix, int vertixCount, int vertixLength, Matrix3 mat){
-		float x;
-		float y;
+	
+	int laserCount = 1000;
+	int sizeX = 3000;
+	int sizeY = 3000;
+	float color[];
+	float angle[];
+	float angleVel[];
+	Vector2 pos[];
+	{
 		
-		for(int i = 0; i < vertixCount; i++){
-			x = vertix[i*vertixLength];
-			y = vertix[i*vertixLength+1];
-			vertix[i*vertixLength] = x * mat.val[0] + y * mat.val[3] + mat.val[6];
-			vertix[i*vertixLength+1]= x * mat.val[1] + y * mat.val[4] + mat.val[7];
+		angle = new float[laserCount];
+		color = new float[laserCount];
+		angleVel = new float[laserCount];
+		pos = new Vector2[laserCount];
+		
+		for(int i = 0; i < laserCount; i++){
+			color[i]=Color.toFloatBits(MathUtils.random(), MathUtils.random(), MathUtils.random(), MathUtils.random(0.5f,1));
+			angle[i]= MathUtils.random(360);
+			angleVel[i]=MathUtils.random(0.5f,2);
+			if(MathUtils.randomBoolean()){
+				angleVel[i]*=-1;
+			}
+			pos[i] = new Vector2(MathUtils.random(-sizeX,sizeX),MathUtils.random(-sizeY,sizeY));
 		}
 	}
-	
-	int angle = 0;
 	@Override
 	public void drawScreen(float delta) {
 		spriteBatch.setProjectionMatrix(getBox2DWorldCamera().combined);
-		vertex.draw(spriteBatch, null, null);
+
+		spriteBatch.begin();
+		for(int i = 0;i < laserCount; i++){
+			vertex.draw(spriteBatch,pos[i], angle[i],color[i]);
+			angle[i]+=angleVel[i];
+		}
+		spriteBatch.end();
 		
 	}
 
-
-	/**
-	    * Creates a mesh which will draw a repeated texture. To be used whenever we are dealing with a region of a TextureAtlas
-	    * @param vertices For re-use, the vertices to use for the mesh. If insufficient are provided, a new array will be constructed
-	    * @param region The AtlasRegion to use
-	    * @param scale The factor by which we want to repeat our texture
-	    * @param x
-	    * @param y
-	    * @param originX
-	    * @param originY
-	    * @param width
-	    * @param height
-	    * @param scaleX Scale by which we want to expand the mesh on X
-	    * @param scaleY Scale by which we want to expand the mesh on Y
-	    * @param rotation Degrees of rotation for mesh
-	    * @param colorBase The initial base color
-	    * @param alpha The alpha by which to mult the colorBase by; resulting in the end interpolation target.
-	    * @return
-	    */
-	    private void constructMesh(
-	    		float[] vertex, 
-	    		AtlasRegion region, 
-	    		int scale, float x, float y, 
-	    		float originX, float originY, 
-	    		float width, float height,
-	    		float scaleX, float scaleY, 
-	    		float rotation, 
-	    		Color colorT, 
-	    		float alpha) {
-	 
-	        if(scale*20 > vertex.length){
-	        	vertex = new float[20*scale];
-	        }
-	 
-	        float color = colorT.toFloatBits();
-	        float colorE;
-	 
-	        int idx = 0;
-	 
-	        // bottom left and top right corner points relative to origin
-	        final float worldOriginX = x + originX;
-	        final float worldOriginY = y + originY;
-	        float fx = -originX;
-	        float fy = -originY;
-	        float fx2 = width - originX;
-	        float fy2 = height - originY;
-	 
-	        // scale
-	        if (scaleX != 1 || scaleY != 1) {
-	            fx *= scaleX;
-	            fy *= scaleY;
-	            fx2 *= scaleX;
-	            fy2 *= scaleY;
-	        }
-	 
-	        // construct corner points, start from top left and go counter clockwise
-	        final float p1x = fx;
-	        final float p1y = fy;
-	        final float p2x = fx;
-	        final float p2y = fy2;
-	        final float p3x = fx2;
-	        final float p3y = fy2;
-	        final float p4x = fx2;
-	        final float p4y = fy;
-	 
-	        float Fx1;
-	        float Fy1;
-	        float Fx2;
-	        float Fy2;
-	        float Fx3;
-	        float Fy3;
-	        float Fx4;
-	        float Fy4;
-	 
-	        // rotate
-	        if (rotation != 0) {
-	            final float cos = MathUtils.cosDeg(rotation);
-	            final float sin = MathUtils.sinDeg(rotation);
-	 
-	            Fx1 = cos * p1x - sin * p1y;
-	            Fy1 = sin * p1x + cos * p1y;
-	 
-	            Fx2 = cos * p2x - sin * p2y;
-	            Fy2 = sin * p2x + cos * p2y;
-	 
-	            Fx3 = cos * p3x - sin * p3y;
-	            Fy3 = sin * p3x + cos * p3y;
-	 
-	            Fx4 = Fx1 + (Fx3 - Fx2);
-	            Fy4 = Fy3 - (Fy2 - Fy1);
-	        } else {
-	            Fx1 = p1x;
-	            Fy1 = p1y;
-	 
-	            Fx2 = p2x;
-	            Fy2 = p2y;
-	 
-	            Fx3 = p3x;
-	            Fy3 = p3y;
-	 
-	            Fx4 = p4x;
-	            Fy4 = p4y;
-	        }
-	 
-	        float x1 = Fx1 + worldOriginX;
-	        float y1 = Fy1 + worldOriginY;
-	        float x2 = Fx2 + worldOriginX;
-	        float y2 = Fy2 + worldOriginY;
-	 
-	        float scaleX2 = ((Fx2-Fx1) / scale);
-	        float scaleY2 = ((Fy2-Fy1) / scale);
-	        float scaleX3 = ((Fx3-Fx4) / scale);
-	        float scaleY3 = ((Fy3-Fy4) / scale);
-	        float scaleAlpha = (colorT.a - (colorT.a*alpha)) / scale;                       
-	 
-	        float x3 = x1;
-	        float y3 = y1;
-	        float x4 = x2;
-	        float y4 = y2;
-	 
-	        final float u1 = region.getU();
-	        final float v1 = region.getV();
-	        final float u2 = region.getU2();
-	        final float v2 = region.getV2();
-	 
-	        int i;
-	        int vertexLength = 5;
-	        for(int j = 0; j < scale; j++){
-		        i=0;
-				vertex[(i+j*vertexLength)*vertexLength+0]=x1;
-				vertex[(i+j*vertexLength)*vertexLength+1]=y1;
-				vertex[(i+j*vertexLength)*vertexLength+2]=color;
-				vertex[(i+j*vertexLength)*vertexLength+3]=u1;
-				vertex[(i+j*vertexLength)*vertexLength+4]=v1;
-	
-				i++;
-				vertex[(i+j*vertexLength)*vertexLength+0]=x2;
-				vertex[(i+j*vertexLength)*vertexLength+1]=y2;
-				vertex[(i+j*vertexLength)*vertexLength+2]=color;
-				vertex[(i+j*vertexLength)*vertexLength+3]=u1;
-				vertex[(i+j*vertexLength)*vertexLength+4]=v2;
-				
-				i++;
-				vertex[(i+j*vertexLength)*vertexLength+0]=x3;
-				vertex[(i+j*vertexLength)*vertexLength+1]=y3;
-				vertex[(i+j*vertexLength)*vertexLength+2]=color;
-				vertex[(i+j*vertexLength)*vertexLength+3]=u2;
-				vertex[(i+j*vertexLength)*vertexLength+4]=v2;
-	
-				i++;
-				vertex[(i+j*vertexLength)*vertexLength+0]=x4;
-				vertex[(i+j*vertexLength)*vertexLength+1]=y4;
-				vertex[(i+j*vertexLength)*vertexLength+2]=color;
-				vertex[(i+j*vertexLength)*vertexLength+3]=u2;
-				vertex[(i+j*vertexLength)*vertexLength+4]=v1;
-	        }
-	    }
 }
