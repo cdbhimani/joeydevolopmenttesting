@@ -6,16 +6,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.emptyPockets.box2d.body.BodyData;
 import com.emptyPockets.graphics.GraphicsToolkit;
-import com.emptyPockets.gui.OrthographicsCameraConvertor;
 import com.emptyPockets.gui.StageScreen;
 
 public abstract class Box2DScreen extends StageScreen{
@@ -24,6 +23,8 @@ public abstract class Box2DScreen extends StageScreen{
 	int velocityIterations = 2;
 	int positionIterations = 2;
 	boolean showDebug = false;
+	SpriteBatch textBatch;
+	BitmapFont font;
 	Box2DDebugRenderer debugRender;
 	OrthographicCamera box2DWorldCamera;
 	float worldScale = 0.1f;
@@ -41,6 +42,8 @@ public abstract class Box2DScreen extends StageScreen{
 		super.show();
 		createWorld();
 		background = new ShapeRenderer();
+		textBatch = new SpriteBatch();
+		font = new BitmapFont();
 	}
 	
 	private void createWorld(){
@@ -116,14 +119,15 @@ public abstract class Box2DScreen extends StageScreen{
 		if(isShowDebug()){
 			box2DWorldCamera.update();
 			background.setProjectionMatrix(box2DWorldCamera.combined);
-			GraphicsToolkit.draw2DAxis(background, box2DWorldCamera, 1, Color.WHITE);
+			GraphicsToolkit.draw2DAxis(background, box2DWorldCamera, 1, Color.WHITE);	
 		}
-
 	}
 	
 	@Override
 	public void drawOverlay(float delta) {
+		textBatch.setProjectionMatrix(screenCamera.combined);
 		drawDebugWorld(delta);
+//		eventLogger.draw(textBatch, font, 10,10,15);
 	}
 
 	public World getWorld() {

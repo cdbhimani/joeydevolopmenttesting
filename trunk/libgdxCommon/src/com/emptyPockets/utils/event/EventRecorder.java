@@ -1,7 +1,12 @@
 package com.emptyPockets.utils.event;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.emptyPockets.utils.event.Event.EventTimerAccuracy;
 
 public class EventRecorder {
@@ -68,6 +73,24 @@ public class EventRecorder {
 
 	public void setAccuracy(EventTimerAccuracy accuracy) {
 		this.accuracy = accuracy;
+	}
+
+	public void draw(SpriteBatch textBatch, BitmapFont font, float x, float y, float yOff) {
+		textBatch.begin();
+		Set<String> event = historicEvents.keySet();
+		font.setColor(Color.RED);
+		int count=0;
+		
+		int length = 0;
+		for(String key : event){
+			if(length < key.length()){
+				length = key.length();
+			}
+		}
+		for(String key : event){
+			font.draw(textBatch, String.format("%"+length+"s : %f", key,historicEvents.get(key).getAverageDurationMS()), x, y+(count++*yOff));
+		}
+		textBatch.end();
 	}
 	
 	

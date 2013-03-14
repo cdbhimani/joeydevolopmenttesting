@@ -1,46 +1,46 @@
 
 SpaceTest.png
 format: RGBA8888
-filter: Nearest,Nearest
+filter: MipMapNearestNearest,MipMapNearestNearest
 repeat: none
 lasers/default/end
   rotate: false
-  xy: 1, 1
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 lasers/default/end_overlay
   rotate: false
-  xy: 67, 1
+  xy: 64, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 lasers/default/laser
   rotate: false
-  xy: 133, 1
+  xy: 128, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 lasers/default/laserOverlayStatic
   rotate: false
-  xy: 199, 1
+  xy: 192, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 lasers/default/start
   rotate: false
-  xy: 265, 1
+  xy: 256, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 lasers/default/start_overlay
   rotate: false
-  xy: 331, 1
+  xy: 320, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -48,95 +48,95 @@ lasers/default/start_overlay
 
 SpaceTest2.png
 format: RGBA8888
-filter: Nearest,Nearest
+filter: MipMapNearestNearest,MipMapNearestNearest
 repeat: none
 ships/5
   rotate: false
-  xy: 1, 616
+  xy: 0, 603
   size: 523, 390
   orig: 523, 390
   offset: 0, 0
   index: -1
 ships/4
   rotate: false
-  xy: 1, 473
+  xy: 0, 462
   size: 318, 141
   orig: 318, 141
   offset: 0, 0
   index: -1
 ships/3
   rotate: false
-  xy: 526, 882
+  xy: 523, 869
   size: 290, 124
   orig: 290, 124
   offset: 0, 0
   index: -1
 ships/12
   rotate: false
-  xy: 1, 336
+  xy: 0, 327
   size: 289, 135
   orig: 289, 135
   offset: 0, 0
   index: -1
 ships/7
   rotate: false
-  xy: 526, 744
+  xy: 523, 733
   size: 288, 136
   orig: 288, 136
   offset: 0, 0
   index: -1
 ships/6
   rotate: false
-  xy: 1, 234
+  xy: 0, 227
   size: 234, 100
   orig: 234, 100
   offset: 0, 0
   index: -1
 ships/1
   rotate: false
-  xy: 526, 647
+  xy: 523, 638
   size: 227, 95
   orig: 227, 95
   offset: 0, 0
   index: -1
 ships/13
   rotate: false
-  xy: 1, 119
+  xy: 0, 114
   size: 223, 113
   orig: 223, 113
   offset: 0, 0
   index: -1
 ships/10
   rotate: false
-  xy: 321, 457
+  xy: 318, 446
   size: 213, 157
   orig: 213, 157
   offset: 0, 0
   index: -1
 ships/11
   rotate: false
-  xy: 818, 959
+  xy: 813, 946
   size: 127, 47
   orig: 127, 47
   offset: 0, 0
   index: -1
 ships/8
   rotate: false
-  xy: 1, 72
+  xy: 0, 69
   size: 127, 45
   orig: 127, 45
   offset: 0, 0
   index: -1
 ships/9
   rotate: false
-  xy: 818, 912
+  xy: 813, 901
   size: 127, 45
   orig: 127, 45
   offset: 0, 0
   index: -1
 ships/2
   rotate: false
-  xy: 1, 1
+  xy: 0, 0
   size: 105, 69
   orig: 105, 69
   offset: 0, 0

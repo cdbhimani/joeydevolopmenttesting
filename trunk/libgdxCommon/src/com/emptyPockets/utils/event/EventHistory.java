@@ -40,8 +40,13 @@ public class EventHistory {
 			System.out.println(e);
 		}
 	}
+	
 	public float getAverageDuration() {
 		return avgDuration;
+	}
+	
+	public float getAverageDurationMS() {
+		return avgDuration*1e6f;
 	}
 	
 	public synchronized int getCount() {
