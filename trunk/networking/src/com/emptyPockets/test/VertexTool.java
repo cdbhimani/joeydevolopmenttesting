@@ -26,7 +26,7 @@ public class VertexTool implements Disposable{
 	AtlasRegion  endOverlayRegion;
 	
 	float middleScaleX = 1;
-	float middleScaleY = 10;
+	float middleScaleY = 2;
 	float startScaleX = 1;
 	float startScaleY = 1;
 	float endScaleX = 1;
@@ -189,7 +189,7 @@ public class VertexTool implements Disposable{
 		resetVertexPosition();
 		transform.idt();
 		transform.translate(p1);
-		transform.rotate(angle);
+		transform.rotate(angle-90);
 		transform.translate(-startBackgroundRegion.getRegionWidth()/2, -startBackgroundRegion.getRegionHeight()/2);
 		applyTransform();
 		
