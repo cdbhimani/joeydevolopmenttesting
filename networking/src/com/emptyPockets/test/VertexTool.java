@@ -4,140 +4,170 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 
 public class VertexTool implements Disposable{
 	int vertexLength = 5;
-	int middleSegmentCount = 10;
+	int middleSegmentCount = 20;
 	
-	float[] startVert;
-	float[] endVert;
-	float[] middleVert;
+	float[] vertexData;
 	
 	TextureAtlas atlas;
 	AtlasRegion startRegion;
 	AtlasRegion  middleRegion;
 	AtlasRegion  endRegion;
-	
-	Matrix3 rotation;
-	Matrix3 translation;
-	Matrix3 scale;
-	
-	Matrix3 result;
+	Matrix3 transform;
 	
 	public void dispose(){
-		startVert = null;
-		endVert = null;
-		middleVert = null;
+		vertexData = null;
 		atlas.dispose();
 		startRegion = null;
 		endRegion=null;
 		middleRegion = null;
+		transform = null;
 	}
 	
 	public void create(){
 		atlas = new TextureAtlas("pack/SpaceTest.pack");
+		transform = new Matrix3();
 		createRegions();
 		createVertexData();
 	}
 	
 	private void createRegions(){
 		startRegion = atlas.findRegion("lasers/default/start");
+		startRegion.flip(false, true);
 		endRegion = atlas.findRegion("lasers/default/end");
+		endRegion.flip(false, true);
 		middleRegion = atlas.findRegion("lasers/default/laser");
 	}
 	
 	private void createVertexData(){
-		startVert = createVertex(startRegion, 1, 1, Color.RED);
-//		middleVert = createVertex(middleRegion, 1, 1, Color.RED);
-//		endVert = createVertex(endRegion, 1, 1, Color.RED);
-		middleVert = startVert;
-		endVert = startVert;
+		vertexData = createVertex(middleSegmentCount+2);
+		resetVertexFull();
 	}
 	
-	private float[] createVertex(AtlasRegion region, int repeatCountX,int repeatCountY, Color c){
-		float[] vertexData = new float[vertexLength*4*repeatCountX*repeatCountY];
-		resetVertex(vertexData, region, repeatCountX, repeatCountY, c);
-		return vertexData;
+	private float[] createVertex(int regionCount){
+		return new float[vertexLength*4*(regionCount)];
 	}
 	
-	private void resetVertex(float[] vertexData,AtlasRegion region, int repeatCountX,int repeatCountY, Color c){
-		float color = c.toFloatBits();
-		int vertexPos = 0;
-		for(int x=0; x < repeatCountX; x++){
-			for(int y=0; y < repeatCountY; y++){
-				vertexPos = y+x*repeatCountX;
-				setRegionVertexColor(vertexData,vertexPos,color);
-				setRegionVertexPosition(vertexData,vertexPos,vertexLength,x*region.getRegionWidth(),y*region.getRegionHeight(), region);
-				setRegionVertexTexturePosition(vertexData,vertexPos,vertexLength, region);
-			}
+	public void applyTransform(){
+		transform(vertexData, transform);
+	}
+	public void resetVertexFull(){
+		resetVertexPosition();
+		resetVertexTexturePosition();
+		resetVertexColor(Color.WHITE.toFloatBits());
+	}
+	
+	private void resetVertexPosition(){
+		//Set laser start
+		setRegionVertexPosition(vertexData,0,0,0, startRegion);
+		//Set Middle Position
+		for(int i=0; i < middleSegmentCount; i++){
+				setRegionVertexPosition(vertexData,i+1,0,startRegion.getRegionHeight()+i*middleRegion.getRegionHeight(), middleRegion);
 		}
+		//Set laser end
+		setRegionVertexPosition(vertexData,middleSegmentCount+1,0,startRegion.getRegionHeight()+middleSegmentCount*middleRegion.getRegionHeight(), endRegion);
 	}
 
-	private void setRegionVertexPosition(float[] vertexData, int vertexPos, float x, float y, int vertexLength, AtlasRegion region){
+	public void resetVertexColor(float color){
+		//Set laser start
+		setRegionVertexColor(vertexData,0,color);
+		//Set Middle Position
+		for(int i=0; i < middleSegmentCount; i++){
+			setRegionVertexColor(vertexData,i+1,color);
+		}
+		//Set laser end
+		setRegionVertexColor(vertexData,middleSegmentCount+1,color);
+	}
+	
+	public void resetVertexTexturePosition(){
+		//Set laser start
+		setRegionVertexTexturePosition(vertexData,0,startRegion);
+		//Set Middle Position
+		for(int i=0; i < middleSegmentCount; i++){
+			setRegionVertexTexturePosition(vertexData,i+1, middleRegion);
+		}
+		//Set laser end
+		setRegionVertexTexturePosition(vertexData,middleSegmentCount+1,endRegion);		
+	}
+	
+	private void setRegionVertexPosition(float[] vertexData, int region, float x, float y, AtlasRegion textureRegion){
 		int i;
 		i = 0;
-		System.out.println(vertexPos*vertexLength*4+i * vertexLength);
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 0] = x;
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 1] = y;
+		vertexData[region*vertexLength*4+i * vertexLength + 0] = x;
+		vertexData[region*vertexLength*4+i * vertexLength + 1] = y;
 		i++;
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 0] = x;
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 1] = y+region.getRegionHeight();
+		vertexData[region*vertexLength*4+i * vertexLength + 0] = x;
+		vertexData[region*vertexLength*4+i * vertexLength + 1] = y+textureRegion.getRegionHeight();
 		i++;
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 0] = x+region.getRegionWidth();
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 1] = y+region.getRegionHeight();
+		vertexData[region*vertexLength*4+i * vertexLength + 0] = x+textureRegion.getRegionWidth();
+		vertexData[region*vertexLength*4+i * vertexLength + 1] = y+textureRegion.getRegionHeight();
 		i++;
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 0] = x+region.getRegionWidth();
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 1] = y;
+		vertexData[region*vertexLength*4+i * vertexLength + 0] = x+textureRegion.getRegionWidth();
+		vertexData[region*vertexLength*4+i * vertexLength + 1] = y;
 	}
 	
-	private void setRegionVertexTexturePosition(float[] vertexData, int vertexPos, int vertexLength, AtlasRegion region){
+	private void setRegionVertexTexturePosition(float[] vertexData, int region, AtlasRegion textureRegion){
 		int i = 0;
 		i = 0;
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 3] = region.getU();
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 4] = region.getV();
+		vertexData[region*vertexLength*4+i * vertexLength + 3] = textureRegion.getU();
+		vertexData[region*vertexLength*4+i * vertexLength + 4] = textureRegion.getV();
 		i++;
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 3] =region.getU();
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 4] = region.getV2();
+		vertexData[region*vertexLength*4+i * vertexLength + 3] = textureRegion.getU();
+		vertexData[region*vertexLength*4+i * vertexLength + 4] = textureRegion.getV2();
 		i++;
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 3] = region.getU2();
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 4] = region.getV2();
+		vertexData[region*vertexLength*4+i * vertexLength + 3] = textureRegion.getU2();
+		vertexData[region*vertexLength*4+i * vertexLength + 4] = textureRegion.getV2();
 		i++;
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 3] = region.getU2();
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 4] = region.getV();
+		vertexData[region*vertexLength*4+i * vertexLength + 3] = textureRegion.getU2();
+		vertexData[region*vertexLength*4+i * vertexLength + 4] = textureRegion.getV();
 	}
 	
-	private void setRegionVertexColor(float[] vertexData, int vertexPos,float color) {
+	private void setRegionVertexColor(float[] vertexData, int region,float color) {
 		int i = 0;
 		i = 0;
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 2] = color;
+		vertexData[region*vertexLength*4+i * vertexLength + 2] = color;
 		i++;
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 2] = color;
+		vertexData[region*vertexLength*4+i * vertexLength + 2] = color;
 		i++;
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 2] = color;
+		vertexData[region*vertexLength*4+i * vertexLength + 2] = color;
 		i++;
-		vertexData[vertexPos*vertexLength*4+i * vertexLength + 2] = color;
+		vertexData[region*vertexLength*4+i * vertexLength + 2] = color;
+	}
+	
+	public void transform(float[] vertexData,Matrix3 mat){
+		float x;
+		float y;
+		
+		int pos = 0;
+		while(pos<vertexData.length){
+			x = vertexData[pos];
+			y = vertexData[pos+1];
+			vertexData[pos] = x * mat.val[0] + y * mat.val[3] + mat.val[6];
+			vertexData[pos+1]= x * mat.val[1] + y * mat.val[4] + mat.val[7];
+			pos+=vertexLength;
+		}
 	}
 
 	public void printVertex(float[] vertex, int vert){
 		int pos = vert*vertexLength;
 		System.out.printf("P[%f,%f]", vertex[pos],vertex[pos+1]);
 	}
-	public void draw(SpriteBatch sbatch, Vector2 p1, Vector2 p2){
-		System.out.println("HERE");
-		resetVertex(startVert, startRegion, 1,1, Color.RED);
-//		setRegionVertexPosition(startVert, 0, 0, 0, vertexLength, startRegion);
-		printVertex(startVert, 0);
-		printVertex(startVert, 1);
-		printVertex(startVert, 2);
-		printVertex(startVert, 3);
+	
+	public void draw(SpriteBatch sbatch, Vector2 p1, float angle, float color){
+		resetVertexPosition();
+		transform.idt();
+		transform.translate(p1);
+		transform.rotate(angle);
+		transform.translate(-startRegion.getRegionWidth()/2, -startRegion.getRegionHeight()/2);
+		applyTransform();
+		resetVertexColor(color);
 		
-		sbatch.begin();
-		sbatch.draw(startRegion.getTexture(), startVert, 0, startVert.length);
-		sbatch.draw(middleRegion.getTexture(), middleVert, 0, middleVert.length);
-		sbatch.draw(endRegion.getTexture(), endVert, 0, endVert.length);
-		sbatch.end();
+		sbatch.draw(middleRegion.getTexture(), vertexData, 0, vertexData.length);
 	}
 }
