@@ -1,4 +1,4 @@
-package com.emptyPockets.test;
+package com.emptyPockets.test.beam;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -26,7 +26,7 @@ public class VertexTool implements Disposable{
 	AtlasRegion  endOverlayRegion;
 	
 	float middleScaleX = 1;
-	float middleScaleY = 2;
+	float middleScaleY = 10;
 	float startScaleX = 1;
 	float startScaleY = 1;
 	float endScaleX = 1;
@@ -189,7 +189,7 @@ public class VertexTool implements Disposable{
 		resetVertexPosition();
 		transform.idt();
 		transform.translate(p1);
-		transform.rotate(angle-90);
+		transform.rotate(angle);
 		transform.translate(-startBackgroundRegion.getRegionWidth()/2, -startBackgroundRegion.getRegionHeight()/2);
 		applyTransform();
 		

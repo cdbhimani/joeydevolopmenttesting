@@ -95,8 +95,8 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 	@Override
 	public void resize(int width, int height) {
-		screenCamera = new OrthographicCamera(width, height);
-		screenCamera.translate(width / 2, height / 2, 0);
+		screenCamera.viewportWidth = width;
+		screenCamera.viewportHeight= height;
 	}
 
 
@@ -221,6 +221,10 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 			Vector2 pointer1, Vector2 pointer2) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	public OrthographicCamera getScreenCamera() {
+		return screenCamera;
 	}
 
 }

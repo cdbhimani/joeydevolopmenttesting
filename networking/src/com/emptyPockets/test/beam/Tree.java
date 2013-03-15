@@ -1,4 +1,4 @@
-package com.emptyPockets.test;
+package com.emptyPockets.test.beam;
 
 import java.util.ArrayList;
 
