@@ -20,7 +20,8 @@ public class OrthoCamController implements InputProcessor {
 	int finger_one_pointer = -1;
 	int finger_two_pointer = -1;
 	float initialDistance = 0f;
-
+	boolean zoomEnabled = true;
+	
 	public OrthoCamController(OrthographicCamera camera) {
 		this.camera = camera;
 		this.pointers = new HashMap<Integer, Vector2>();
@@ -130,7 +131,9 @@ public class OrthoCamController implements InputProcessor {
 	}
 
 	public void changeZoom(float zoom, float x, float y){
-		
+		if(!zoomEnabled){
+			return;
+		}
 		Vector3 before = new Vector3(x,y,0);
 		camera.unproject(before);
 		
@@ -148,6 +151,14 @@ public class OrthoCamController implements InputProcessor {
 		float newZoom = camera.zoom * (1 + (amount < 0 ? 0.1f : -0.1f));
 		changeZoom(newZoom, lastMouse.x,lastMouse.y);	
 		return true;
+	}
+
+	public boolean isZoomEnabled() {
+		return zoomEnabled;
+	}
+
+	public void setZoomEnabled(boolean zoomEnabled) {
+		this.zoomEnabled = zoomEnabled;
 	}
 
 	
