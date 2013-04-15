@@ -10,8 +10,9 @@ import com.emptyPockets.graphics.GraphicsToolkit;
 import com.emptyPockets.gui.GameScreen;
 import com.emptyPockets.gui.OrthographicsCameraConvertor;
 import com.emptyPockets.test.building.controls.BuildingNodeMenu;
-import com.emptyPockets.test.building.controls.BuildingNodeMenuItem;
 import com.emptyPockets.test.building.controls.BuildingNodeMenuAction;
+import com.emptyPockets.test.building.controls.BuildingNodeMenuAdapter;
+import com.emptyPockets.test.building.controls.BuildingNodeMenuItem;
 import com.emptyPockets.test.building.model.BuildingNode;
 import com.emptyPockets.test.building.model.World;
 import com.emptyPockets.utils.OrthoCamController;
@@ -45,68 +46,73 @@ public class WorldRenderScreen extends GameScreen {
 		selectedBuildingOffset = new Vector2();
 		
 		setClearColor(Color.BLACK);
-		setupRandom(10, 1000, 1000,100,60);
+		setupRandom(10, 1000, 1000,100,60,10);
 	}
 
-	public void setupRandom(int count, int wide, int high, int radius, int buttonSize){
+	public void addBuilding(final BuildingNode node, final float border, final float buttonSize){
+		float rad = node.getRadius();
+		BuildingNodeMenu menu = new BuildingNodeMenu("Menu");
+		
+		BuildingNodeMenuItem left = new BuildingNodeMenuItem(menu, "",   new Rectangle(-rad-buttonSize-border,-buttonSize/2         ,buttonSize,buttonSize));
+		BuildingNodeMenuItem right = new BuildingNodeMenuItem(menu, "",  new Rectangle(rad+border            ,-buttonSize/2         ,buttonSize,buttonSize));
+		BuildingNodeMenuItem down = new BuildingNodeMenuItem(menu, "",   new Rectangle(-buttonSize/2         ,-rad-buttonSize-border,buttonSize,buttonSize));
+		BuildingNodeMenuItem up = new BuildingNodeMenuItem(menu, "",     new Rectangle(-buttonSize/2         , rad+border           ,buttonSize,buttonSize));
+		
+		menu.addMenuItem(left);
+		menu.addMenuItem(right);
+		menu.addMenuItem(up);
+		menu.addMenuItem(down);
+		final float offset = 3;
+		up.addAction(new BuildingNodeMenuAdapter(){
+			@Override
+			public void click(BuildingNodeMenuItem item) {
+				BuildingNode newNode = new BuildingNode();
+				newNode.setPos(node.getPosX(), node.getPosY()+offset*node.getRadius());
+				newNode.setRadius(node.getRadius());
+				addBuilding(newNode, border, buttonSize);
+			}
+		});
+		
+		down.addAction(new BuildingNodeMenuAdapter(){
+			@Override
+			public void click(BuildingNodeMenuItem item) {
+				BuildingNode newNode = new BuildingNode();
+				newNode.setPos(node.getPosX(), node.getPosY()-offset*node.getRadius());
+				newNode.setRadius(node.getRadius());
+				addBuilding(newNode, border, buttonSize);
+			}
+		});
+		
+		left.addAction(new BuildingNodeMenuAdapter(){
+			@Override
+			public void click(BuildingNodeMenuItem item) {
+				BuildingNode newNode = new BuildingNode();
+				newNode.setPos(node.getPosX()-offset*node.getRadius(), node.getPosY());
+				newNode.setRadius(node.getRadius());
+				addBuilding(newNode, border, buttonSize);
+			}
+		});
+		
+		right.addAction(new BuildingNodeMenuAdapter(){
+			@Override
+			public void click(BuildingNodeMenuItem item) {
+				BuildingNode newNode = new BuildingNode();
+				newNode.setPos(node.getPosX()+offset*node.getRadius(), node.getPosY());
+				newNode.setRadius(node.getRadius());
+				addBuilding(newNode, border, buttonSize);
+			}
+		});
+		node.setMenu(menu);
+		world.addBuilding(node);
+	}
+	public void setupRandom(int count, float wide, float high, float radiusMax, float buttonSize,float border){
 		
 		for(int i = 0; i < count; i++){
 			final BuildingNode node = new BuildingNode();
+			float rad = MathUtils.random(radiusMax/2, radiusMax);
 			node.setPos(MathUtils.random(-wide, wide),MathUtils.random(-high, high));
-			node.setRadius(MathUtils.random(radius/2, radius));
-		
-			BuildingNodeMenu menu = new BuildingNodeMenu("Menu");
-			
-			BuildingNodeMenuItem item1 = new BuildingNodeMenuItem(menu, "", new Rectangle(radius,radius,buttonSize,buttonSize));
-			BuildingNodeMenuItem item2 = new BuildingNodeMenuItem(menu, "", new Rectangle(radius,0,buttonSize,buttonSize));
-			BuildingNodeMenuItem item3 = new BuildingNodeMenuItem(menu, "", new Rectangle(radius,-radius,buttonSize,buttonSize));
-			
-			menu.addMenuItem(item1);
-			menu.addMenuItem(item2);
-			menu.addMenuItem(item3);
-			
-			item1.addAction(new BuildingNodeMenuAction() {
-				@Override
-				public void click(BuildingNodeMenuItem item) {
-					System.out.println("Click");
-					node.setRadius(node.getRadius()+1);
-				}
-
-				@Override
-				public void touchUp(BuildingNodeMenuItem item) {
-					System.out.println("Touch Up");
-				}
-				@Override
-				public void touchDown(BuildingNodeMenuItem item) {
-					System.out.println("Touch Down");
-				}
-
-				@Override
-				public void touchDragged(BuildingNodeMenuItem item, float x,float y) {
-					System.out.println("Touch Dragged");
-				}
-			});
-			item2.addAction(new BuildingNodeMenuAction() {
-				@Override
-				public void click(BuildingNodeMenuItem item) {
-					node.setRadius(node.getRadius()-1);
-				}
-
-				@Override
-				public void touchUp(BuildingNodeMenuItem item) {
-				}
-
-				@Override
-				public void touchDown(BuildingNodeMenuItem item) {
-				}
-
-				@Override
-				public void touchDragged(BuildingNodeMenuItem item, float x,float y) {
-				}
-			});
-			node.setMenu(menu);
-			
-			world.addBuilding(node);
+			node.setRadius(rad);
+			addBuilding(node, border, buttonSize);
 		}
 	}
 	

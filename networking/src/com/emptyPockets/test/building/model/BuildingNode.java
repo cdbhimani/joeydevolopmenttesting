@@ -24,6 +24,7 @@ public class BuildingNode {
 		}
 		shape.begin(ShapeType.Circle);
 		shape.circle(pos.x, pos.y, radius,100);
+		shape.circle(pos.x, pos.y, 1,100);
 		shape.end();
 		
 		if(selected&&getMenu()!=null){
