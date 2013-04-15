@@ -9,15 +9,15 @@ import com.emptyPockets.test.building.controls.BuildingNodeMenu;
 public class BuildingNode {
 	Vector2 pos;
 	float radius = 10;
-	boolean selected = false;
+	boolean highlighted = false;
 	private BuildingNodeMenu menu;
-	
+
 	public BuildingNode(){
 		pos = new Vector2();
 	}
 	
 	public void draw(ShapeRenderer shape){
-		if(selected){
+		if(highlighted){
 			shape.setColor(Color.RED);
 		}else{
 			shape.setColor(Color.GREEN);
@@ -27,7 +27,7 @@ public class BuildingNode {
 		shape.circle(pos.x, pos.y, 1,100);
 		shape.end();
 		
-		if(selected&&getMenu()!=null){
+		if(getMenu()!=null){
 			getMenu().draw(shape);
 		}
 	}
@@ -64,11 +64,11 @@ public class BuildingNode {
 	}
 
 	public boolean isSelected() {
-		return selected;
+		return highlighted;
 	}
 
 	public void setSelected(boolean selected) {
-		this.selected = selected;
+		this.highlighted = selected;
 	}
 
 	public BuildingNodeMenu getMenu() {
