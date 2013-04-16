@@ -11,6 +11,7 @@ public class BuildingNodeMenu {
 	boolean visible = false;
 	ArrayList<BuildingNodeMenuItem> menuItems;
 	Rectangle bounds;
+	
 	public BuildingNodeMenu(String name){
 		this.name = name;
 		bounds = new Rectangle();
@@ -51,5 +52,13 @@ public class BuildingNodeMenu {
 			}
 		}
 		return null;
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 }
