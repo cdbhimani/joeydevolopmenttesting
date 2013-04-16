@@ -195,11 +195,13 @@ public class WorldRenderScreen extends GameScreen {
 				//Unselect last building
 				if(selectedBuilding != null){
 					selectedBuilding.setSelected(false);
+					selectedBuilding.getMenu().setVisible(false);
 				}
 				selectedBuilding = newBuilding;
 				selectedBuildingOffset.x = selectedBuilding.getPosX() - lastMouse.x;
 				selectedBuildingOffset.y = selectedBuilding.getPosY() - lastMouse.y;
 				selectedBuilding.setSelected(true);
+				selectedBuilding.getMenu().setVisible(true);
 				touchDownOnBuilding= true;
 			}
 		}
@@ -259,6 +261,7 @@ public class WorldRenderScreen extends GameScreen {
 		if(!touchDownOnMenu&&!touchDownOnBuilding&&!dragged){
 			if(selectedBuilding != null){
 				selectedBuilding.setSelected(false);
+				selectedBuilding.getMenu().setVisible(false);
 				selectedBuilding = null;
 			}
 		}
