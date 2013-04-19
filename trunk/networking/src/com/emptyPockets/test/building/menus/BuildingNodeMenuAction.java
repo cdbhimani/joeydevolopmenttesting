@@ -1,4 +1,4 @@
-package com.emptyPockets.test.building.controls;
+package com.emptyPockets.test.building.menus;
 
 public interface BuildingNodeMenuAction {
 	public void click(BuildingNodeMenuItem item);
