@@ -1,4 +1,4 @@
-package com.emptyPockets.test.building.controls;
+package com.emptyPockets.test.building.menus;
 
 import java.util.ArrayList;
 

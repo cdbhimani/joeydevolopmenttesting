@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
-import com.emptyPockets.test.building.controls.BuildingNodeMenu;
+import com.emptyPockets.test.building.menus.BuildingNodeMenu;
 
 public class BuildingNode {
 	Vector2 pos;
