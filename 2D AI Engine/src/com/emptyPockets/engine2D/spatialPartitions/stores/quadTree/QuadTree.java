@@ -1,4 +1,4 @@
-package com.emptyPockets.engine2D.spatialPartitions.quadTree;
+package com.emptyPockets.engine2D.spatialPartitions.stores.quadTree;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

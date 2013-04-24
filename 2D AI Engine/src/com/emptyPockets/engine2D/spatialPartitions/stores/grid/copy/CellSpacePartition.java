@@ -1,4 +1,4 @@
-package com.emptyPockets.engine2D.spatialPartitions.grid;
+package com.emptyPockets.engine2D.spatialPartitions.stores.grid.copy;
 //package com.joey.aitesting.game.cellSpace;
 //
 //import java.util.ArrayList;

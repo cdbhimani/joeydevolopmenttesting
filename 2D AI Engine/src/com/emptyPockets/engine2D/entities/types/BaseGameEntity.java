@@ -3,10 +3,12 @@ package com.emptyPockets.engine2D.entities.types;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.emptyPockets.engine2D.shapes.Rectangle2D;
 import com.emptyPockets.engine2D.shapes.Vector2D;
+import com.emptyPockets.engine2D.spatialPartitions.bounds.BoundedBody;
+import com.emptyPockets.engine2D.spatialPartitions.bounds.BoundingShape;
 
 import java.awt.geom.Point2D;
 
-public abstract class BaseGameEntity {
+public abstract class BaseGameEntity implements BoundedBody {
 	static int ENTITY_COUNT = 0;
 
 	public int id;
@@ -14,13 +16,17 @@ public abstract class BaseGameEntity {
 
 	public Vector2D pos;
 	public Vector2D scale;
+	public float angle = 0;
+	
 	public boolean tagged;
 	public float radius =1;
+	private BoundingShape bounds;
 	
 	public BaseGameEntity(){
 	    id = getNextValidId();
 	    pos = new Vector2D();
 	    scale = new Vector2D(1,1);
+	    angle = 0;
 	    entityType = EntityTypes.DEFAULT_TYPE;
 	    tagged = false;
 	}
@@ -47,7 +53,9 @@ public abstract class BaseGameEntity {
 	    this.entityType = entityType;
 	}
 	
-	public abstract void update(float time);
+	public void update(float time){
+		bounds.update(this);
+	}
 
 	public static int getNextValidId(){
 	    return ENTITY_COUNT++;
@@ -86,7 +94,6 @@ public abstract class BaseGameEntity {
 	
 	@Override
 	public int hashCode() {
-		// TODO Auto-generated method stub
 		return id;
 	}
 	
@@ -97,5 +104,13 @@ public abstract class BaseGameEntity {
 		}
 		return this.id == ((BaseGameEntity)obj).id;
 	}
-
+	@Override
+	public BoundingShape getBoundingShape() {
+		return bounds;
+	}
+	
+	@Override
+	public boolean hasBoundedShapeChanged() {
+		return true;
+	}
 }

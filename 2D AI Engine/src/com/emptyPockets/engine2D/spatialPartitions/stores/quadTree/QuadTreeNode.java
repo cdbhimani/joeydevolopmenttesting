@@ -1,4 +1,4 @@
-package com.emptyPockets.engine2D.spatialPartitions.quadTree;
+package com.emptyPockets.engine2D.spatialPartitions.stores.quadTree;
 
 import java.util.ArrayList;
 import java.util.HashSet;

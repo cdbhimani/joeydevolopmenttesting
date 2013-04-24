@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.emptyPockets.test.beam.BeamTesting;
 import com.emptyPockets.test.building.WorldRenderScreen;
 import com.emptyPockets.test.controls.TouchableEntitiesScreen;
+import com.emptyPockets.test.nat.ClientScreen;
 import com.emptyPockets.test.shaders.ShaderLesson1;
 import com.emptyPockets.utils.file.FileSelector;
 
@@ -26,7 +27,8 @@ public class ProgramMain extends Game{
 //		BeamTesting screen = new BeamTesting(input); //Testing Mesh Grids to display laser beams
 //		ShaderLesson1 screen = new ShaderLesson1(input); //Testing shaders
 //		WorldRenderScreen screen = new WorldRenderScreen(input); //Fist touch tests for menus on entities
-		TouchableEntitiesScreen screen = new TouchableEntitiesScreen(input);
+//		TouchableEntitiesScreen screen = new TouchableEntitiesScreen(input);
+		ClientScreen screen = new ClientScreen(input);
 		setScreen(screen);
 	}
 	

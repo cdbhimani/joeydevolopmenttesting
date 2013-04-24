@@ -9,7 +9,7 @@ public abstract class MovingEntity extends BaseGameEntity {
 	public Vector2D vel;
 	public Vector2D velHead;
 	public Vector2D velSide;
-	public float angle = 0;
+	
 	
 	public float mass;
 	public float maxSpeed;
@@ -140,11 +140,6 @@ public abstract class MovingEntity extends BaseGameEntity {
 
 	public void setMaxTurnRate(float maxTurnRate) {
 		this.maxTurnRate = maxTurnRate;
-	}
-
-	public float getAngle() {
-		// TODO Auto-generated method stub
-		return angle;
 	}
 
 }
