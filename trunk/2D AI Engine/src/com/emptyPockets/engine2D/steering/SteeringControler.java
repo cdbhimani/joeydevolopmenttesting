@@ -110,7 +110,7 @@ public class SteeringControler {
 
 	private void calculateNeighbobors(Vehicle vehicle,HashSet<Vehicle> neighbors, Rectangle2D reg) {
 		if (vehicle.world.worldBounds.contains(reg)) {
-			vehicle.world.quadTree.getEntitiesInRegion(reg, neighbors);
+			vehicle.world.getEntitiesInRegion(reg, neighbors);
 		} else {
 			// If not fully contained in the world search off wrapped world
 			if (regHold == null) {
@@ -124,7 +124,7 @@ public class SteeringControler {
 					vehicle.world.worldBounds, regHold);
 
 			for (int i = 0; i < count; i++) {
-				vehicle.world.quadTree.getEntitiesInRegion(regHold[i], neighbors);
+				vehicle.world.getEntitiesInRegion(regHold[i], neighbors);
 			}
 		}
 	}

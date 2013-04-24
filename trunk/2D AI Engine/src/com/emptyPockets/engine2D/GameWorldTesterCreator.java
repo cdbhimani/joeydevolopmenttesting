@@ -8,6 +8,7 @@ import com.emptyPockets.engine2D.entities.types.Wall2D;
 import com.emptyPockets.engine2D.entities.types.WaypointPath;
 import com.emptyPockets.engine2D.shapes.Rectangle2D;
 import com.emptyPockets.engine2D.shapes.Vector2D;
+import com.emptyPockets.engine2D.spatialPartitions.bounds.BoundedBody;
 
 public class GameWorldTesterCreator {
 
@@ -59,7 +60,7 @@ public class GameWorldTesterCreator {
 		entity.steering.wallAvoidance.enabled = true;
 		entity.steering.wallAvoidance.forceWeight = 100;
 		
-		int entityCount = world.vehicles.size();
+		int entityCount = world.vehicles.getEntityCount();
 		if(entityCount == 0){
 			entity.steering.drawBehaviors = true;
 			
@@ -79,7 +80,7 @@ public class GameWorldTesterCreator {
 			
 			entity.steering.hide.enabled = true;
 			entity.steering.hide.forceWeight = 1000;
-			entity.steering.hide.hideVehicle = world.getVehicles().get(0);
+			entity.steering.hide.hideVehicle = (Vehicle) ((ArrayList<Vehicle>)world.vehicles.getAllEntities()).get(0);
 		}
 
 		entity.vel.set(
@@ -114,7 +115,7 @@ public class GameWorldTesterCreator {
 		entity.pos.x = entity.steering.neighborDetectionRadius*(float)Math.random();
 		entity.pos.y = entity.steering.neighborDetectionRadius*(float)Math.random();
 		
-		if(entity.world.getVehicles().size() > 0){
+		if(entity.world.vehicles.getEntityCount() > 0){
 			entity.steering.drawBehaviors= false;
 		}else{
 			entity.steering.drawBehaviors= true;
@@ -140,7 +141,7 @@ public class GameWorldTesterCreator {
 		entity.mass = 1;
 		entity.scale = new Vector2D(1, 1);
 
-		int entityCount = world.vehicles.size();
+		int entityCount = world.vehicles.getEntityCount();
 		switch (entityCount % 3) {
 		case 0:
 			entity.steering.wander.enabled= true;
@@ -165,8 +166,8 @@ public class GameWorldTesterCreator {
 			break;
 		case 2:
 			entity.steering.interpose.enabled = true;
-			entity.steering.interpose.interposeVehicleA = world.vehicles.get(entityCount - 1);
-			entity.steering.interpose.interposeVehicleB = world.vehicles.get(entityCount - 2);
+			entity.steering.interpose.interposeVehicleA = (Vehicle) ((ArrayList<Vehicle>)world.vehicles.getAllEntities()).get(entityCount - 1);
+			entity.steering.interpose.interposeVehicleB = (Vehicle) ((ArrayList<Vehicle>)world.vehicles.getAllEntities()).get(entityCount - 2);
 			entity.steering.interpose.forceWeight = 10;
 			break;
 
@@ -193,7 +194,7 @@ public class GameWorldTesterCreator {
 		entity.mass = 1;
 		entity.scale = new Vector2D(1, 1);
 
-		int entityCount = world.vehicles.size();
+		int entityCount = world.vehicles.getEntityCount();
 		if (entityCount == 0) {// Create a path following Leader
 			WaypointPath path = new WaypointPath();
 			for (int i = 0; i < 3; i++) {
@@ -216,8 +217,7 @@ public class GameWorldTesterCreator {
 			entity.maxSpeed *= 4;
 			entity.steering.offsetPursuit.enabled= true;
 			entity.steering.offsetPursuit.forceWeight = 10f;
-			entity.steering.offsetPursuit.leader= world.vehicles
-					.get(entityCount - 1);
+			entity.steering.offsetPursuit.leader= (Vehicle) ((ArrayList<Vehicle>)world.vehicles.getAllEntities()).get(entityCount - 1);
 			float box = 50;
 			entity.steering.offsetPursuit.offset = new Vector2D(-box, 0);
 		}
@@ -297,7 +297,7 @@ public class GameWorldTesterCreator {
 			for (int i = 0; i < count; i++) {
 				Obstacle ob = new Obstacle(world.worldBounds.getRandomPos(),
 						radius);
-				world.obstacles.add(ob);
+				world.obstacles.addEntity(ob);
 			}
 		}
 	}
@@ -305,12 +305,9 @@ public class GameWorldTesterCreator {
 	// Add a new viechle in random position
 	public static void addEntity(GameWorld world, int count, float maxVel,
 			float maxForce) {
-		synchronized (world.quadTree) {
 			for (int i = 0; i < count; i++) {
 				CreateEntity(world, maxVel, maxForce);
 			}
-
-		}
 	}
 
 	public static void CreateWallAvoidanceEntity(GameWorld world, float maxVel,
@@ -329,8 +326,8 @@ public class GameWorldTesterCreator {
 		entity.steering.feelerFOV = (float) Math.PI;
 		entity.steering.feelerLength = maxVel;
 
-		if (world.vehicles.size() > 0) {
-			Vehicle v = world.vehicles.get(0);
+		if (world.vehicles.getEntityCount() > 0) {
+			Vehicle v = (Vehicle) ((ArrayList<Vehicle>)world.vehicles.getAllEntities()).get(0);
 			if (v != entity) {
 				entity.steering.evade.enabled = true;
 				entity.steering.evade.forceWeight = 30;
@@ -348,7 +345,7 @@ public class GameWorldTesterCreator {
 				entity.steering.cohesion.enabled = true;
 				entity.steering.neighborDetectionRadius = maxVel;
 				
-				if(entity.world.getVehicles().size() > 0){
+				if(entity.world.vehicles.getEntityCount() > 0){
 					entity.steering.drawBehaviors= false;
 				}else{
 					entity.steering.drawBehaviors= true;
@@ -371,15 +368,11 @@ public class GameWorldTesterCreator {
 
 	// Add remove random set of viechle in random position
 	public static void removeVehicles(GameWorld world, int count) {
-		synchronized (world.quadTree) {
 			for (int i = 0; i < count; i++) {
-				if (world.vehicles.size() > 1) {
-					world.removeVehicle(world.vehicles
-							.get(1 + (int) ((world.vehicles.size() - 1) * Math
+				if (world.vehicles.getEntityCount()> 1) {
+					world.removeVehicle((Vehicle) ((ArrayList<Vehicle>)world.vehicles.getAllEntities()).get(1 + (int) ((world.vehicles.getEntityCount() - 1) * Math
 									.random())));
 				}
-			}
-
 		}
 	}
 }

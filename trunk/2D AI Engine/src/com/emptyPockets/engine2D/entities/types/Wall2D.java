@@ -3,12 +3,16 @@ package com.emptyPockets.engine2D.entities.types;
 import com.emptyPockets.engine2D.GameWorld;
 import com.emptyPockets.engine2D.shapes.Rectangle2D;
 import com.emptyPockets.engine2D.shapes.Vector2D;
+import com.emptyPockets.engine2D.spatialPartitions.bounds.BoundedBody;
+import com.emptyPockets.engine2D.spatialPartitions.bounds.BoundingShape;
 
-public class Wall2D {
+public class Wall2D implements BoundedBody{
 	// Do not make public as normal needs to be updated
 	public Vector2D p1;
 	public Vector2D p2;
 	public Vector2D vN;
+	BoundingShape bounds;
+	
 	public boolean useFlipNormal = false;
 	
 	public Wall2D() {
@@ -104,5 +108,17 @@ public class Wall2D {
 		world.addWall(top);
 		world.addWall(left);
 		world.addWall(right);
+	}
+
+	@Override
+	public BoundingShape getBoundingShape() {
+		// TODO Auto-generated method stub
+		return bounds;
+	}
+
+	@Override
+	public boolean hasBoundedShapeChanged() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

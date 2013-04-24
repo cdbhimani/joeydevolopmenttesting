@@ -1,6 +1,9 @@
 package com.emptyPockets.engine2D.shapes;
 
+import com.badlogic.gdx.math.Rectangle;
+
 public class Rectangle2D {
+	Rectangle rect;
 	public float x1;
 	public float y1;
 	public float x2;
@@ -129,5 +132,16 @@ public class Rectangle2D {
 	public float area() {
 		// TODO Auto-generated method stub
 		return Math.abs((x2-x1)*(y2-y1));
+	}
+
+	public Rectangle getRect() {
+		if(rect == null){
+			rect = new Rectangle();
+		}
+		rect.x = x1;
+		rect.y = y1;
+		rect.width = x2-x1;
+		rect.height= y2-y1;
+		return rect;
 	}
 }
