@@ -1,15 +1,23 @@
 package com.emptyPockets.test.nat;
 
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.emptyPockets.graphics.GraphicsToolkit;
+import com.emptyPockets.gui.OrthographicsCameraConvertor;
 import com.emptyPockets.gui.StageScreen;
 import com.emptyPockets.gui.scene2d.ExceptionHandeling;
 import com.emptyPockets.logging.ConsoleScreen;
+import com.emptyPockets.test.nat.client.ClientConnection;
+import com.emptyPockets.test.nat.server.ServerState;
+import com.emptyPockets.utils.OrthoCamController;
 
 public class ClientScreen extends StageScreen {
 	String defaulHost = MainTesting.host;
@@ -23,19 +31,54 @@ public class ClientScreen extends StageScreen {
 	TextField udpPort;
 	TextField tcpPort;
 	TextButton connect;
-	TextButton sendSTUN;
-	TextButton requestServerState;
-
+	TextButton showConsole;
 	ConsoleScreen console;
-
+	ServerState state;
+	ShapeRenderer shape;
+	Vector2 lastMouse;
+	OrthoCamController cameraController;
+	OrthographicsCameraConvertor camConvert;
+	
 	public ClientScreen(InputMultiplexer inputMultiplexer) {
 		super(inputMultiplexer);
-		
+		setClearColor(Color.BLACK);
 		console = new ConsoleScreen("Console", getSkin());
 		connection = new ClientConnection();
 		connection.setConsole(console);
+		state = new ServerState();
+		connection.setServerState(state);
+		
+		cameraController = new OrthoCamController(getScreenCamera());
+		camConvert = new OrthographicsCameraConvertor(getScreenCamera());
+
+		lastMouse = new Vector2();
 	}
 
+	@Override
+	public void addInputMultiplexer(InputMultiplexer input) {
+		super.addInputMultiplexer(input);
+		input.addProcessor(cameraController);
+	}
+	
+	@Override
+	public void removeInputMultiplexer(InputMultiplexer input) {
+		super.removeInputMultiplexer(input);
+		input.removeProcessor(cameraController);
+	}
+	
+	@Override
+	public void show() {
+		super.show();
+		shape = new ShapeRenderer();
+	}
+	
+	@Override
+	public void hide() {
+		super.hide();
+		shape.dispose();
+		shape = null;
+	}
+	
 	@Override
 	public void createStage(Stage stage) {
 		host = new TextField(defaulHost, getSkin());
@@ -43,11 +86,7 @@ public class ClientScreen extends StageScreen {
 		udpPort = new TextField(defaultUDP, getSkin());
 		tcpPort = new TextField(defalutTCP, getSkin());
 		connect = new TextButton("Connect", getSkin());
-		requestServerState = new TextButton("Get State", getSkin());
-
-		ExceptionHandeling win = new ExceptionHandeling("Test", getSkin());
-		win.pack();
-		stage.addActor(win);
+		showConsole= new TextButton("console", getSkin());
 		
 		Window controls = new Window("Server", getSkin());
 		controls.row();
@@ -65,24 +104,25 @@ public class ClientScreen extends StageScreen {
 		controls.row();
 		controls.add(connect).fillX().expand().colspan(2);
 		controls.row();
-		controls.add(requestServerState).fillX().expand().colspan(2);
-
+		controls.add(showConsole).fillX().expand().colspan(2);
+		
 		controls.pack();
-		stage.addActor(controls);
+		
 		stage.addActor(console);
+		stage.addActor(controls);
+		
+		showConsole.addListener(new ChangeListener() {
 
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				console.setVisible(!console.isVisible());
+			}
+		});
 		connect.addListener(new ChangeListener() {
 
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				connect();
-			}
-		});
-
-		requestServerState.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				serverState();
 			}
 		});
 	}
@@ -104,27 +144,32 @@ public class ClientScreen extends StageScreen {
 		}).start();
 	}
 
-	public void serverState() {
-		console.println("Request State");
-		connection.requestServerStatus();
+	@Override
+	public void initializeRender() {
+		super.initializeRender();
+		shape.setProjectionMatrix(getScreenCamera().combined);
 	}
-
+	
 	@Override
 	public void drawBackground(float delta) {
-		// TODO Auto-generated method stub
-
+		GraphicsToolkit.draw2DAxis(shape, getScreenCamera(), 100, Color.WHITE);
 	}
 
 	@Override
 	public void drawScreen(float delta) {
-		// TODO Auto-generated method stub
-
+		state.drawServer(shape);
 	}
 
 	@Override
 	public void drawOverlay(float delta) {
-		// TODO Auto-generated method stub
 
+	}
+	
+	@Override
+	public boolean touchDown(float x, float y, int pointer, int button) {
+		camConvert.camToPanel(x, y, lastMouse);
+		connection.setPosition(lastMouse.x, lastMouse.y);
+		return super.touchDown(x, y, pointer, button);
 	}
 
 }
