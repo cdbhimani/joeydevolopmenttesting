@@ -7,13 +7,10 @@ public class MainTesting {
 	public static String host = "54.247.121.180";
 	
 	public static void main(String input[]) throws Exception{
-		host = "localhost";
+//		host = "localhost";
+//		tcpPort = 21;
 		ClientConnection client = new ClientConnection();
-		client.connectServerManager(host, tcpPort, udpPort);
-		
-		client.sendServerManagerSTUN();
-		client.sendServerManagerSTUN();
-		client.sendServerManagerSTUN();
+		client.connectServer(host, tcpPort, udpPort);
 		
 		Thread.sleep(1000000);
 	}
