@@ -5,7 +5,7 @@ import android.os.Bundle;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.emptyPockets.main.ProgramMain;
-import com.emptyPockets.test.nat.ClientConnection;
+import com.emptyPockets.test.nat.client.ClientConnection;
    
 public class MainActivity extends AndroidApplication {
 	@Override          

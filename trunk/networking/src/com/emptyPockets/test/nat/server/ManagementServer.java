@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.Timer;
 
 import com.emptyPockets.test.nat.transport.Network;
-import com.emptyPockets.test.nat.transport.messages.LoginData;
+import com.emptyPockets.test.nat.transport.messages.EntityUpdate;
+import com.emptyPockets.test.nat.transport.messages.UserData;
 import com.emptyPockets.test.nat.transport.messages.LoginRequest;
 import com.emptyPockets.test.nat.transport.messages.ServerStateRequest;
 import com.emptyPockets.test.nat.transport.messages.ServerStateResponse;
@@ -20,7 +21,7 @@ public class ManagementServer extends Listener {
 	int tcpPort;
 	LoginRequest loginRequest = new LoginRequest();
 
-	HashMap<Integer, LoginData> connections = new HashMap<Integer, LoginData>();
+	HashMap<Integer, UserData> connections = new HashMap<Integer, UserData>();
 	ServerStateResponse serverState = new ServerStateResponse();
 
 	public ManagementServer(int tcpPort, int udpPort) {
@@ -64,12 +65,12 @@ public class ManagementServer extends Listener {
 	public void logout(Connection con) {
 		System.out.println("HOST MANAGER : Logout");
 		synchronized (serverState) {
-			LoginData data = connections.remove(con.getID());
+			UserData data = connections.remove(con.getID());
 			serverState.connections.remove(data);
 		}
 	}
 
-	public void login(Connection con, LoginData data) {
+	public void login(Connection con, UserData data) {
 		System.out.println("HOST MANAGER : Login");
 		synchronized (serverState) {
 			connections.put(con.getID(), data);
@@ -79,25 +80,38 @@ public class ManagementServer extends Listener {
 
 	public void updateConnectionState(Connection con) {
 		synchronized (serverState) {
-			LoginData data = connections.get(con.getID());
+			UserData data = connections.get(con.getID());
 			data.serverTCPAddress = con.getRemoteAddressTCP().toString();
 			data.serverUDPAddress = con.getRemoteAddressUDP().toString();
 		}
 	}
 
 	public void received(Connection connection, Object object) {
-		System.out.printf("HOST MANAGER:Recieved Object from [%s] : %s\n", connection.toString(), object.toString());
-		if (object instanceof LoginData) {
-			login(connection, (LoginData) object);
+		System.out.println("HOST MANAGER:Update entity["+connection.getID()+"]"+object);
+		if (object instanceof UserData) {
+			login(connection, (UserData) object);
 			sendServerStateTCP(connection);
 		}
 		if (isLoggedIn(connection)) {
 			updateConnectionState(connection);
 			if (object instanceof ServerStateRequest) {
 				sendServerStateTCP(connection);
+			}else if(object instanceof EntityUpdate){
+				updateEntity(connection, (EntityUpdate)object);
 			}
 		} else {
 			connection.sendTCP(loginRequest);
+		}
+	}
+
+	private void updateEntity(Connection con, EntityUpdate update) {
+		System.out.printf("HOST MANAGER:Updating Entity\n");
+		synchronized (serverState) {
+			UserData data = connections.get(con.getID());
+			if(data != null){
+				data.pos.set(update.pos);
+				data.vel.set(update.vel);
+			}
 		}
 	}
 
@@ -106,7 +120,7 @@ public class ManagementServer extends Listener {
 		Connection[] conns = server.getConnections();
 		for (int i = 0; i < conns.length; i++) {
 			synchronized (serverState) {
-				LoginData data = connections.get(conns[i].getID());
+				UserData data = connections.get(conns[i].getID());
 				if (data != null) {
 					data.serverPing = conns[i].getReturnTripTime();
 				}
@@ -140,7 +154,7 @@ public class ManagementServer extends Listener {
 		ping.start();
 
 		SchedultedMethodCallerTask state = new SchedultedMethodCallerTask("Server State", server, "broadcastServerState", null);
-		state.setDelay(30000);
+		state.setDelay(500);
 		state.start();
 	}
 }
