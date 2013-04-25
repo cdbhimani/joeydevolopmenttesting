@@ -13,6 +13,10 @@ import com.emptyPockets.gui.StageScreen;
 import com.emptyPockets.logging.ConsoleScreen;
 
 public class ClientScreen extends StageScreen {
+	String defaulHost = "54.247.121.180";
+	String defalutTCP = "8080";
+	String defaultUDP = "8081";
+	
 	ClientConnection connection;
 	
 	TextField host;
@@ -20,6 +24,7 @@ public class ClientScreen extends StageScreen {
 	TextField tcpPort;
 	TextButton connect;
 	TextButton sendSTUN;
+	TextButton requestServerState;
 	
 	ConsoleScreen console;
 	
@@ -31,11 +36,11 @@ public class ClientScreen extends StageScreen {
 	}
 	@Override
 	public void createStage(Stage stage) {
-		host = new TextField("", getSkin());
-		udpPort = new TextField("", getSkin());
-		tcpPort = new TextField("", getSkin());
+		host = new TextField(defaulHost, getSkin());
+		udpPort = new TextField(defaultUDP, getSkin());
+		tcpPort = new TextField(defalutTCP, getSkin());
 		connect = new TextButton("Connect", getSkin());
-		sendSTUN = new TextButton("STUN", getSkin());
+		requestServerState= new TextButton("Get State", getSkin());
 		
 		Window controls = new Window("Server", getSkin());
 		controls.row();
@@ -50,7 +55,7 @@ public class ClientScreen extends StageScreen {
 		controls.row();
 		controls.add(connect).fillX().expand().colspan(2);
 		controls.row();
-		controls.add(sendSTUN).fillX().expand().colspan(2);
+		controls.add(requestServerState).fillX().expand().colspan(2);
 		
 		controls.pack();
 		stage.addActor(controls);
@@ -64,11 +69,10 @@ public class ClientScreen extends StageScreen {
 			}
 		});
 		
-		sendSTUN.addListener(new ChangeListener() {
-			
+		requestServerState.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				stun();
+				serverState();
 			}
 		});
 	}
@@ -76,15 +80,15 @@ public class ClientScreen extends StageScreen {
 	public void connect(){
 		console.println("About to connect");
 		try {
-			connection.connectServerManager(host.getText(), Integer.parseInt(tcpPort.getText()), Integer.parseInt(udpPort.getText()));
+			connection.connectServer(host.getText(), Integer.parseInt(tcpPort.getText()), Integer.parseInt(udpPort.getText()));
 		} catch (Exception e) {
 			console.println("Error Connecting"+e.getLocalizedMessage());
 		}
 	}
 	
-	public void stun(){
-		console.println("Sending Stun");
-		connection.sendServerManagerSTUN();
+	public void serverState(){
+		console.println("Request State");
+		connection.requestServerStatus();
 	}
 
 	@Override

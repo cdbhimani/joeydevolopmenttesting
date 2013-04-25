@@ -4,74 +4,64 @@ import java.io.IOException;
 
 import com.emptyPockets.logging.ConsoleScreen;
 import com.emptyPockets.test.nat.transport.Network;
-import com.emptyPockets.test.nat.transport.stun.STUNRequest;
-import com.emptyPockets.test.nat.transport.stun.STUNResponse;
+import com.emptyPockets.test.nat.transport.messages.LoginData;
+import com.emptyPockets.test.nat.transport.messages.LoginRequest;
+import com.emptyPockets.test.nat.transport.messages.ServerStateRequest;
+import com.emptyPockets.test.nat.transport.messages.ServerStateResponse;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-public class ClientConnection {
-	Client serverManager;
+public class ClientConnection extends Listener{
 	Client server;
-	
-	ClientListener listener;
-
+	LoginData loginData;
 	ConsoleScreen console;
 	
+	ServerStateRequest serverStateRequest = new ServerStateRequest();
+	
 	public ClientConnection() {
-		listener = new ClientListener(this);
-		
 		server = new Client();
-		server.start();
-		server.addListener(listener);
+		server.addListener(this);
 		Network.registerClasses(server);
-		
-		serverManager = new Client();
-		serverManager.start();
-		serverManager.addListener(listener);
-		Network.registerClasses(serverManager);
+	
+		server.start();
 	}
 
-	public void connectServerManager(String serverAddress, int tcpPort, int udpPort) throws IOException {
-		serverManager.connect(5000, serverAddress, tcpPort, udpPort);
-	}
-	
 	public void connectServer(String serverAddress, int tcpPort, int udpPort) throws IOException {
-		server.connect(5000, serverAddress, tcpPort, udpPort);
+		server.connect(30000, serverAddress, tcpPort);
 	}
 
-	public void sendServerManagerSTUN(){
+	public void requestServerStatus(){
 		if(console != null){
-			console.println("CLIENT: Sending Stun Message");	
+			console.println("CLIENT: Requesting Server State");	
 		}
-		STUNRequest msg = new STUNRequest();
-		serverManager.sendTCP(msg);
+		server.sendTCP(serverStateRequest);
 	}
 	
-	public void requestServerListFromServerManager(){
+	public void loginToServer(){
+		if(console != null){
+			console.println("CLIENT: Sending Login Message");	
+		}
+		loginData = new LoginData();
+		server.sendTCP(loginData);
+	}
+
+	private void processServerState(ServerStateResponse object) {
+		if(console != null){
+			console.println("CLIENT: Recieved Server State");	
+			for(LoginData d : object.connections){
+				console.println("\tData:"+d);	
+			}
+		}
 	}
 	
 	public void disconnectServer() {
 		server.close();
 	}
-	
-	public void disconnectServerManager(){
-		serverManager.close();
-	}
-
-	protected void processSTUNResponse(STUNResponse object) {
-		System.out.println("CLIENT : "+object);
-		if(console != null){
-			console.println("CLIENT : "+object);	
-		}
-	}
 
 	public void dispose() {
 		server.stop();
-		serverManager.stop();
 		server = null;
-		serverManager = null;
-		listener = null;
 	}
 
 	public ConsoleScreen getConsole() {
@@ -80,14 +70,6 @@ public class ClientConnection {
 
 	public void setConsole(ConsoleScreen console) {
 		this.console = console;
-	}
-}
-
-class ClientListener extends Listener {
-	ClientConnection owner;
-
-	public ClientListener(ClientConnection clientConnection) {
-		this.owner = clientConnection;
 	}
 
 	@Override
@@ -106,12 +88,12 @@ class ClientListener extends Listener {
 	}
 	
 	@Override
-	public void received(Connection connection, Object object) {
-		System.out.printf("CLIENT:Recieved Object from [%s] : %s\n",connection.toString(),object.toString());
-		if(object instanceof STUNResponse){
-			owner.processSTUNResponse((STUNResponse)object);
+	public void received(Connection con, Object object) {
+		System.out.printf("CLIENT:Recieved Object from [%s] : %s\n",con.toString(),object.toString());
+		if(object instanceof LoginRequest){
+			loginToServer();
+		}else if(object instanceof ServerStateResponse){
+			processServerState((ServerStateResponse)object);
 		}
 	}
-	
-	
 }
