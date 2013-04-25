@@ -3,6 +3,7 @@ package com.emptyPockets.main;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.emptyPockets.gui.Scene2DToolkit;
 import com.emptyPockets.test.beam.BeamTesting;
 import com.emptyPockets.test.building.WorldRenderScreen;
 import com.emptyPockets.test.controls.TouchableEntitiesScreen;
@@ -31,5 +32,18 @@ public class ProgramMain extends Game{
 		ClientScreen screen = new ClientScreen(input);
 		setScreen(screen);
 	}
+	
+	@Override
+	public void pause() {
+		super.pause();
+		Scene2DToolkit.getToolkit().disposeSkin();
+	}
+	
+	@Override
+	public void resume() {
+		super.resume();
+		Scene2DToolkit.getToolkit().reloadSkin();
+	}
+	
 	
 }

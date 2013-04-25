@@ -20,6 +20,17 @@ public class Scene2DToolkit {
 		}
 		return toolkit;
 	}
+	
+	public void reloadSkin(){
+		getSkin();
+	}
+	
+	public void disposeSkin(){
+		if(skin != null){
+			skin.dispose();
+			skin = null;
+		}
+	}
 	public Skin getSkin(){
 		if( skin == null ) {
 			FileHandle jsonFile = Gdx.files.internal( "ui/uiskin.json" );

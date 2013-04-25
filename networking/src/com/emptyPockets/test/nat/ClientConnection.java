@@ -16,19 +16,21 @@ public class ClientConnection extends Listener{
 	Client server;
 	LoginData loginData;
 	ConsoleScreen console;
-	
+	String name;
 	ServerStateRequest serverStateRequest = new ServerStateRequest();
 	
 	public ClientConnection() {
 		server = new Client();
 		server.addListener(this);
 		Network.registerClasses(server);
-	
 		server.start();
 	}
 
 	public void connectServer(String serverAddress, int tcpPort, int udpPort) throws IOException {
-		server.connect(30000, serverAddress, tcpPort);
+		if(console != null){
+			console.printf("CLIENT: Connecting [%s] TCP[%d] UDP[%d]\n", serverAddress, tcpPort, udpPort);	
+		}
+		server.connect(5000, serverAddress, tcpPort, udpPort);
 	}
 
 	public void requestServerStatus(){
@@ -43,6 +45,7 @@ public class ClientConnection extends Listener{
 			console.println("CLIENT: Sending Login Message");	
 		}
 		loginData = new LoginData();
+		loginData.name = name;
 		server.sendTCP(loginData);
 	}
 
@@ -95,5 +98,13 @@ public class ClientConnection extends Listener{
 		}else if(object instanceof ServerStateResponse){
 			processServerState((ServerStateResponse)object);
 		}
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }
