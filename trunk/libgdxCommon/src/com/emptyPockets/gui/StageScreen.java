@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 public abstract class StageScreen extends GameScreen {
 
@@ -72,6 +73,7 @@ public abstract class StageScreen extends GameScreen {
 		getStage().setCamera(stageCamera);
 		try{
 			getStage().draw();
+			Table.drawDebug(getStage());
 		}catch(Exception e){
 			
 		}

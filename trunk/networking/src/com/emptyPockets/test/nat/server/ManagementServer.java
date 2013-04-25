@@ -1,7 +1,8 @@
-package com.emptyPockets.test.nat;
+package com.emptyPockets.test.nat.server;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Timer;
 
 import com.emptyPockets.test.nat.transport.Network;
 import com.emptyPockets.test.nat.transport.messages.LoginData;
@@ -11,6 +12,7 @@ import com.emptyPockets.test.nat.transport.messages.ServerStateResponse;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
+import com.esotericsoftware.minlog.Log;
 
 public class ManagementServer extends Listener {
 	Server server;
@@ -29,18 +31,25 @@ public class ManagementServer extends Listener {
 	@Override
 	public void connected(Connection connection) {
 		super.connected(connection);
-		connection.sendTCP(loginRequest);
+		System.out.println("HOST MANAGER : Connection - " + connection);
 	}
 
 	@Override
 	public void disconnected(Connection connection) {
 		super.disconnected(connection);
+		System.out.println("HOST MANAGER : Disconnect - " + connection);
 		logout(connection);
 	}
 
-	public void sendServerState(Connection con) {
+	public void sendServerStateTCP(Connection con) {
 		synchronized (serverState) {
 			con.sendTCP(serverState);
+		}
+	}
+
+	public void sendServerStateUDP(Connection con) {
+		synchronized (serverState) {
+			con.sendUDP(serverState);
 		}
 	}
 
@@ -52,28 +61,27 @@ public class ManagementServer extends Listener {
 		return result;
 	}
 
-	public void logout(Connection con){
+	public void logout(Connection con) {
 		System.out.println("HOST MANAGER : Logout");
 		synchronized (serverState) {
 			LoginData data = connections.remove(con.getID());
 			serverState.connections.remove(data);
 		}
 	}
+
 	public void login(Connection con, LoginData data) {
 		System.out.println("HOST MANAGER : Login");
 		synchronized (serverState) {
-			connections.put(con.getID(),data);
+			connections.put(con.getID(), data);
 			serverState.connections.add(data);
 		}
 	}
-	
-	public void updateConnectionState(Connection con){
-		System.out.println("HOST MANAGER : Update Connection");
+
+	public void updateConnectionState(Connection con) {
 		synchronized (serverState) {
 			LoginData data = connections.get(con.getID());
 			data.serverTCPAddress = con.getRemoteAddressTCP().toString();
 			data.serverUDPAddress = con.getRemoteAddressUDP().toString();
-			data.serverPing = con.getReturnTripTime();
 		}
 	}
 
@@ -81,15 +89,37 @@ public class ManagementServer extends Listener {
 		System.out.printf("HOST MANAGER:Recieved Object from [%s] : %s\n", connection.toString(), object.toString());
 		if (object instanceof LoginData) {
 			login(connection, (LoginData) object);
-			sendServerState(connection);
+			sendServerStateTCP(connection);
 		}
 		if (isLoggedIn(connection)) {
 			updateConnectionState(connection);
 			if (object instanceof ServerStateRequest) {
-				sendServerState(connection);
+				sendServerStateTCP(connection);
 			}
 		} else {
 			connection.sendTCP(loginRequest);
+		}
+	}
+
+	public void pingAllClients() {
+		System.out.printf("HOST MANAGER:Updating Pings\n");
+		Connection[] conns = server.getConnections();
+		for (int i = 0; i < conns.length; i++) {
+			synchronized (serverState) {
+				LoginData data = connections.get(conns[i].getID());
+				if (data != null) {
+					data.serverPing = conns[i].getReturnTripTime();
+				}
+			}
+			conns[i].updateReturnTripTime();
+		}
+	}
+
+	public void broadcastServerState() {
+		System.out.printf("HOST MANAGER:Broadcase State\n");
+		Connection[] conns = server.getConnections();
+		for (int i = 0; i < conns.length; i++) {
+			sendServerStateUDP(conns[i]);
 		}
 	}
 
@@ -101,8 +131,16 @@ public class ManagementServer extends Listener {
 		server.addListener(this);
 	}
 
-	public static void main(String input[]) throws IOException {
+	public static void main(String input[]) throws IOException, SecurityException, NoSuchMethodException {
 		ManagementServer server = new ManagementServer(8080, 8081);
 		server.startServer();
+
+		SchedultedMethodCallerTask ping = new SchedultedMethodCallerTask("Ping Task", server, "pingAllClients", null);
+		ping.setDelay(10000);
+		ping.start();
+
+		SchedultedMethodCallerTask state = new SchedultedMethodCallerTask("Server State", server, "broadcastServerState", null);
+		state.setDelay(30000);
+		state.start();
 	}
 }

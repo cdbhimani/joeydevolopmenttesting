@@ -5,15 +5,15 @@ import android.os.Bundle;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.emptyPockets.main.ProgramMain;
+import com.emptyPockets.test.nat.ClientConnection;
    
 public class MainActivity extends AndroidApplication {
-	@Override        
+	@Override          
 	public void onCreate(Bundle savedInstanceState) { 
 		super.onCreate(savedInstanceState);  
                     
 		AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
 		cfg.useGL20 = true;      
-    
 		initialize(new ProgramMain(), cfg);             
 	 }
 }             

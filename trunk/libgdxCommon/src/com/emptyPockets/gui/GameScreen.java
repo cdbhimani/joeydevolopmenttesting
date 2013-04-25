@@ -40,7 +40,6 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 		input.addProcessor(this);
 		input.addProcessor(gesture);
 	}
-	
 
 	public Skin getSkin(){
 		return Scene2DToolkit.getToolkit().getSkin();
