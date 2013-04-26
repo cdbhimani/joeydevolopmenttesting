@@ -1,13 +1,13 @@
-package com.emptyPockets.test.nat.transport;
+package com.emptyPockets.test.kryoNetwork.transport;
 
 import java.util.ArrayList;
 
 import com.badlogic.gdx.math.Vector2;
-import com.emptyPockets.test.nat.transport.messages.EntityUpdate;
-import com.emptyPockets.test.nat.transport.messages.UserData;
-import com.emptyPockets.test.nat.transport.messages.LoginRequest;
-import com.emptyPockets.test.nat.transport.messages.ServerStateRequest;
-import com.emptyPockets.test.nat.transport.messages.ServerStateResponse;
+import com.emptyPockets.test.kryoNetwork.transport.messages.EntityUpdate;
+import com.emptyPockets.test.kryoNetwork.transport.messages.LoginRequest;
+import com.emptyPockets.test.kryoNetwork.transport.messages.ServerStateRequest;
+import com.emptyPockets.test.kryoNetwork.transport.messages.ServerStateResponse;
+import com.emptyPockets.test.kryoNetwork.transport.messages.UserData;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 

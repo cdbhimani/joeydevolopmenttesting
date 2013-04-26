@@ -1,13 +1,14 @@
-package com.emptyPockets.test.nat;
+package com.emptyPockets.test.kryoNetwork;
 
-import com.emptyPockets.test.nat.client.ClientConnection;
-import com.emptyPockets.test.nat.server.ManagementServer;
+import com.emptyPockets.test.kryoNetwork.client.ClientConnection;
+import com.emptyPockets.test.kryoNetwork.server.ManagementServer;
 
 
 public class MainTesting {
 	public static int tcpPort = 8080;
 	public static int udpPort = 8081;
-	public static String host = "54.217.240.178";
+	public static String host = "localhost";
+//	public static String host = "54.217.240.178";
 	
 	public static void main(String input[]) throws Exception{
 		ManagementServer.main(input);

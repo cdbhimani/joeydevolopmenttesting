@@ -7,7 +7,7 @@ import com.emptyPockets.gui.Scene2DToolkit;
 import com.emptyPockets.test.beam.BeamTesting;
 import com.emptyPockets.test.building.WorldRenderScreen;
 import com.emptyPockets.test.controls.TouchableEntitiesScreen;
-import com.emptyPockets.test.nat.ClientScreen;
+import com.emptyPockets.test.kryoNetwork.gui.ClientScreen;
 import com.emptyPockets.test.shaders.ShaderLesson1;
 import com.emptyPockets.utils.file.FileSelector;
 
