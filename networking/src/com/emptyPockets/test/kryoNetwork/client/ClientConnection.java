@@ -1,16 +1,16 @@
-package com.emptyPockets.test.nat.client;
+package com.emptyPockets.test.kryoNetwork.client;
 
 import java.io.IOException;
 
 import com.badlogic.gdx.math.Vector2;
 import com.emptyPockets.logging.ConsoleScreen;
-import com.emptyPockets.test.nat.server.ServerState;
-import com.emptyPockets.test.nat.transport.Network;
-import com.emptyPockets.test.nat.transport.messages.EntityUpdate;
-import com.emptyPockets.test.nat.transport.messages.LoginRequest;
-import com.emptyPockets.test.nat.transport.messages.ServerStateRequest;
-import com.emptyPockets.test.nat.transport.messages.ServerStateResponse;
-import com.emptyPockets.test.nat.transport.messages.UserData;
+import com.emptyPockets.test.kryoNetwork.server.ServerState;
+import com.emptyPockets.test.kryoNetwork.transport.Network;
+import com.emptyPockets.test.kryoNetwork.transport.messages.EntityUpdate;
+import com.emptyPockets.test.kryoNetwork.transport.messages.LoginRequest;
+import com.emptyPockets.test.kryoNetwork.transport.messages.ServerStateRequest;
+import com.emptyPockets.test.kryoNetwork.transport.messages.ServerStateResponse;
+import com.emptyPockets.test.kryoNetwork.transport.messages.UserData;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;

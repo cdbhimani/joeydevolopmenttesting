@@ -1,15 +1,15 @@
-package com.emptyPockets.test.nat.server;
+package com.emptyPockets.test.kryoNetwork.server;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Timer;
 
-import com.emptyPockets.test.nat.transport.Network;
-import com.emptyPockets.test.nat.transport.messages.EntityUpdate;
-import com.emptyPockets.test.nat.transport.messages.UserData;
-import com.emptyPockets.test.nat.transport.messages.LoginRequest;
-import com.emptyPockets.test.nat.transport.messages.ServerStateRequest;
-import com.emptyPockets.test.nat.transport.messages.ServerStateResponse;
+import com.emptyPockets.test.kryoNetwork.transport.Network;
+import com.emptyPockets.test.kryoNetwork.transport.messages.EntityUpdate;
+import com.emptyPockets.test.kryoNetwork.transport.messages.LoginRequest;
+import com.emptyPockets.test.kryoNetwork.transport.messages.ServerStateRequest;
+import com.emptyPockets.test.kryoNetwork.transport.messages.ServerStateResponse;
+import com.emptyPockets.test.kryoNetwork.transport.messages.UserData;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -116,7 +116,6 @@ public class ManagementServer extends Listener {
 	}
 
 	public void pingAllClients() {
-		System.out.printf("HOST MANAGER:Updating Pings\n");
 		Connection[] conns = server.getConnections();
 		for (int i = 0; i < conns.length; i++) {
 			synchronized (serverState) {
@@ -130,7 +129,6 @@ public class ManagementServer extends Listener {
 	}
 
 	public void broadcastServerState() {
-		System.out.printf("HOST MANAGER:Broadcase State\n");
 		Connection[] conns = server.getConnections();
 		for (int i = 0; i < conns.length; i++) {
 			sendServerStateUDP(conns[i]);
@@ -146,6 +144,7 @@ public class ManagementServer extends Listener {
 	}
 
 	public static void main(String input[]) throws IOException, SecurityException, NoSuchMethodException {
+		int broadcasePerSecond = 20;
 		ManagementServer server = new ManagementServer(8080, 8081);
 		server.startServer();
 
@@ -154,7 +153,7 @@ public class ManagementServer extends Listener {
 		ping.start();
 
 		SchedultedMethodCallerTask state = new SchedultedMethodCallerTask("Server State", server, "broadcastServerState", null);
-		state.setDelay(500);
+		state.setDelay((int)(1000*1f/broadcasePerSecond));
 		state.start();
 	}
 }

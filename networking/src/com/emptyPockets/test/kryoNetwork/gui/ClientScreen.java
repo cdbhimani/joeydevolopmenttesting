@@ -1,4 +1,4 @@
-package com.emptyPockets.test.nat;
+package com.emptyPockets.test.kryoNetwork.gui;
 
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
@@ -15,8 +15,9 @@ import com.emptyPockets.gui.OrthographicsCameraConvertor;
 import com.emptyPockets.gui.StageScreen;
 import com.emptyPockets.gui.scene2d.ExceptionHandeling;
 import com.emptyPockets.logging.ConsoleScreen;
-import com.emptyPockets.test.nat.client.ClientConnection;
-import com.emptyPockets.test.nat.server.ServerState;
+import com.emptyPockets.test.kryoNetwork.MainTesting;
+import com.emptyPockets.test.kryoNetwork.client.ClientConnection;
+import com.emptyPockets.test.kryoNetwork.server.ServerState;
 import com.emptyPockets.utils.OrthoCamController;
 
 public class ClientScreen extends StageScreen {
@@ -25,7 +26,8 @@ public class ClientScreen extends StageScreen {
 	String defaultUDP = ""+MainTesting.udpPort;
 
 	ClientConnection connection;
-
+	ServerPanel serverPanel;
+	
 	TextField clientName;
 	TextField host;
 	TextField udpPort;
@@ -41,11 +43,18 @@ public class ClientScreen extends StageScreen {
 	
 	public ClientScreen(InputMultiplexer inputMultiplexer) {
 		super(inputMultiplexer);
-		setClearColor(Color.BLACK);
+		setClearColor(Color.WHITE);
+
+		serverPanel = new ServerPanel("Title",getSkin());
+		
+		state = new ServerState();
+		state.addListener(serverPanel);
+		
 		console = new ConsoleScreen("Console", getSkin());
+		console.setVisible(false);
+
 		connection = new ClientConnection();
 		connection.setConsole(console);
-		state = new ServerState();
 		connection.setServerState(state);
 		
 		cameraController = new OrthoCamController(getScreenCamera());
@@ -108,9 +117,10 @@ public class ClientScreen extends StageScreen {
 		
 		controls.pack();
 		
+		
 		stage.addActor(console);
 		stage.addActor(controls);
-		
+		stage.addActor(serverPanel);
 		showConsole.addListener(new ChangeListener() {
 
 			@Override

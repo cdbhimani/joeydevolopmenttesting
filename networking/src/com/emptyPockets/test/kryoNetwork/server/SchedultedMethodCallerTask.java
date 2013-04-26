@@ -1,4 +1,4 @@
-package com.emptyPockets.test.nat.server;
+package com.emptyPockets.test.kryoNetwork.server;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

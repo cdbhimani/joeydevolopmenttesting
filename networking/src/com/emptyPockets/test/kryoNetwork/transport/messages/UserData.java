@@ -1,4 +1,4 @@
-package com.emptyPockets.test.nat.transport.messages;
+package com.emptyPockets.test.kryoNetwork.transport.messages;
 
 import com.badlogic.gdx.math.Vector2;
 
