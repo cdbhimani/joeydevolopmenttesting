@@ -2,6 +2,8 @@ package com.emptyPockets.network.connection;
 
 import java.net.DatagramPacket;
 
+import com.emptyPockets.network.transport.TransportObject;
+
 public interface UDPConnectionListener{
-	public void notifyPacketRecieved(UDPConnection con, DatagramPacket packet);
+	public void notifyObjectRecieved(UDPConnection con, TransportObject object);
 }
