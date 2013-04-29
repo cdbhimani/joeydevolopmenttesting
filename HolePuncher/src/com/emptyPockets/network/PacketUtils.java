@@ -3,17 +3,19 @@ package com.emptyPockets.network;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 
+import com.esotericsoftware.minlog.Log;
+
 public class PacketUtils {
 	public static void printPacket(DatagramPacket pkt){
-		System.out.println(">>>>>>>>>>>>>>>>>PACKET START<<<<<<<<<<<<<<<<<<");
-		System.out.println("Address : "+pkt.getAddress());
-		System.out.println("Port    : "+pkt.getPort());
-		System.out.println("Length  : "+pkt.getLength());
+		Log.trace(">>>>>>>>>>>>>>>>>PACKET START<<<<<<<<<<<<<<<<<<");
+		Log.trace("Address : "+pkt.getAddress());
+		Log.trace("Port    : "+pkt.getPort());
+		Log.trace("Length  : "+pkt.getLength());
 		try {
-			System.out.println(new String(pkt.getData(), "UTF-8"));
+			Log.trace(new String(pkt.getData(), "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
-			System.out.println("Cant Print Data");
+			Log.trace("Cant Print Data");
 		}
-		System.out.println(">>>>>>>>>>>>>>>>>PACKET END<<<<<<<<<<<<<<<<<<");
+		Log.trace(">>>>>>>>>>>>>>>>>PACKET END<<<<<<<<<<<<<<<<<<");
 	}
 }

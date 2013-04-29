@@ -1,33 +1,45 @@
 package com.emptyPockets.network.connection;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketAddress;
-import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.emptyPockets.network.PacketUtils;
+import com.emptyPockets.network.transport.FrameworkMessages;
+import com.emptyPockets.network.transport.FrameworkMessages.Ping;
+import com.emptyPockets.network.transport.NetworkTransferManager;
+import com.emptyPockets.network.transport.TransportObject;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.minlog.Log;
 
 public class UDPConnection implements Runnable{
+	Kryo kryo;
 	Thread recieveThread;
 	boolean alive = false;
 	
 	DatagramSocket connection;
-	DatagramPacket recievePacket;
-	int maxBufferSize;
+	int packetBufferSize;
 
+	Output out;
+	byte[] outData;
+	DatagramPacket outPacket;
+
+	
+	Input in;
+	byte[] inData;
+	DatagramPacket inPacket;
+	
 	int localPort;
 	
 	ArrayList<UDPConnectionListener> listeners;
 	
 	public UDPConnection(int maxBufferSize, int localPort) throws IOException{
-		this.maxBufferSize = maxBufferSize;
+		this.packetBufferSize = maxBufferSize;
 		this.localPort=localPort;
 		listeners = new ArrayList<UDPConnectionListener>();
 		init();
@@ -35,34 +47,77 @@ public class UDPConnection implements Runnable{
 	
 	public void init() throws IOException{
 		connection = new DatagramSocket(localPort);
-		recievePacket = createPacket(new byte[maxBufferSize]);
+		
+		inData = new byte[packetBufferSize];
+		inPacket =  new DatagramPacket(inData, inData.length);
+		in = new Input(inData);		
+		
+		outData = new byte[packetBufferSize];
+		outPacket =  new DatagramPacket(outData, outData.length);
+		out = new Output(outData);
+		
+		kryo = new Kryo();
+		kryo.setRegistrationRequired(true);
+		NetworkTransferManager.register(kryo);
 	}
 	
-	private DatagramPacket createPacket(byte[] buffer){
-		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-		return packet;
+	public void sendObject(Object ojb, InetAddress dst, int port) throws IOException{
+		TransportObject transport= new TransportObject();
+		transport.data = ojb;
+		transport.host = dst;
+		transport.port = port;
+		sendTransportObject(transport);
 	}
 	
-	public void sendPacket(DatagramPacket packet) throws IOException{
-		System.out.println("Sending Packet");
-		PacketUtils.printPacket(packet);
-		connection.send(packet);
-	}
-	
-	private void readPacket(DatagramPacket packet) throws IOException{
-		System.out.println("Waiting For Packet");
-		connection.receive(packet);
-		System.out.println("Packet Recieved");
-	}
-	
-	private void notifyPacketRecieved(DatagramPacket packet){
-		synchronized (listeners) {
-			for(UDPConnectionListener list : listeners){
-				list.notifyPacketRecieved(this, packet);
-			}
+	public void sendTransportObject(TransportObject data) throws IOException{
+		synchronized (outPacket) {
+			out.setPosition(0);
+			kryo.writeObject(out, data);
+			out.flush();
+			
+			outPacket.setLength(out.position());
+			outPacket.setAddress(data.host);
+			outPacket.setPort(data.port);
+			sendPacket(outPacket);
 		}
 	}
 	
+	private void clearPacketData(DatagramPacket pkt){
+		Arrays.fill(pkt.getData(), 0,pkt.getLength(),(byte)0);
+	}
+	private void sendPacket(DatagramPacket packet) throws IOException{
+//		Log.TRACE
+		
+		Log.trace("#################Sending Packet : START ###############");
+		PacketUtils.printPacket(packet);
+		connection.send(packet);
+		clearPacketData(outPacket);
+		Log.trace("#################Sending Packet : DONE  ###############");
+	}
+	
+	private void readPacket(DatagramPacket packet) throws IOException{
+		Log.trace("#################Recieve Packet : WAIT ###############");
+		clearPacketData(packet);
+		connection.receive(packet);
+		PacketUtils.printPacket(packet);
+		Log.trace("#################Recieve Packet : DONE ###############");
+	}
+	
+	private TransportObject readObject() throws IOException{
+		readPacket(inPacket);
+		in.setLimit(inPacket.getLength());
+		in.setPosition(0);
+		try {
+			TransportObject object = kryo.readObject(in, TransportObject.class);
+			object.host = inPacket.getAddress();
+			object.port = inPacket.getPort();
+			return object;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+		
 	public void addListener(UDPConnectionListener list){
 		synchronized (listeners) {
 			listeners.add(list);
@@ -79,15 +134,31 @@ public class UDPConnection implements Runnable{
 	public void run() {
 		while(alive){
 			try{
-				readPacket(recievePacket);
-				notifyPacketRecieved(recievePacket);
-			}catch(Exception e){
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e1) {
+				TransportObject object = readObject();
+				if(object != null){
+					notifyObjectRecieved(object);
 				}
+			}catch(Exception e){
+				e.printStackTrace();
+				stop();
 			}
 		}
+	}
+
+	private void notifyObjectRecieved(TransportObject object) {
+		if(object.data instanceof FrameworkMessages){
+			FrameworkMessages.getFrameWork().notifyObjectRecieved(this,object);
+			return;
+		}
+		for(UDPConnectionListener list : listeners){
+			list.notifyObjectRecieved(this, object);
+		}
+	}
+	
+	public void ping(InetAddress address, int port) throws IOException{
+		Ping ping = new Ping();
+		ping.start();
+		sendObject(ping, address, port);
 	}
 
 	public void stop(){

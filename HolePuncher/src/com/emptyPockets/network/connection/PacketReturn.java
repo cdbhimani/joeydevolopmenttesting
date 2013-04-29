@@ -1,21 +1,18 @@
 package com.emptyPockets.network.connection;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.DatagramPacket;
-
-import com.emptyPockets.network.PacketUtils;
+import com.emptyPockets.network.transport.TransportObject;
 
 public class PacketReturn implements UDPConnectionListener {
 
 	@Override
-	public void notifyPacketRecieved(UDPConnection con, DatagramPacket pkt) {
-		DatagramPacket newPkt = new DatagramPacket(pkt.getData(), pkt.getData().length);
-		newPkt.setAddress(pkt.getAddress());
-		newPkt.setPort(pkt.getPort());
+	public void notifyObjectRecieved(UDPConnection con, TransportObject object) {
+		TransportObject newObj = new TransportObject();
+		newObj.port = object.port;
+		newObj.host=object.host;
+		newObj.data = object.data+"1";
 		try {
-			con.sendPacket(newPkt);
-		} catch (IOException e) {
+			con.sendTransportObject(newObj);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
