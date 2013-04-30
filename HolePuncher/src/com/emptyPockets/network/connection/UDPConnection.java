@@ -61,15 +61,16 @@ public class UDPConnection implements Runnable{
 		NetworkTransferManager.register(kryo);
 	}
 	
-	public void sendObject(Object ojb, InetAddress dst, int port) throws IOException{
+	public boolean sendObject(Object ojb, InetAddress dst, int port){
 		TransportObject transport= new TransportObject();
 		transport.data = ojb;
 		transport.host = dst;
 		transport.port = port;
-		sendTransportObject(transport);
+		return sendTransportObject(transport);
 	}
 	
-	public void sendTransportObject(TransportObject data) throws IOException{
+	public boolean sendTransportObject(TransportObject data){
+		try{
 		synchronized (outPacket) {
 			out.setPosition(0);
 			kryo.writeObject(out, data);
@@ -80,6 +81,11 @@ public class UDPConnection implements Runnable{
 			outPacket.setPort(data.port);
 			sendPacket(outPacket);
 		}
+		}catch(IOException e){
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 	
 	private void clearPacketData(DatagramPacket pkt){
@@ -146,19 +152,9 @@ public class UDPConnection implements Runnable{
 	}
 
 	private void notifyObjectRecieved(TransportObject object) {
-		if(object.data instanceof FrameworkMessages){
-			FrameworkMessages.getFrameWork().notifyObjectRecieved(this,object);
-			return;
-		}
 		for(UDPConnectionListener list : listeners){
 			list.notifyObjectRecieved(this, object);
 		}
-	}
-	
-	public void ping(InetAddress address, int port) throws IOException{
-		Ping ping = new Ping();
-		ping.start();
-		sendObject(ping, address, port);
 	}
 
 	public void stop(){
