@@ -1,34 +1,74 @@
 package com.emptyPockets.network.transport;
 
-import java.io.IOException;
-
-import com.emptyPockets.network.connection.UDPConnection;
-import com.emptyPockets.network.connection.UDPConnectionListener;
 import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.minlog.Log;
 
-public class FrameworkMessages implements UDPConnectionListener{
+public class FrameworkMessages{
 	//Variables
 	public static FrameworkMessages framework = null;
 	
-	//Framework messages
-	public static class KeepAlive extends FrameworkMessages{
+	public static class ConnectionRequest extends FrameworkMessages{
+		private String username;
+
+		public String getUsername() {
+			return username;
+		}
+
+		public void setUsername(String username) {
+			this.username = username;
+		}
 	}
+	
+	public static class ConnectionResponse extends FrameworkMessages{
+		boolean accepted;
+		String message;
+		int serverClientId;
+		public boolean isAccepted() {
+			return accepted;
+		}
+		public void setAccepted(boolean accepted) {
+			this.accepted = accepted;
+		}
+		public String getMessage() {
+			return message;
+		}
+		public void setMessage(String message) {
+			this.message = message;
+		}
+		public int getServerClientId() {
+			return serverClientId;
+		}
+		public void setServerClientId(int serverClientId) {
+			this.serverClientId = serverClientId;
+		}
+	}
+	
 	public static class Ping extends FrameworkMessages{
-		long sendTime;
-		long returnTime;
+		int clientId;
+		private byte id;
 		boolean isResponse = false;
 		
-		public void start(){
-			sendTime = System.currentTimeMillis();
+		public Ping(int clientId, byte id){
+			this.clientId = clientId;
+			this.setId(id);
 		}
 		
-		public void finish(){
-			returnTime = System.currentTimeMillis();
+		public boolean isResponse() {
+			return isResponse;
 		}
-		
-		public long getTime(){
-			return returnTime-sendTime;
+		public void setResponse(boolean isResponse) {
+			this.isResponse = isResponse;
+		}
+
+		public byte getId() {
+			return id;
+		}
+
+		public void setId(byte id) {
+			this.id = id;
+		}
+
+		public int getClientId() {
+			return clientId;
 		}
 	}
 
@@ -42,30 +82,9 @@ public class FrameworkMessages implements UDPConnectionListener{
 		return framework;
 	}
 	
-	@Override
-	public void notifyObjectRecieved(UDPConnection con, TransportObject object) {
-		if(object.data instanceof FrameworkMessages){
-			if(object.data instanceof Ping){
-				Ping p = (Ping) object.data;
-				if(p.isResponse){
-					p.finish();
-					Log.info("PING : "+p.getTime());
-				}else{
-					p.isResponse = true;
-					try {
-						con.sendTransportObject(object);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		
-	}
-
 	public static void register(Kryo kryo) {
 		kryo.register(Ping.class);
-		kryo.register(KeepAlive.class);
+		kryo.register(ConnectionRequest.class);
+		kryo.register(ConnectionResponse.class);
 	}
 }
