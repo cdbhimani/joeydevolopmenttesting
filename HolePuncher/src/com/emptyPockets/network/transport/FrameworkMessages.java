@@ -46,6 +46,9 @@ public class FrameworkMessages{
 		int clientId;
 		private byte id;
 		boolean isResponse = false;
+		String data = new String(new byte[1024]);
+		public Ping(){
+		}
 		
 		public Ping(int clientId, byte id){
 			this.clientId = clientId;

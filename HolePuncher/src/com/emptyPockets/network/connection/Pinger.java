@@ -2,6 +2,7 @@ package com.emptyPockets.network.connection;
 
 import com.emptyPockets.network.server.NetworkNode;
 import com.emptyPockets.network.transport.FrameworkMessages.Ping;
+import com.esotericsoftware.minlog.Log;
 
 public class Pinger {
 	long maxTimeout;
@@ -17,8 +18,8 @@ public class Pinger {
 	
 	NetworkConnection connection;
 	public Pinger(NetworkConnection connection){
-		pingPeroid = 5000;
-		maxTimeout = 1000;
+		pingPeroid = 50;
+		maxTimeout = 10000;
 		maxTimeoutCount = 3;
 		pingId = 0;
 		pingActive = false;
@@ -30,6 +31,7 @@ public class Pinger {
 		//Get Next Ping Id
 		synchronized (pingLock) {
 			pingId++;
+			lastPingTime = System.currentTimeMillis();
 			Ping p = new Ping(connection.clientId, pingId);
 			if(server.getConnection().sendObject(p, connection.clientAddress, connection.clientPort)){
 				pingActive = true;
@@ -66,7 +68,8 @@ public class Pinger {
 					}
 				}
 			}else{
-				if(lastPingTime+pingPeroid> System.currentTimeMillis()){
+				
+				if(lastPingTime+pingPeroid< System.currentTimeMillis()){
 					sendPing(server);
 				}
 			}
