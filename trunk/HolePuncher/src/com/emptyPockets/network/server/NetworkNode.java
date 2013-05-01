@@ -12,14 +12,16 @@ import com.emptyPockets.network.transport.FrameworkMessages.ConnectionRequest;
 import com.emptyPockets.network.transport.FrameworkMessages.ConnectionResponse;
 import com.emptyPockets.network.transport.FrameworkMessages.Ping;
 import com.emptyPockets.network.transport.TransportObject;
+import com.esotericsoftware.minlog.Log;
 
 public class NetworkNode implements UDPConnectionListener, Runnable{
 	static int nodeCount = 0;
 	String nodeName = "Node"+nodeCount++;
 	
-	ArrayList<NetworkConnection> clients;
-	HashMap<Integer, NetworkConnection> clientsById;
-	HashMap<String, NetworkConnection> clientsByUsername;
+	private ArrayList<NetworkConnection> timeoutClients;
+	private ArrayList<NetworkConnection> clients;
+	private HashMap<Integer, NetworkConnection> clientsById;
+	private HashMap<String, NetworkConnection> clientsByUsername;
 	Thread thread;
 	boolean active = false;
 	
@@ -36,6 +38,8 @@ public class NetworkNode implements UDPConnectionListener, Runnable{
 	public void init() throws IOException {
 		setConnection(new UDPConnection(maxPacketSize, localPort));
 		getConnection().addListener(this);
+		timeoutClients = new ArrayList<NetworkConnection>();
+		clients  = new ArrayList<NetworkConnection>();
 		clientsById = new HashMap<Integer, NetworkConnection>();
 		clientsByUsername = new HashMap<String, NetworkConnection>();
 	}
@@ -44,6 +48,7 @@ public class NetworkNode implements UDPConnectionListener, Runnable{
 		if(active){
 			return;
 		}
+		active = true;
 		Thread t = new Thread(this);
 		t.start();
 		getConnection().start();
@@ -55,6 +60,7 @@ public class NetworkNode implements UDPConnectionListener, Runnable{
 	}
 
 	public void clientConnectRecieved(NetworkConnection client){
+		Log.info(nodeName, "Connection : "+client);
 		synchronized (clients) {
 			clientsById.put(client.getClientId(), client);
 			clientsByUsername.put(client.getUsername(), client);
@@ -64,6 +70,7 @@ public class NetworkNode implements UDPConnectionListener, Runnable{
 	}
 	
 	public void clientDisconnectRecieved(NetworkConnection client){
+		Log.info(nodeName, "Disconnect : "+client);
 		synchronized (clients) {
 			clients.remove(client);
 			clientsById.remove(client.getClientId());
@@ -72,11 +79,16 @@ public class NetworkNode implements UDPConnectionListener, Runnable{
 	}
 	
 	public void clientTimeoutRecieved(NetworkConnection client){
-		clientDisconnectRecieved(client);
+		Log.info(nodeName, "Timeout : "+client);
+		synchronized (timeoutClients) {
+			timeoutClients.add(client);	
+		}
 	}
 	
 	@Override
 	public void notifyObjectRecieved(UDPConnection con, TransportObject object) {
+		Log.info(nodeName, "Recieved : "+object);
+		
 		if (object.data instanceof Ping) {
 			Ping p = (Ping) object.data;
 			if (p.isResponse()) {
@@ -86,11 +98,14 @@ public class NetworkNode implements UDPConnectionListener, Runnable{
 				}
 			} else {
 				p.setResponse(true);
+				con.sendTransportObject(object);
 			}
 		}else if(object.data instanceof ConnectionRequest){
 			ConnectionRequest request = (ConnectionRequest) object.data;
 			NetworkConnection client = new NetworkConnection(request, object.host, object.port);
 			ConnectionResponse response = generateConnectionResponse(client);
+			Log.info(nodeName, "Response : "+response);
+			
 			if(response.isAccepted()){
 				clientConnectRecieved(client);
 			}
@@ -105,6 +120,7 @@ public class NetworkNode implements UDPConnectionListener, Runnable{
 			resp.setAccepted(false);
 			resp.setMessage("Username already in use");
 		}else{
+			resp.setAccepted(true);
 			resp.setServerClientId(newClient.getClientId());
 		}
 		return resp;
@@ -125,6 +141,13 @@ public class NetworkNode implements UDPConnectionListener, Runnable{
 					c.update(this);
 				}
 			}
+			
+			synchronized (timeoutClients) {
+				for(NetworkConnection c : timeoutClients){
+					clientDisconnectRecieved(c);
+				}
+				timeoutClients.clear();
+			}
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
@@ -134,6 +157,7 @@ public class NetworkNode implements UDPConnectionListener, Runnable{
 	}
 
 	public void connect(String username, InetAddress address, int port) {
+		Log.info(nodeName, "Attempting connection : "+address+":"+port);
 		ConnectionRequest request = new ConnectionRequest();
 		request.setUsername(username);
 		connection.sendObject(request, address, port);
