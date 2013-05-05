@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.emptyPockets.network.PacketUtils;
+import com.emptyPockets.network.server.NetworkConnection;
+import com.emptyPockets.network.server.NetworkNode;
 import com.emptyPockets.network.transport.FrameworkMessages;
 import com.emptyPockets.network.transport.FrameworkMessages.Ping;
 import com.emptyPockets.network.transport.NetworkTransferManager;
@@ -18,6 +21,7 @@ import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.minlog.Log;
 
 public class UDPConnection implements Runnable {
+	NetworkNode node;
 	Kryo kryo;
 	Thread recieveThread;
 	boolean alive = false;
@@ -37,9 +41,10 @@ public class UDPConnection implements Runnable {
 
 	ArrayList<UDPConnectionListener> listeners;
 
-	public UDPConnection(int maxBufferSize, int localPort) throws IOException {
+	public UDPConnection(NetworkNode node, int maxBufferSize, int localPort) throws IOException {
 		this.packetBufferSize = maxBufferSize;
 		this.localPort = localPort;
+		this.node = node;
 		listeners = new ArrayList<UDPConnectionListener>();
 		init();
 	}
@@ -59,12 +64,18 @@ public class UDPConnection implements Runnable {
 		kryo.setRegistrationRequired(true);
 		NetworkTransferManager.register(kryo);
 	}
+	
+	public boolean sendObject(Object object, NetworkConnection con) {
+		return sendObject(object, con.getClientAddress(), con.getClientPort());
+	}
 
 	public boolean sendObject(Object ojb, InetAddress dst, int port) {
 		TransportObject transport = new TransportObject();
 		transport.data = ojb;
 		transport.host = dst;
+		transport.nodeName = node.getNodeName();
 		transport.port = port;
+		Log.trace(node.getNodeName(), "Sending Object ["+transport+"]");
 		return sendTransportObject(transport);
 	}
 
@@ -72,7 +83,9 @@ public class UDPConnection implements Runnable {
 		try {
 			synchronized (outPacket) {
 				out.setPosition(0);
-				kryo.writeObject(out, data);
+				synchronized (kryo) {
+					kryo.writeObject(out, data);
+				}
 				out.flush();
 
 				outPacket.setLength(out.position());
@@ -94,34 +107,37 @@ public class UDPConnection implements Runnable {
 	private void sendPacket(DatagramPacket packet) throws IOException {
 		// Log.TRACE
 
-		Log.trace("#################Sending Packet : START ###############");
+		Log.trace(node.getNodeName(), "#################Sending Packet : START ###############");
 		PacketUtils.printPacket(packet);
 		connection.send(packet);
 		clearPacketData(outPacket);
-		Log.trace("#################Sending Packet : DONE  ###############");
+		Log.trace(node.getNodeName(), "#################Sending Packet : DONE  ###############");
 	}
 
 	private void readPacket(DatagramPacket packet) throws IOException {
-		Log.trace("#################Recieve Packet : WAIT ###############");
+		Log.trace(node.getNodeName(), "#################Recieve Packet : WAIT ###############");
 		clearPacketData(packet);
 		connection.receive(packet);
 		PacketUtils.printPacket(packet);
-		Log.trace("#################Recieve Packet : DONE ###############");
+		Log.trace(node.getNodeName(), "#################Recieve Packet : DONE ###############");
 	}
 
 	private TransportObject readObject() throws IOException {
 		TransportObject object = null;
 		synchronized (in) {
-			Log.info("Packet Size : "+inPacket.getLength());
+			Log.trace(node.getNodeName(), "Packet Size : "+inPacket.getLength());
 			readPacket(inPacket);
 			in.setLimit(inPacket.getLength());
 			in.setPosition(0);
 			try {
-				object = kryo.readObject(in, TransportObject.class);
+				synchronized (kryo) {
+					object = kryo.readObject(in, TransportObject.class);
+				}
 				object.host = inPacket.getAddress();
 				object.port = inPacket.getPort();
 			} catch (Exception e) {
 				e.printStackTrace();
+				Log.error(node.getNodeName(), "Failed to read object");
 			}
 		}
 		return object;
@@ -145,9 +161,14 @@ public class UDPConnection implements Runnable {
 			try {
 				TransportObject object = readObject();
 				if (object != null) {
-					Log.debug("Data Recieved " + object);
+					Log.trace(node.getNodeName(), "Data Recieved " + object);
 					notifyObjectRecieved(object);
+				}else{
+					Log.trace(node.getNodeName(), "No Data Recieved ");
 				}
+			} catch(SocketException e){
+				Log.info(node.getNodeName(), "Socket Exception");
+				stop();
 			} catch (Exception e) {
 				e.printStackTrace();
 				stop();
@@ -162,11 +183,13 @@ public class UDPConnection implements Runnable {
 	}
 
 	public void stop() {
+		Log.debug("Stopping UDP connection");
 		alive = false;
 		connection.close();
 	}
 
 	public void start() {
+		Log.debug("Starting UDP connection");
 		if (alive == true) {
 			return;
 		}
@@ -174,4 +197,6 @@ public class UDPConnection implements Runnable {
 		recieveThread = new Thread(this);
 		recieveThread.start();
 	}
+
+	
 }

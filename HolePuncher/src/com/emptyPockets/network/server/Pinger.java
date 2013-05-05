@@ -1,6 +1,6 @@
-package com.emptyPockets.network.connection;
+package com.emptyPockets.network.server;
 
-import com.emptyPockets.network.server.NetworkNode;
+import com.emptyPockets.network.DataAverager;
 import com.emptyPockets.network.transport.FrameworkMessages.Ping;
 import com.esotericsoftware.minlog.Log;
 
@@ -9,7 +9,7 @@ public class Pinger {
 	long maxTimeoutCount;
 	
 	long pingPeroid;
-	int ping;
+	DataAverager<Integer> pingHistory;
 	byte pingId;
 	long lastPingTime;
 	boolean pingActive;
@@ -18,10 +18,11 @@ public class Pinger {
 	
 	NetworkConnection connection;
 	public Pinger(NetworkConnection connection){
-		pingPeroid = 50;
-		maxTimeout = 10000;
-		maxTimeoutCount = 3;
+		pingPeroid = 50000;
+		maxTimeout = 150000;
+		maxTimeoutCount = 1;
 		pingId = 0;
+		pingHistory = new DataAverager<Integer>(5);
 		pingActive = false;
 		this.connection = connection;
 	}
@@ -31,6 +32,7 @@ public class Pinger {
 		//Get Next Ping Id
 		synchronized (pingLock) {
 			pingId++;
+			Log.trace("Sending Ping:"+pingId+" - ClientId:"+connection.clientId);
 			lastPingTime = System.currentTimeMillis();
 			Ping p = new Ping(connection.clientId, pingId);
 			if(server.getConnection().sendObject(p, connection.clientAddress, connection.clientPort)){
@@ -43,8 +45,10 @@ public class Pinger {
 	
 	public void recievePing(Ping pingData){
 		synchronized (pingLock) {
+			Log.trace("Ping Recieved :"+pingData.getId()+" clientId:"+connection.clientId);
 			if(pingData.getId() == pingId){
-				ping = (int) (System.currentTimeMillis()-lastPingTime);
+				int ping = (int) (System.currentTimeMillis()-lastPingTime);
+				pingHistory.addRecord(ping);
 				pingActive = false;	
 				pingTimeoutCount = 0;
 			}
@@ -53,13 +57,14 @@ public class Pinger {
 
 	
 	public void update(NetworkNode server){
+//		Log.info("Ping : "+ping);
 		/**
 		 * Testing Pinging and keep alive
 		 */
 		synchronized (pingLock) {
 			if(pingActive){
 				//Check if ping has timed out and send again
-				if(lastPingTime+maxTimeout > System.currentTimeMillis()){
+				if((System.currentTimeMillis()-lastPingTime) > maxTimeout ){
 					pingTimeoutCount++;
 					if(pingTimeoutCount < maxTimeoutCount){
 						sendPing(server);	
@@ -78,6 +83,6 @@ public class Pinger {
 
 
 	public int getPing() {
-		return ping;
+		return (int) pingHistory.getAvg();
 	}
 }

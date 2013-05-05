@@ -2,14 +2,18 @@ package com.emptyPockets.network.server;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.emptyPockets.network.connection.NetworkConnection;
 import com.emptyPockets.network.connection.UDPConnection;
 import com.emptyPockets.network.connection.UDPConnectionListener;
+import com.emptyPockets.network.controls.CommandHub;
+import com.emptyPockets.network.controls.CommandService;
+import com.emptyPockets.network.transport.FrameworkMessages;
 import com.emptyPockets.network.transport.FrameworkMessages.ConnectionRequest;
 import com.emptyPockets.network.transport.FrameworkMessages.ConnectionResponse;
+import com.emptyPockets.network.transport.FrameworkMessages.DisconnectNotification;
 import com.emptyPockets.network.transport.FrameworkMessages.Ping;
 import com.emptyPockets.network.transport.TransportObject;
 import com.esotericsoftware.minlog.Log;
@@ -18,36 +22,46 @@ public class NetworkNode implements UDPConnectionListener, Runnable{
 	static int nodeCount = 0;
 	String nodeName = "Node"+nodeCount++;
 	
-	private ArrayList<NetworkConnection> timeoutClients;
+	private ArrayList<NetworkConnection> timeoutNodess;
 	private ArrayList<NetworkConnection> clients;
 	private HashMap<Integer, NetworkConnection> clientsById;
-	private HashMap<String, NetworkConnection> clientsByUsername;
+	private HashMap<String, NetworkConnection> clientsByNodeName;
 	Thread thread;
 	boolean active = false;
+	
+	ArrayList<NetworkNodeListener> listeners;
 	
 	private UDPConnection connection;
 	int localPort;
 	int maxPacketSize;
 
-	public NetworkNode(int localPort, int maxPacketSize) throws IOException {
+	CommandHub commandHub;
+	
+	public NetworkNode(int localPort, int maxPacketSize) {
 		this.localPort = localPort;
 		this.maxPacketSize = maxPacketSize;
+		commandHub = new CommandHub();
+		CommandService.registerServer(this);
+		listeners = new ArrayList<NetworkNodeListener>();
 		init();
 	}
 
-	public void init() throws IOException {
-		setConnection(new UDPConnection(maxPacketSize, localPort));
-		getConnection().addListener(this);
-		timeoutClients = new ArrayList<NetworkConnection>();
+	public void init(){
+		timeoutNodess = new ArrayList<NetworkConnection>();
 		clients  = new ArrayList<NetworkConnection>();
 		clientsById = new HashMap<Integer, NetworkConnection>();
-		clientsByUsername = new HashMap<String, NetworkConnection>();
+		clientsByNodeName = new HashMap<String, NetworkConnection>();
 	}
 
-	public void start() {
+	
+	public void start() throws IOException  {
+		Log.info(nodeName, "Starting Network Node");
 		if(active){
 			return;
 		}
+		setConnection(new UDPConnection(this,maxPacketSize, localPort));
+		getConnection().addListener(this);
+		
 		active = true;
 		Thread t = new Thread(this);
 		t.start();
@@ -55,68 +69,165 @@ public class NetworkNode implements UDPConnectionListener, Runnable{
 	}
 
 	public void stop() {
+		Log.info(nodeName, "Stopping Network Node");
+		disconnectAllConnections();
 		active = false;
-		getConnection().stop();
+		if(getConnection() != null){
+			getConnection().stop();
+		}
+		setConnection(null);
+	}
+	
+	public void disconnect(String name){
+		synchronized (clients) {
+			NetworkConnection con = clientsByNodeName.get(name);
+			sendData(con, new DisconnectNotification(this.nodeName));
+			nodeDisconnectRecieved(con);
+		}
+	}
+	public void disconnectAllConnections(){
+		sendDataToAll(new DisconnectNotification(this.nodeName));
+		synchronized (clients) {
+			clients.clear();
+			clientsById.clear();
+			clientsByNodeName.clear();
+		}
+	}
+	
+	public void addListener(NetworkNodeListener listener){
+		synchronized (listeners) {
+			listeners.add(listener);
+		}
+	}
+	
+	public void removeListener(NetworkNodeListener listener){
+		synchronized (listeners) {
+			listeners.remove(listener);
+		}
 	}
 
-	public void clientConnectRecieved(NetworkConnection client){
-		Log.info(nodeName, "Connection : "+client);
+	protected void nodeConnectRecieved(NetworkConnection node){
+		Log.info(nodeName, "Node Connected : "+node);
 		synchronized (clients) {
-			clientsById.put(client.getClientId(), client);
-			clientsByUsername.put(client.getUsername(), client);
-			clients.add(client);
+			clientsById.put(node.getClientId(), node);
+			clientsByNodeName.put(node.getNodeName(), node);
+			clients.add(node);
+		}
+		
+		synchronized (listeners) {
+			for(NetworkNodeListener list :listeners){
+				list.nodeConnected(node);
+			}
 		}
 		
 	}
 	
-	public void clientDisconnectRecieved(NetworkConnection client){
-		Log.info(nodeName, "Disconnect : "+client);
+	public boolean sendDataToAll(Object object){
+		boolean result = true;
 		synchronized (clients) {
-			clients.remove(client);
-			clientsById.remove(client.getClientId());
-			clientsByUsername.remove(client.getUsername());
+			for(NetworkConnection con : clients){
+				result = result && sendData(con,object);
+			}
+		}
+		return result;
+	}
+	
+	public boolean sendData(String nodeName, Object object) throws NodeNotFoundException{
+		synchronized (clients) {
+			NetworkConnection con = clientsByNodeName.get(nodeName);
+			if(con == null){
+				throw new NodeNotFoundException("No such node found");
+			}
+			return sendData(con,object);
 		}
 	}
 	
-	public void clientTimeoutRecieved(NetworkConnection client){
-		Log.info(nodeName, "Timeout : "+client);
-		synchronized (timeoutClients) {
-			timeoutClients.add(client);	
+	public boolean sendData(NetworkConnection con, Object object){
+		return connection.sendObject(object, con);
+	}
+
+	protected void nodeDisconnectRecieved(NetworkConnection node){
+		Log.info(nodeName, "Node Disconnect : "+node);
+		synchronized (clients) {
+			clients.remove(node);
+			clientsById.remove(node.getClientId());
+			clientsByNodeName.remove(node.getNodeName());
+		}
+		
+		synchronized (listeners) {
+			for(NetworkNodeListener list :listeners){
+				list.nodeDisconnected(node);
+			}
+		}
+	}
+	
+	protected void nodeTimeoutRecieved(NetworkConnection node){
+		Log.info(nodeName, "Node Timeout : "+node);
+		synchronized (timeoutNodess) {
+			timeoutNodess.add(node);	
+		}
+		
+		synchronized (listeners) {
+			for(NetworkNodeListener list :listeners){
+				list.nodeTimeout(node);
+			}
 		}
 	}
 	
 	@Override
 	public void notifyObjectRecieved(UDPConnection con, TransportObject object) {
-		Log.info(nodeName, "Recieved : "+object);
-		
-		if (object.data instanceof Ping) {
-			Ping p = (Ping) object.data;
-			if (p.isResponse()) {
-				NetworkConnection client = clientsById.get(p.getClientId());
-				if (client != null) {
-					client.getPinger().recievePing(p);
+		Log.debug(nodeName, "Recieved : "+object);
+		//Deal with Framework Messages
+		if(object.data instanceof FrameworkMessages){
+			if (object.data instanceof Ping) {
+				Ping p = (Ping) object.data;
+				if (p.isResponse()) {
+					NetworkConnection client = clientsById.get(p.getClientId());
+					if (client != null) {
+						client.getPinger().recievePing(p);
+					}
+				} else {
+					p.setResponse(true);
+					con.sendTransportObject(object);
 				}
-			} else {
-				p.setResponse(true);
-				con.sendTransportObject(object);
+			}else if(object.data instanceof ConnectionRequest){
+				ConnectionRequest request = (ConnectionRequest) object.data;
+				Log.info(nodeName,"Connection Request Recieved: "+request);
+				NetworkConnection client = new NetworkConnection(request.getNodeName(), object.host, object.port);
+				ConnectionResponse response = generateConnectionResponse(client);
+				Log.debug(nodeName, "Connection Request Response : "+response);
+				
+				if(response.isAccepted()){
+					nodeConnectRecieved(client);
+				}
+				connection.sendObject(response, object.host, object.port);
+			}else if (object.data instanceof ConnectionResponse){
+				ConnectionResponse response = (ConnectionResponse)object.data;
+				NetworkConnection server = new NetworkConnection(response.getNodeName(), object.host, object.port);
+				nodeConnectRecieved(server);
+			}else if(object.data instanceof DisconnectNotification){
+				disconnect(((DisconnectNotification)object.data).getNodeName());
+			}else{
+				throw new InvalidParameterException("Unknown Framework Message");
 			}
-		}else if(object.data instanceof ConnectionRequest){
-			ConnectionRequest request = (ConnectionRequest) object.data;
-			NetworkConnection client = new NetworkConnection(request, object.host, object.port);
-			ConnectionResponse response = generateConnectionResponse(client);
-			Log.info(nodeName, "Response : "+response);
+		}else{
+			synchronized (clients) {
+				NetworkConnection netCon = clientsByNodeName.get(object.nodeName);
+				//Non Framework Data
+				synchronized (listeners) {
+					for(NetworkNodeListener list :listeners){
+						list.dataRecieved(this, netCon, object.data);
+					}
+				}
 			
-			if(response.isAccepted()){
-				clientConnectRecieved(client);
 			}
-			connection.sendObject(response, object.host, object.port);
 		}
 	}
 
-	public ConnectionResponse generateConnectionResponse(NetworkConnection newClient){
+	private ConnectionResponse generateConnectionResponse(NetworkConnection newClient){
 		ConnectionResponse resp = new ConnectionResponse();
-		
-		if(clientsByUsername.containsKey(newClient.getUsername())){
+		resp.setNodeName(this.nodeName);
+		if(clientsByNodeName.containsKey(newClient.getNodeName())){
 			resp.setAccepted(false);
 			resp.setMessage("Username already in use");
 		}else{
@@ -142,11 +253,12 @@ public class NetworkNode implements UDPConnectionListener, Runnable{
 				}
 			}
 			
-			synchronized (timeoutClients) {
-				for(NetworkConnection c : timeoutClients){
-					clientDisconnectRecieved(c);
+			//Remove clients That have timed out
+			synchronized (timeoutNodess) {
+				for(NetworkConnection c : timeoutNodess){
+					nodeDisconnectRecieved(c);
 				}
-				timeoutClients.clear();
+				timeoutNodess.clear();
 			}
 			try {
 				Thread.sleep(100);
@@ -156,10 +268,43 @@ public class NetworkNode implements UDPConnectionListener, Runnable{
 		}
 	}
 
-	public void connect(String username, InetAddress address, int port) {
+	public void connect(InetAddress address, int port) {
 		Log.info(nodeName, "Attempting connection : "+address+":"+port);
 		ConnectionRequest request = new ConnectionRequest();
-		request.setUsername(username);
+		request.setNodeName(nodeName);
 		connection.sendObject(request, address, port);
+	}
+
+	public String getNodeName() {
+		return nodeName;
+	}
+
+	public void setNodeName(String nodeName) {
+		this.nodeName = nodeName;
+	}
+
+	public void logClients() {
+		synchronized (clients) {
+			for(NetworkConnection con : clients){
+				Log.info(nodeName,String.format("Name[%s] ping[%d]",con.getNodeName(), con.getPing()));
+			}
+		}
+	}
+
+	public CommandHub getCommandHub() {
+		return commandHub;
+	}
+
+	public void setLocalPort(int localPort) {
+		this.localPort = localPort;
+	}
+
+	public boolean isServerRunning(){
+		return  active;
+	}
+	public int getConnectedCount() {
+		synchronized (clients) {
+			return clients.size();
+		}
 	}
 }
