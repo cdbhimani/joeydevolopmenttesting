@@ -1,7 +1,7 @@
 
 package com.esotericsoftware.kryo.util;
 
-import static com.esotericsoftware.minlog.Log.*;
+import static com.emptyPockets.network.ServerLogger.ServerLogger.*;
 
 /** A few utility methods, mostly for private use.
  * @author Nathan Sweet <misc@n4te.com> */

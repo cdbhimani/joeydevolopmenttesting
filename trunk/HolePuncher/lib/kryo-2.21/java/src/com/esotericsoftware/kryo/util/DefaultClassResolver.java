@@ -9,7 +9,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
 import static com.esotericsoftware.kryo.util.Util.*;
-import static com.esotericsoftware.minlog.Log.*;
+import static com.emptyPockets.network.ServerLogger.ServerLogger.*;
 
 /** Resolves classes by ID or by fully qualified class name.
  * @author Nathan Sweet <misc@n4te.com> */

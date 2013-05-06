@@ -6,7 +6,7 @@ import java.io.InputStream;
 
 import com.esotericsoftware.kryo.KryoException;
 
-import static com.esotericsoftware.minlog.Log.*;
+import static com.emptyPockets.network.ServerLogger.ServerLogger.*;
 
 /** An InputStream that reads lengths and chunks of data from another OutputStream, allowing chunks to be skipped.
  * @author Nathan Sweet <misc@n4te.com> */

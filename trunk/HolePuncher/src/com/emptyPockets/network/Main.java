@@ -2,23 +2,19 @@ package com.emptyPockets.network;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 
-import com.emptyPockets.network.controls.CommandHub;
-import com.emptyPockets.network.controls.commands.Command;
+import com.emptyPockets.network.log.LogListener;
+import com.emptyPockets.network.log.ServerLogger;
 import com.emptyPockets.network.server.NetworkConnection;
 import com.emptyPockets.network.server.NetworkNode;
-import com.emptyPockets.network.server.NetworkNodeListener;
 import com.emptyPockets.network.server.NetworkNodeListenerAdapter;
 import com.emptyPockets.network.server.NodeNotFoundException;
-import com.esotericsoftware.minlog.Log;
-import com.esotericsoftware.minlog.Log.Logger;
 
 public class Main {
 
 	public static void main(String[] args) throws IOException, InterruptedException, NodeNotFoundException {
-		Log.INFO();
+		ServerLogger.INFO();
 		int port = 8080;
 		// InetAddress address = InetAddress.getByName("54.217.240.178");
 		// InetAddress address = InetAddress.getLocalHost();
@@ -30,35 +26,37 @@ public class Main {
 			@Override
 			public void dataRecieved(NetworkNode node, NetworkConnection connection, Object data) {
 				super.dataRecieved(node, connection, data);
-				Log.info(node.getNodeName(), "Data Recieved [" + data + "]");
-				node.getCommandHub().processCommand(data.toString());
+				ServerLogger.info(node.getNodeName(), "Data Recieved [" + data + "]");
 			}
 		};
 
 		final NetworkNode host = new NetworkNode(port, maxPacketSize);
-		host.setNodeName("Server");
+		host.setNodeName("server");
+//		host.start();
 		host.addListener(echo);
-		host.start();
 		final NetworkNode client;
 
-		int i = 1;
-		client = new NetworkNode(port + i, maxPacketSize);
-		client.setNodeName("Client");
-		client.addListener(echo);
-		client.start();
-		Thread.sleep(1000);
-
-		client.connect(address, port);
+		ServerLogger.info("Startup");
+//		int i = 1;
+//		client = new NetworkNode(port + i, maxPacketSize);
+//		client.setNodeName("client");
+//		client.start();
+//		client.addListener(echo);
+//		Thread.sleep(1000);
+//
+//		client.connect(address, port);
 
 		Scanner in = new Scanner(System.in);
 		String line;
 		while ((line = in.nextLine()) != null) {
 			try {
-				if (line.charAt(0) == 'c') {
-					String command = line.substring(1);
-					client.getCommandHub().processCommand(command);
-				} else {
-					host.getCommandHub().processCommand(line);
+				if (line.length() > 0) {
+					if (line.charAt(0) == 'c') {
+						String command = line.substring(1);
+//						client.getCommandHub().processCommand(command);
+					} else {
+						host.getCommandHub().processCommand(line);
+					}
 				}
 			} catch (Throwable t) {
 				t.printStackTrace();

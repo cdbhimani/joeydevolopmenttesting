@@ -9,16 +9,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.emptyPockets.network.PacketUtils;
+import com.emptyPockets.network.log.ServerLogger;
 import com.emptyPockets.network.server.NetworkConnection;
 import com.emptyPockets.network.server.NetworkNode;
-import com.emptyPockets.network.transport.FrameworkMessages;
-import com.emptyPockets.network.transport.FrameworkMessages.Ping;
 import com.emptyPockets.network.transport.NetworkTransferManager;
 import com.emptyPockets.network.transport.TransportObject;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.minlog.Log;
 
 public class UDPConnection implements Runnable {
 	NetworkNode node;
@@ -75,7 +73,7 @@ public class UDPConnection implements Runnable {
 		transport.host = dst;
 		transport.nodeName = node.getNodeName();
 		transport.port = port;
-		Log.trace(node.getNodeName(), "Sending Object ["+transport+"]");
+		ServerLogger.trace(node.getNodeName(), "Sending Object ["+transport+"]");
 		return sendTransportObject(transport);
 	}
 
@@ -105,27 +103,27 @@ public class UDPConnection implements Runnable {
 	}
 
 	private void sendPacket(DatagramPacket packet) throws IOException {
-		// Log.TRACE
+		// ServerLogger.TRACE
 
-		Log.trace(node.getNodeName(), "#################Sending Packet : START ###############");
+		ServerLogger.trace(node.getNodeName(), "#################Sending Packet : START ###############");
 		PacketUtils.printPacket(packet);
 		connection.send(packet);
 		clearPacketData(outPacket);
-		Log.trace(node.getNodeName(), "#################Sending Packet : DONE  ###############");
+		ServerLogger.trace(node.getNodeName(), "#################Sending Packet : DONE  ###############");
 	}
 
 	private void readPacket(DatagramPacket packet) throws IOException {
-		Log.trace(node.getNodeName(), "#################Recieve Packet : WAIT ###############");
+		ServerLogger.trace(node.getNodeName(), "#################Recieve Packet : WAIT ###############");
 		clearPacketData(packet);
 		connection.receive(packet);
 		PacketUtils.printPacket(packet);
-		Log.trace(node.getNodeName(), "#################Recieve Packet : DONE ###############");
+		ServerLogger.trace(node.getNodeName(), "#################Recieve Packet : DONE ###############");
 	}
 
 	private TransportObject readObject() throws IOException {
 		TransportObject object = null;
 		synchronized (in) {
-			Log.trace(node.getNodeName(), "Packet Size : "+inPacket.getLength());
+			ServerLogger.trace(node.getNodeName(), "Packet Size : "+inPacket.getLength());
 			readPacket(inPacket);
 			in.setLimit(inPacket.getLength());
 			in.setPosition(0);
@@ -137,7 +135,7 @@ public class UDPConnection implements Runnable {
 				object.port = inPacket.getPort();
 			} catch (Exception e) {
 				e.printStackTrace();
-				Log.error(node.getNodeName(), "Failed to read object");
+				ServerLogger.error(node.getNodeName(), "Failed to read object");
 			}
 		}
 		return object;
@@ -161,13 +159,13 @@ public class UDPConnection implements Runnable {
 			try {
 				TransportObject object = readObject();
 				if (object != null) {
-					Log.trace(node.getNodeName(), "Data Recieved " + object);
+					ServerLogger.trace(node.getNodeName(), "Data Recieved " + object);
 					notifyObjectRecieved(object);
 				}else{
-					Log.trace(node.getNodeName(), "No Data Recieved ");
+					ServerLogger.trace(node.getNodeName(), "No Data Recieved ");
 				}
 			} catch(SocketException e){
-				Log.info(node.getNodeName(), "Socket Exception");
+				ServerLogger.info(node.getNodeName(), "Socket Exception");
 				stop();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -183,13 +181,13 @@ public class UDPConnection implements Runnable {
 	}
 
 	public void stop() {
-		Log.debug("Stopping UDP connection");
+		ServerLogger.debug("Stopping UDP connection");
 		alive = false;
 		connection.close();
 	}
 
 	public void start() {
-		Log.debug("Starting UDP connection");
+		ServerLogger.debug("Starting UDP connection");
 		if (alive == true) {
 			return;
 		}

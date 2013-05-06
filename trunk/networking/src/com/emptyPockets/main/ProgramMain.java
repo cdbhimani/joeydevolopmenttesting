@@ -4,11 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.emptyPockets.gui.Scene2DToolkit;
-import com.emptyPockets.test.beam.BeamTesting;
-import com.emptyPockets.test.building.WorldRenderScreen;
-import com.emptyPockets.test.controls.TouchableEntitiesScreen;
-import com.emptyPockets.test.kryoNetwork.gui.ClientScreen;
-import com.emptyPockets.test.shaders.ShaderLesson1;
+import com.emptyPockets.test.holepuncher.HolePuncher;
 import com.emptyPockets.utils.file.FileSelector;
 
 public class ProgramMain extends Game{
@@ -29,7 +25,8 @@ public class ProgramMain extends Game{
 //		ShaderLesson1 screen = new ShaderLesson1(input); //Testing shaders
 //		WorldRenderScreen screen = new WorldRenderScreen(input); //Fist touch tests for menus on entities
 //		TouchableEntitiesScreen screen = new TouchableEntitiesScreen(input);
-		ClientScreen screen = new ClientScreen(input);
+//		ClientScreen screen = new ClientScreen(input);
+		HolePuncher screen = new HolePuncher(input);
 		setScreen(screen);
 	}
 	
