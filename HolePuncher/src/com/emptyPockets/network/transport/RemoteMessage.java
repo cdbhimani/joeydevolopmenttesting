@@ -1,4 +1,4 @@
-package com.emptyPockets.network.transport;
+package com.emptypockets.network.transport;
 
 public class RemoteMessage {
 	String node;

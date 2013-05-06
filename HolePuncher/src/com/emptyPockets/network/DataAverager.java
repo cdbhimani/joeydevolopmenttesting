@@ -1,4 +1,4 @@
-package com.emptyPockets.network;
+package com.emptypockets.network;
 
 import java.util.ArrayList;
 

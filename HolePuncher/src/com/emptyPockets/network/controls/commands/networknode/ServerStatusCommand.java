@@ -1,6 +1,6 @@
-package com.emptyPockets.network.controls.commands.networknode;
+package com.emptypockets.network.controls.commands.networknode;
 
-import com.emptyPockets.network.server.NetworkNode;
+import com.emptypockets.network.server.NetworkNode;
 
 public class ServerStatusCommand extends NetworkNodeCommand {
 
