@@ -111,12 +111,12 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 	@Override
 	public void pause() {
-		
+		Scene2DToolkit.getToolkit().disposeSkin();
 	}
 
 	@Override
 	public void resume() {
-		
+		Scene2DToolkit.getToolkit().reloadSkin();
 	}
 
 	@Override

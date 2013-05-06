@@ -25,7 +25,7 @@ public class Log {
 
 	/**
 	 * The level of messages that will be logged. Compiling this and the booleans below as "final" will cause the compiler to
-	 * remove all "if (Log.info) ..." type statements below the set level.
+	 * remove all "if (ServerLogger.info) ..." type statements below the set level.
 	 */
 	static private int level = LEVEL_INFO;
 
@@ -41,11 +41,11 @@ public class Log {
 	static public boolean TRACE = level <= LEVEL_TRACE;
 
 	/**
-	 * Sets the level to log. If a version of this class is being used that has a final log level, this has no affect.
+	 * Sets the level to ServerLogger. If a version of this class is being used that has a final log level, this has no affect.
 	 */
 	static public void set (int level) {
 		// Comment out method contents when compiling fixed level JARs.
-		Log.level = level;
+		ServerLogger.level = level;
 		ERROR = level <= LEVEL_ERROR;
 		WARN = level <= LEVEL_WARN;
 		INFO = level <= LEVEL_INFO;
@@ -81,7 +81,7 @@ public class Log {
 	 * Sets the logger that will write the log messages.
 	 */
 	static public void setLogger (Logger logger) {
-		Log.logger = logger;
+		ServerLogger.logger = logger;
 	}
 
 	static private Logger logger = new Logger();

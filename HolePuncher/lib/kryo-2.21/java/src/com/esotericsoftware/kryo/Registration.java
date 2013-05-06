@@ -4,7 +4,7 @@ package com.esotericsoftware.kryo;
 import org.objenesis.instantiator.ObjectInstantiator;
 
 import static com.esotericsoftware.kryo.util.Util.*;
-import static com.esotericsoftware.minlog.Log.*;
+import static com.emptyPockets.network.ServerLogger.ServerLogger.*;
 
 /** Describes the {@link Serializer} and class ID to use for a class.
  * @author Nathan Sweet <misc@n4te.com> */

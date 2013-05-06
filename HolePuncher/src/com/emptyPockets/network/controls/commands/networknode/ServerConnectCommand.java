@@ -5,9 +5,9 @@ import java.net.UnknownHostException;
 
 import com.emptyPockets.network.server.NetworkNode;
 
-public class ConnectCommand extends NetworkNodeCommand {
+public class ServerConnectCommand extends NetworkNodeCommand {
 
-	public ConnectCommand(NetworkNode nodes) {
+	public ServerConnectCommand(NetworkNode nodes) {
 		super("connect", nodes);
 	}
 

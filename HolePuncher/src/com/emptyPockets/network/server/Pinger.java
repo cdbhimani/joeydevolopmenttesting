@@ -1,8 +1,8 @@
 package com.emptyPockets.network.server;
 
 import com.emptyPockets.network.DataAverager;
+import com.emptyPockets.network.log.ServerLogger;
 import com.emptyPockets.network.transport.FrameworkMessages.Ping;
-import com.esotericsoftware.minlog.Log;
 
 public class Pinger {
 	long maxTimeout;
@@ -18,8 +18,8 @@ public class Pinger {
 	
 	NetworkConnection connection;
 	public Pinger(NetworkConnection connection){
-		pingPeroid = 50000;
-		maxTimeout = 150000;
+		pingPeroid = 5000;
+		maxTimeout = 15000;
 		maxTimeoutCount = 1;
 		pingId = 0;
 		pingHistory = new DataAverager<Integer>(5);
@@ -32,7 +32,7 @@ public class Pinger {
 		//Get Next Ping Id
 		synchronized (pingLock) {
 			pingId++;
-			Log.trace("Sending Ping:"+pingId+" - ClientId:"+connection.clientId);
+			ServerLogger.trace("Sending Ping:"+pingId+" - ClientId:"+connection.clientId);
 			lastPingTime = System.currentTimeMillis();
 			Ping p = new Ping(connection.clientId, pingId);
 			if(server.getConnection().sendObject(p, connection.clientAddress, connection.clientPort)){
@@ -45,7 +45,7 @@ public class Pinger {
 	
 	public void recievePing(Ping pingData){
 		synchronized (pingLock) {
-			Log.trace("Ping Recieved :"+pingData.getId()+" clientId:"+connection.clientId);
+			ServerLogger.trace("Ping Recieved :"+pingData.getId()+" clientId:"+connection.clientId);
 			if(pingData.getId() == pingId){
 				int ping = (int) (System.currentTimeMillis()-lastPingTime);
 				pingHistory.addRecord(ping);
@@ -57,7 +57,7 @@ public class Pinger {
 
 	
 	public void update(NetworkNode server){
-//		Log.info("Ping : "+ping);
+//		ServerLogger.info("Ping : "+ping);
 		/**
 		 * Testing Pinging and keep alive
 		 */

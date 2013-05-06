@@ -9,6 +9,16 @@ public class FrameworkMessages{
 	public static class DisconnectNotification extends FrameworkMessages{
 		String nodeName;
 
+		public String toString() {
+			StringBuilder rst = new StringBuilder();
+			rst.append("{ DisconnectNotification:");
+			rst.append(" nodeName=[");
+			rst.append(nodeName);
+			rst.append("] }");
+			return rst.toString();
+		}
+
+		
 		public DisconnectNotification() {
 		}
 	

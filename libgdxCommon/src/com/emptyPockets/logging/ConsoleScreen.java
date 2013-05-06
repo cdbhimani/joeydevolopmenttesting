@@ -1,7 +1,5 @@
 package com.emptyPockets.logging;
 
-import javax.xml.stream.events.Characters;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -11,13 +9,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 
 public class ConsoleScreen extends Window{
 	Label label;
 	ScrollPane scroll;
 	StringBuffer console;
-	int characterLimit = 10000;
+	int characterLimit = 1000000;
 	TextButton maximise;
 	
 	public ConsoleScreen(String title, Skin skin) {
@@ -46,6 +43,9 @@ public class ConsoleScreen extends Window{
 		});
 	}
 	
+	public ScrollPane getContent(){
+		return scroll;
+	}
 	public void relayout(){
 		clear();
 		row();

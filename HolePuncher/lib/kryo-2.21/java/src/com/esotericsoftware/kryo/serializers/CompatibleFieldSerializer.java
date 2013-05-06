@@ -8,7 +8,7 @@ import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.io.OutputChunked;
 import com.esotericsoftware.kryo.util.ObjectMap;
 
-import static com.esotericsoftware.minlog.Log.*;
+import static com.emptyPockets.network.ServerLogger.ServerLogger.*;
 
 /** Serializes objects using direct field assignment, with limited support for forward and backward compatibility. Fields can be
  * added or removed without invalidating previously serialized bytes. Note that changing the type of a field is not supported.

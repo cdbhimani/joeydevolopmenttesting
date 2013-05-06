@@ -13,7 +13,7 @@ import com.emptyPockets.test.kryoNetwork.transport.messages.UserData;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
-import com.esotericsoftware.minlog.Log;
+import com.emptyPockets.network.log.ServerLogger;
 
 public class ManagementServer extends Listener {
 	Server server;

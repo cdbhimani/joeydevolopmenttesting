@@ -12,7 +12,7 @@ import org.junit.Assert;
 
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.minlog.Log;
+import com.emptyPockets.network.ServerLogger.ServerLogger;
 
 /** Convenience methods for round tripping objects.
  * @author Nathan Sweet <misc@n4te.com> */
@@ -24,7 +24,7 @@ abstract public class KryoTestCase extends TestCase {
 	protected boolean supportsCopy;
 
 	protected void setUp () throws Exception {
-		Log.TRACE();
+		ServerLogger.TRACE();
 
 		kryo = new Kryo();
 		kryo.setReferences(false);
