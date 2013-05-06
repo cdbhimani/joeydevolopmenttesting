@@ -1,9 +1,9 @@
-package com.emptyPockets.network;
+package com.emptypockets.network;
 
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 
-import com.emptyPockets.network.log.ServerLogger;
+import com.emptypockets.network.log.ServerLogger;
 
 public class PacketUtils {
 	public static void printPacket(DatagramPacket pkt){

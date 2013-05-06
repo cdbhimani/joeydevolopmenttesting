@@ -1,14 +1,14 @@
-package com.emptyPockets.network.controls;
+package com.emptypockets.network.controls;
 
-import com.emptyPockets.network.controls.commands.networknode.ServerConnectCommand;
-import com.emptyPockets.network.controls.commands.networknode.ServerDisconnectCommand;
-import com.emptyPockets.network.controls.commands.networknode.ServerListCommand;
-import com.emptyPockets.network.controls.commands.networknode.ServerLogCommand;
-import com.emptyPockets.network.controls.commands.networknode.ServerSendMessageCommand;
-import com.emptyPockets.network.controls.commands.networknode.ServerStartCommand;
-import com.emptyPockets.network.controls.commands.networknode.ServerStatusCommand;
-import com.emptyPockets.network.controls.commands.networknode.ServerStopCommand;
-import com.emptyPockets.network.server.NetworkNode;
+import com.emptypockets.network.controls.commands.networknode.ServerConnectCommand;
+import com.emptypockets.network.controls.commands.networknode.ServerDisconnectCommand;
+import com.emptypockets.network.controls.commands.networknode.ServerListCommand;
+import com.emptypockets.network.controls.commands.networknode.ServerLogCommand;
+import com.emptypockets.network.controls.commands.networknode.ServerSendMessageCommand;
+import com.emptypockets.network.controls.commands.networknode.ServerStartCommand;
+import com.emptypockets.network.controls.commands.networknode.ServerStatusCommand;
+import com.emptypockets.network.controls.commands.networknode.ServerStopCommand;
+import com.emptypockets.network.server.NetworkNode;
 
 
 

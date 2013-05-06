@@ -1,4 +1,4 @@
-package com.emptyPockets.network.server;
+package com.emptypockets.network.server;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -6,17 +6,17 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.emptyPockets.network.connection.UDPConnection;
-import com.emptyPockets.network.connection.UDPConnectionListener;
-import com.emptyPockets.network.controls.CommandHub;
-import com.emptyPockets.network.controls.CommandService;
-import com.emptyPockets.network.log.ServerLogger;
-import com.emptyPockets.network.transport.FrameworkMessages;
-import com.emptyPockets.network.transport.FrameworkMessages.ConnectionRequest;
-import com.emptyPockets.network.transport.FrameworkMessages.ConnectionResponse;
-import com.emptyPockets.network.transport.FrameworkMessages.DisconnectNotification;
-import com.emptyPockets.network.transport.FrameworkMessages.Ping;
-import com.emptyPockets.network.transport.TransportObject;
+import com.emptypockets.network.connection.UDPConnection;
+import com.emptypockets.network.connection.UDPConnectionListener;
+import com.emptypockets.network.controls.CommandHub;
+import com.emptypockets.network.controls.CommandService;
+import com.emptypockets.network.log.ServerLogger;
+import com.emptypockets.network.transport.FrameworkMessages;
+import com.emptypockets.network.transport.TransportObject;
+import com.emptypockets.network.transport.FrameworkMessages.ConnectionRequest;
+import com.emptypockets.network.transport.FrameworkMessages.ConnectionResponse;
+import com.emptypockets.network.transport.FrameworkMessages.DisconnectNotification;
+import com.emptypockets.network.transport.FrameworkMessages.Ping;
 
 public class NetworkNode implements UDPConnectionListener, Runnable {
 	static int nodeCount = 0;

@@ -1,4 +1,4 @@
-package com.emptyPockets.network.server;
+package com.emptypockets.network.server;
 
 public interface NetworkNodeListener {
 	public void nodeConnected(NetworkConnection node);

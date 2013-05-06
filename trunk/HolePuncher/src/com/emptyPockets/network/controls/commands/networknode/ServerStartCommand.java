@@ -1,9 +1,9 @@
-package com.emptyPockets.network.controls.commands.networknode;
+package com.emptypockets.network.controls.commands.networknode;
 
 import java.io.IOException;
 
-import com.emptyPockets.network.log.ServerLogger;
-import com.emptyPockets.network.server.NetworkNode;
+import com.emptypockets.network.log.ServerLogger;
+import com.emptypockets.network.server.NetworkNode;
 
 public class ServerStartCommand extends NetworkNodeCommand {
 
