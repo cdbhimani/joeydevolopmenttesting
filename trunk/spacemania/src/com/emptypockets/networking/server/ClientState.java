@@ -1,0 +1,25 @@
+package com.emptypockets.networking.server;
+
+import com.badlogic.gdx.math.Vector2;
+import com.emptypockets.networking.transfer.ClientStateTransferObject;
+
+public class ClientState {
+	String username;
+	Vector2 pos;
+	Vector2 vel;
+	long lastClientTime;
+	
+	public ClientState(String username){
+		this.username = username;
+		pos = new Vector2();
+		vel = new Vector2();
+		lastClientTime = 0;
+	}
+	public void clientDataRecieved(ClientStateTransferObject data){
+		if(lastClientTime < data.time){
+			vel.x = data.velX;
+			vel.y = data.velY;
+			lastClientTime = data.time;
+		}
+	}
+}
