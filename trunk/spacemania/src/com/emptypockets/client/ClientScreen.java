@@ -16,12 +16,14 @@ import com.emptyPockets.graphics.GraphicsToolkit;
 import com.emptyPockets.gui.Scene2DToolkit;
 import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.gui.StageScreen;
+import com.emptyPockets.logging.ConsoleScreen;
 import com.emptyPockets.utils.OrthoCamController;
 import com.emptypockets.networking.client.ClientManager;
 import com.emptypockets.networking.transfer.ClientStateTransferObject;
 
 public class ClientScreen extends StageScreen{
 
+	ConsoleScreen console;
 	Touchpad touchPad;
 	ClientManager client;
 	ShapeRenderer shape;
@@ -30,6 +32,7 @@ public class ClientScreen extends StageScreen{
 	public ClientScreen(InputMultiplexer inputMultiplexer) {
 		super(inputMultiplexer);
 		client = new ClientManager();
+		console = new ConsoleScreen("Console", getSkin());
 		setClearColor(Color.BLACK);
 		control = new OrthoCamController(getScreenCamera());
 	}
@@ -142,5 +145,13 @@ public class ClientScreen extends StageScreen{
 	public void updateLogic(float delta) {
 		super.updateLogic(delta);
 		client.update(delta);
+	}
+
+	public ConsoleScreen getConsole() {
+		return console;
+	}
+
+	public void setConsole(ConsoleScreen console) {
+		this.console = console;
 	}
 }

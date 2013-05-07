@@ -1,4 +1,4 @@
-package com.emptypockets.network.log;
+package com.emptypockets.networking.log;
 
 public interface LogListener {
 	public void print(String message);
