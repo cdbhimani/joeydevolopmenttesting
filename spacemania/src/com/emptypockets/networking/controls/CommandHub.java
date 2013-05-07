@@ -2,8 +2,8 @@ package com.emptypockets.networking.controls;
 
 import java.util.HashMap;
 
-import com.emptypockets.network.log.ServerLogger;
 import com.emptypockets.networking.controls.commands.Command;
+import com.emptypockets.networking.log.ServerLogger;
 import com.esotericsoftware.kryonet.Listener;
 
 public class CommandHub extends Listener {
@@ -21,7 +21,7 @@ public class CommandHub extends Listener {
 
 	public void processCommand(String data) {
 		ServerLogger.debug("Command Called - processCommand : " + data);
-		if (data!=null && data.startsWith("\\")) {
+		if (data != null && data.startsWith("\\")) {
 			String cmd[] = data.split(" ", 2);
 
 			String commandName = cmd[0].substring(1);
@@ -41,13 +41,5 @@ public class CommandHub extends Listener {
 			}
 		}
 
-	}
-
-	@Override
-	public void dataRecieved(NetworkNode node, NetworkConnection connection, Object data) {
-		super.dataRecieved(node, connection, data);
-		if (data instanceof RemoteMessage) {
-			processCommand(((RemoteMessage) data).getMessage());
-		}
 	}
 }
