@@ -6,8 +6,7 @@ import com.emptypockets.networking.server.ServerManager;
 
 public class SpaceManiaServer {
 	public static void main(String input[]){
-		ServerManager server = new ServerManager(10);
-		
+		ServerManager server = new ServerManager(30);
 		Scanner in = new Scanner(System.in);
 		String line;
 		while ((line = in.nextLine()) != null) {

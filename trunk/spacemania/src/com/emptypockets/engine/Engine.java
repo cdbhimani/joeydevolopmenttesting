@@ -7,12 +7,15 @@ public class Engine {
 	ArrayList<MovingEntity> entities = new ArrayList<MovingEntity>();
 
 	public void update(float time) {
-		tick++;
 		synchronized (entities) {
 			for (MovingEntity e : entities) {
 				e.update(time);
 			}
 		}
+	}
+	
+	public void tick(){
+		tick++;
 	}
 
 	public void updateEntityVel(String name, float velX, float velY) {
