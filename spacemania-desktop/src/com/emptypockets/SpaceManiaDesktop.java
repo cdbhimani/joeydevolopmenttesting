@@ -2,6 +2,9 @@ package com.emptypockets;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.emptypockets.networking.log.ServerLogger;
+import com.emptypockets.networking.server.ServerManager;
+import com.esotericsoftware.minlog.Log;
 
 public class SpaceManiaDesktop {
 	public static void main(String[] args) {

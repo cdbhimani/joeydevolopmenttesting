@@ -9,6 +9,9 @@ import com.emptypockets.engine.Engine;
 import com.emptypockets.engine.MovingEntity;
 import com.emptypockets.networking.controls.CommandHub;
 import com.emptypockets.networking.controls.CommandService;
+import com.emptypockets.networking.transfer.ClientLoginRequest;
+import com.emptypockets.networking.transfer.ClientStateTransferObject;
+import com.emptypockets.networking.transfer.NetworkProtocall;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -18,11 +21,13 @@ public class ClientManager extends Listener {
 	Object engineLock = new Object();
 	Engine engine;
 	private CommandHub command;
+	String username = "client";
 	
 	public ClientManager(){
 		setCommand(new CommandHub());
-		CommandService.registerClient(this);
 		setupClient();
+		NetworkProtocall.register(client.getKryo());
+		CommandService.registerClient(this);
 	}
 	public void setupClient() {
 		client = new Client();
@@ -31,7 +36,7 @@ public class ClientManager extends Listener {
 	}
 
 	public void connect(String address, int tcpPort, int udpPort) throws IOException {
-		client.connect(5000, address, tcpPort, udpPort);
+		client.connect(20000, address, tcpPort, udpPort);
 	}
 
 	public void stop() {
@@ -39,9 +44,8 @@ public class ClientManager extends Listener {
 	}
 
 	public void render(ShapeRenderer shape) {
-
 		shape.begin(ShapeType.Circle);
-		shape.setColor(Color.WHITE);
+		shape.setColor(Color.GREEN);
 		synchronized (engineLock) {
 			if (engine != null) {
 				for (MovingEntity e : engine.getEntities()) {
@@ -82,5 +86,17 @@ public class ClientManager extends Listener {
 
 	public void setCommand(CommandHub command) {
 		this.command = command;
+	}
+	public void setUsername(String data) {
+		this.username = data;
+	}
+	public void serverLogin() {
+		client.sendTCP(new ClientLoginRequest(username));
+	}
+	public void send(ClientStateTransferObject state) {
+		if(client.isConnected()){
+			state.username = username;
+			client.sendUDP(state);
+		}
 	}
 }

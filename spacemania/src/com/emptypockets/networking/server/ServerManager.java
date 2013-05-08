@@ -8,6 +8,7 @@ import com.emptypockets.networking.controls.CommandService;
 import com.emptypockets.networking.log.ServerLogger;
 import com.emptypockets.networking.transfer.ClientLoginRequest;
 import com.emptypockets.networking.transfer.ClientStateTransferObject;
+import com.emptypockets.networking.transfer.NetworkProtocall;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -22,8 +23,8 @@ public class ServerManager extends Listener implements Runnable {
 	int maxUpdateCount = 0;
 	boolean alive = false;
 	CommandHub command;
-	int udpPort = 9081;
-	int tcpPort = 9080;
+	int udpPort = 8081;
+	int tcpPort = 8080;
 
 	public ServerManager(int maxUpdateCount) {
 		setMaxUpdateCount(maxUpdateCount);
@@ -31,6 +32,7 @@ public class ServerManager extends Listener implements Runnable {
 		engine = new Engine();
 		command = new CommandHub();
 		CommandService.registerServer(this);
+		NetworkProtocall.register(server.getKryo());
 	}
 
 	public void setupServer() {
@@ -59,12 +61,14 @@ public class ServerManager extends Listener implements Runnable {
 	}
 
 	public void clientExit(String name) {
+		ServerLogger.info(name, "Client Exit : "+name);
 		synchronized (engine) {
 			engine.removeEntity(name);
 		}
 	}
 
 	public void clientJoin(String name) {
+		ServerLogger.info(name, "Client Join : "+name);
 		synchronized (engine) {
 			engine.addEntity(name);
 		}
@@ -90,7 +94,9 @@ public class ServerManager extends Listener implements Runnable {
 				lastEngineUpdate = System.currentTimeMillis();
 				return;
 			}
-			engine.update((System.currentTimeMillis() - lastEngineUpdate) * 1e-6f);
+			float time = (System.currentTimeMillis() - lastEngineUpdate) * 1e-3f;
+			engine.update(time);
+			engine.tick();
 			lastEngineUpdate = System.currentTimeMillis();
 		}
 	}
@@ -107,6 +113,7 @@ public class ServerManager extends Listener implements Runnable {
 		if (object instanceof ClientStateTransferObject) {
 			clientStateRecieved(((ClientConnection) connection).getUsername(), (ClientStateTransferObject) object);
 		} else if (object instanceof ClientLoginRequest) {
+			((ClientConnection) connection).setUsername(((ClientLoginRequest)object).getUsername());
 			clientJoin(((ClientConnection) connection).getUsername());
 		}
 	}
