@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.emptypockets.engine.Engine;
 import com.emptypockets.engine.MovingEntity;
+import com.emptypockets.networking.controls.CommandHub;
+import com.emptypockets.networking.controls.CommandService;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -15,7 +17,13 @@ public class ClientManager extends Listener {
 	Client client;
 	Object engineLock = new Object();
 	Engine engine;
-
+	private CommandHub command;
+	
+	public ClientManager(){
+		setCommand(new CommandHub());
+		CommandService.registerClient(this);
+		setupClient();
+	}
 	public void setupClient() {
 		client = new Client();
 		client.start();
@@ -66,5 +74,13 @@ public class ClientManager extends Listener {
 		if (object instanceof Engine) {
 			serverStateRecieved((Engine) object);
 		}
+	}
+
+	public CommandHub getCommand() {
+		return command;
+	}
+
+	public void setCommand(CommandHub command) {
+		this.command = command;
 	}
 }

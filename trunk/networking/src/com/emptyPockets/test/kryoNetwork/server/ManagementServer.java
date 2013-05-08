@@ -2,7 +2,6 @@ package com.emptyPockets.test.kryoNetwork.server;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Timer;
 
 import com.emptyPockets.test.kryoNetwork.transport.Network;
 import com.emptyPockets.test.kryoNetwork.transport.messages.EntityUpdate;
@@ -13,7 +12,6 @@ import com.emptyPockets.test.kryoNetwork.transport.messages.UserData;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
-import com.emptyPockets.network.log.ServerLogger;
 
 public class ManagementServer extends Listener {
 	Server server;
