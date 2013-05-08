@@ -7,37 +7,50 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class Scene2DToolkit {
 	private static Scene2DToolkit toolkit;
-	
+
 	Skin skin;
-	
-	private Scene2DToolkit(){
-		
+	TextureAtlas atlas;
+	FileHandle jsonFile;
+	FileHandle atlasFile;
+
+	private Scene2DToolkit() {
+
 	}
-	
-	public static Scene2DToolkit getToolkit(){
-		if(toolkit == null){
+
+	public static Scene2DToolkit getToolkit() {
+		if (toolkit == null) {
 			toolkit = new Scene2DToolkit();
 		}
 		return toolkit;
 	}
-	
-	public void reloadSkin(){
-		getSkin();
+
+	public void reloadSkin() {
+		if (skin != null) {
+			// atlas.dispose();
+			// skin.addRegions(atlas);
+		}
 	}
-	
-	public void disposeSkin(){
-		if(skin != null){
+
+	public void disposeSkin() {
+		if (skin != null) {
 			skin.dispose();
 			skin = null;
 		}
 	}
-	public Skin getSkin(){
-		if( skin == null ) {
-			FileHandle jsonFile = Gdx.files.internal( "ui/uiskin.json" );
-			FileHandle atlasFile = Gdx.files.internal( "ui/uiskin.atlas" );
-			TextureAtlas atlas = new TextureAtlas(atlasFile);
-            skin = new Skin(jsonFile, atlas);
-        }
-        return skin;
+
+	public Skin getSkin() {
+		if (skin == null) {
+			jsonFile = Gdx.files.internal("ui/uiskin.json");
+			atlasFile = Gdx.files.internal("ui/uiskin.atlas");
+			atlas = new TextureAtlas(atlasFile);
+			skin = new Skin(jsonFile) {
+				@Override
+				public void dispose() {
+					super.dispose();
+					atlas.dispose();
+				}
+			};
+		}
+		return skin;
 	}
 }

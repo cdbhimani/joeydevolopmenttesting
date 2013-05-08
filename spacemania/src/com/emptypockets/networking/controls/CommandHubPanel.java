@@ -18,10 +18,11 @@ import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptypockets.client.ClientScreen;
 import com.emptypockets.networking.log.ServerLogger;
 
-public class CommandPanel extends Table {
+public class CommandHubPanel extends Table {
 	Skin skin;
 	TextField command;
-	TextButton remoteConnect;
+	TextButton prevCommand;
+	TextButton nextCommand;
 	TextButton sendButton;
 	
 	CommandHub commandHub;
@@ -32,27 +33,35 @@ public class CommandPanel extends Table {
 	ArrayList<String> commands = new ArrayList<String>(commandHistory);
 	
 	
-	public CommandPanel(CommandHub commandHub) {
+	public CommandHubPanel(CommandHub commandHub) {
 		super(Scene2DToolkit.getToolkit().getSkin());
 		this.commandHub = commandHub;
 		createPanel();
 	}
 
 	public void createPanel() {
-		command = new TextField("\\start 8080,", getSkin());
+		command = new TextField("", getSkin());
 		sendButton = new TextButton("Send", getSkin());
-		remoteConnect = new TextButton("Con", getSkin());
-
+		prevCommand = new TextButton("-", getSkin());
+		nextCommand = new TextButton("+", getSkin());
+		
 		float size = ScreenSizeHelper.getcmtoPxlX(1);
 		row();
-		add(remoteConnect).height(size).width(size);
+		add(prevCommand).height(size).width(size/2);
+		add(nextCommand).height(size).width(size/2);
 		add(command).expandX().fillX().height(size);
 		add(sendButton).height(size).width(size);
 		
-		remoteConnect.addListener(new ChangeListener() {
+		prevCommand.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				command.setText("\\connect 54.217.240.178:8080");
+				previousCommand();
+			}
+		});
+		nextCommand.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				nextCommand();
 			}
 		});
 		command.addListener(new EventListener() {
@@ -108,17 +117,23 @@ public class CommandPanel extends Table {
 		command.setCursorPosition(command.getText().length());
 	}
 	public void sendCommand(){
-		currentCommand = -1;
 		String cmd = command.getText();
-		commands.add(0, cmd);
-		
-		if(commands.size() >= commandHistory){
-			commands.remove(commands.size()-1);
-		}
-		
-		commandHub.processCommand(command.getText());
+		sendCommand(cmd);
 		command.setText("\\");
 		command.setCursorPosition(1);
+	}
+	
+	public void pushHistory(String cmd){
+		currentCommand = -1;
+		commands.add(0, cmd);
+		if(commands.size() >= commandHistory){
+			commands.remove(commands.size()-1);
+		}	
+	}
+	
+	public void sendCommand(String cmd){
+		pushHistory(cmd);
+		commandHub.processCommand(cmd);
 	}
 	public Skin getSkin() {
 		return Scene2DToolkit.getToolkit().getSkin();

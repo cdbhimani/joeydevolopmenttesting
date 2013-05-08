@@ -17,14 +17,14 @@ public class ServerStartCommand extends ServerCommand {
 			if (data != null) {
 				String args[] = data.split(",");
 				
-				if(args.length > 2){
+				if(args.length == 3){
 					int tcpPort = Integer.parseInt(args[0]);
 					int udpPort = Integer.parseInt(args[1]);
 					String name = args[3];
 					server.setTcpPort(tcpPort);
 					server.setUdpPort(udpPort);
 					server.setName(name);
-				}else{
+				}if(args.length ==2){
 					int tcpPort = Integer.parseInt(args[0]);
 					int udpPort = Integer.parseInt(args[1]);
 					server.setTcpPort(tcpPort);

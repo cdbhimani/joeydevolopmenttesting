@@ -7,6 +7,7 @@ import com.emptypockets.networking.log.ServerLogger;
 import com.esotericsoftware.kryonet.Listener;
 
 public class CommandHub extends Listener {
+	CommandHubPanel panel;
 	HashMap<String, Command> commands;
 
 	public CommandHub() {
@@ -41,5 +42,12 @@ public class CommandHub extends Listener {
 			}
 		}
 
+	}
+
+	public CommandHubPanel getPanel() {
+		if(panel == null){
+			panel = new CommandHubPanel(this);
+		}
+		return panel;
 	}
 }

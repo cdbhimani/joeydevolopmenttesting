@@ -13,39 +13,40 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.emptyPockets.utils.event.EventRecorder;
 
-public abstract class GameScreen implements Screen, GestureListener, InputProcessor{
+public abstract class GameScreen implements Screen, GestureListener, InputProcessor {
 
 	protected OrthographicCamera screenCamera = new OrthographicCamera();
 	GestureDetector gesture;
-	protected Color clearColor = new Color(1,1,1,1);
+	protected Color clearColor = new Color(1, 1, 1, 1);
 	protected Skin skin;
 	protected EventRecorder eventLogger;
 	InputMultiplexer parentInputMultiplexer;
-	
-	public GameScreen(InputMultiplexer inputProcessor){
+
+	public GameScreen(InputMultiplexer inputProcessor) {
 		this.parentInputMultiplexer = inputProcessor;
 		this.gesture = new GestureDetector(this);
 		eventLogger = new EventRecorder(50);
 	}
-	
-	public void initializeRender(){
+
+	public void initializeRender() {
 		screenCamera.update();
-		if(Gdx.gl10 !=null)screenCamera.apply(Gdx.gl10);
-		
+		if (Gdx.gl10 != null)
+			screenCamera.apply(Gdx.gl10);
+
 		Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT); // #14
 	}
-	
-	protected void addInputMultiplexer(InputMultiplexer input){
+
+	protected void addInputMultiplexer(InputMultiplexer input) {
 		input.addProcessor(this);
 		input.addProcessor(gesture);
 	}
 
-	public Skin getSkin(){
+	public Skin getSkin() {
 		return Scene2DToolkit.getToolkit().getSkin();
 	}
-	
-	public void removeInputMultiplexer(InputMultiplexer input){
+
+	public void removeInputMultiplexer(InputMultiplexer input) {
 		input.removeProcessor(this);
 		input.removeProcessor(gesture);
 	}
@@ -58,65 +59,63 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 		this.gesture = gesture;
 	}
 
-
 	@Override
 	public final void render(float delta) {
 		eventLogger.begin("Logic");
 		updateLogic(delta);
 		eventLogger.end("Logic");
-		
+
 		eventLogger.begin("Render");
 		initializeRender();
 		renderScreen(delta);
 		eventLogger.end("Render");
 	}
-	
-	public void renderScreen(float delta){
+
+	public void renderScreen(float delta) {
 		eventLogger.begin("Background");
 		drawBackground(delta);
 		eventLogger.end("Background");
-		
+
 		eventLogger.begin("Screen");
 		drawScreen(delta);
 		eventLogger.end("Screen");
-		
+
 		eventLogger.begin("Overlay");
 		drawOverlay(delta);
 		eventLogger.end("Overlay");
 	}
-	
-	public void updateLogic(float delta){
+
+	public void updateLogic(float delta) {
 	}
-	
+
+	public void pause() {
+	}
+
+	public void resume() {
+
+	}
+
 	public abstract void drawBackground(float delta);
+
 	public abstract void drawScreen(float delta);
+
 	public abstract void drawOverlay(float delta);
 
 	@Override
 	public void resize(int width, int height) {
 		screenCamera.viewportWidth = width;
-		screenCamera.viewportHeight= height;
+		screenCamera.viewportHeight = height;
 	}
-
 
 	@Override
 	public void show() {
+		Scene2DToolkit.getToolkit().reloadSkin();
 		addInputMultiplexer(parentInputMultiplexer);
 	}
 
 	@Override
 	public void hide() {
 		removeInputMultiplexer(parentInputMultiplexer);
-	}
-
-	@Override
-	public void pause() {
-		Scene2DToolkit.getToolkit().disposeSkin();
-	}
-
-	@Override
-	public void resume() {
-		Scene2DToolkit.getToolkit().reloadSkin();
 	}
 
 	@Override
@@ -216,8 +215,7 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	}
 
 	@Override
-	public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2,
-			Vector2 pointer1, Vector2 pointer2) {
+	public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
 		// TODO Auto-generated method stub
 		return false;
 	}

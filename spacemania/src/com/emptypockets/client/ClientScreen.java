@@ -3,8 +3,8 @@ package com.emptypockets.client;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.emptyPockets.graphics.GraphicsToolkit;
-import com.emptyPockets.gui.Scene2DToolkit;
 import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.gui.StageScreen;
 import com.emptyPockets.logging.ConsoleScreen;
@@ -105,9 +104,7 @@ public class ClientScreen extends StageScreen{
 		
 		Table inset = new Table();
 		inset.row();
-		inset.add();
-		inset.add().height(insetSize).expandX().fillX();
-		inset.add();
+		inset.add(client.getCommand().getPanel()).fillX().expandX().colspan(3);
 		
 		inset.row();
 		inset.add().width(insetSize).expandY().fillY();

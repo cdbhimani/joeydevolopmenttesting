@@ -22,8 +22,8 @@ public class ServerManager extends Listener implements Runnable {
 	int maxUpdateCount = 0;
 	boolean alive = false;
 	CommandHub command;
-	int udpPort = 8081;
-	int tcpPort = 8080;
+	int udpPort = 9081;
+	int tcpPort = 9080;
 
 	public ServerManager(int maxUpdateCount) {
 		setMaxUpdateCount(maxUpdateCount);

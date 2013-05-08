@@ -13,16 +13,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.gui.StageScreen;
 import com.emptyPockets.logging.ConsoleScreen;
-import com.emptyPockets.network.server.NetworkConnection;
-import com.emptyPockets.network.server.NetworkNode;
-import com.emptyPockets.network.server.NetworkNodeListenerAdapter;
-import com.emptyPockets.network.log.LogListener;
-import com.emptyPockets.network.log.ServerLogger;
-import com.emptyPockets.network.log.ServerLogger.Logger;
+import com.emptypockets.network.log.LogListener;
+import com.emptypockets.network.log.ServerLogger;
+import com.emptypockets.network.server.NetworkConnection;
+import com.emptypockets.network.server.NetworkNode;
+import com.emptypockets.network.server.NetworkNodeListenerAdapter;
 
 public class HolePuncher extends StageScreen {
 
