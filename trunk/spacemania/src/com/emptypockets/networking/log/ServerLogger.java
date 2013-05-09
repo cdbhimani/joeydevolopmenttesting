@@ -5,6 +5,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.emptyPockets.logging.Console;
+
 /**
  * A low overhead, lightweight logging system.
  * 
@@ -281,7 +283,7 @@ public class ServerLogger {
 		 */
 		protected void print(String message) {
 			System.out.println(message);
-			
+			Console.println(message);
 			synchronized (listeners) {
 				for (LogListener listener : listeners) {
 					listener.print(message);

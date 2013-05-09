@@ -7,6 +7,7 @@ import com.emptypockets.networking.controls.CommandHub;
 import com.emptypockets.networking.controls.CommandService;
 import com.emptypockets.networking.log.ServerLogger;
 import com.emptypockets.networking.transfer.ClientLoginRequest;
+import com.emptypockets.networking.transfer.ClientLogoutRequest;
 import com.emptypockets.networking.transfer.ClientStateTransferObject;
 import com.emptypockets.networking.transfer.NetworkProtocall;
 import com.esotericsoftware.kryonet.Connection;
@@ -14,6 +15,7 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
 public class ServerManager extends Listener implements Runnable {
+	public static final int DEFAULT_SERVER_UPDATE = 30;
 	String name = "Server";
 	Server server;
 	long lastEngineUpdate = 0;
@@ -26,6 +28,9 @@ public class ServerManager extends Listener implements Runnable {
 	int udpPort = 8081;
 	int tcpPort = 8080;
 
+	public ServerManager(){
+		this(DEFAULT_SERVER_UPDATE);
+	}
 	public ServerManager(int maxUpdateCount) {
 		setMaxUpdateCount(maxUpdateCount);
 		setupServer();
@@ -114,7 +119,9 @@ public class ServerManager extends Listener implements Runnable {
 			clientStateRecieved(((ClientConnection) connection).getUsername(), (ClientStateTransferObject) object);
 		} else if (object instanceof ClientLoginRequest) {
 			((ClientConnection) connection).setUsername(((ClientLoginRequest)object).getUsername());
-			clientJoin(((ClientConnection) connection).getUsername());
+			clientJoin(((ClientLoginRequest)object).getUsername());
+		}else if (object instanceof ClientLogoutRequest) {
+			clientExit(((ClientLogoutRequest)object).getUsername());
 		}
 	}
 

@@ -9,7 +9,9 @@ import com.emptypockets.engine.Engine;
 import com.emptypockets.engine.MovingEntity;
 import com.emptypockets.networking.controls.CommandHub;
 import com.emptypockets.networking.controls.CommandService;
+import com.emptypockets.networking.server.ServerManager;
 import com.emptypockets.networking.transfer.ClientLoginRequest;
+import com.emptypockets.networking.transfer.ClientLogoutRequest;
 import com.emptypockets.networking.transfer.ClientStateTransferObject;
 import com.emptypockets.networking.transfer.NetworkProtocall;
 import com.esotericsoftware.kryonet.Client;
@@ -22,7 +24,8 @@ public class ClientManager extends Listener {
 	Engine engine;
 	private CommandHub command;
 	String username = "client";
-	
+	ServerManager serverManager;
+
 	public ClientManager(){
 		setCommand(new CommandHub());
 		setupClient();
@@ -35,6 +38,16 @@ public class ClientManager extends Listener {
 		client.addListener(this);
 	}
 
+	public void setupServer(int updateCount) {
+		serverManager = new ServerManager(updateCount);
+	}
+
+	public ServerManager getServerManager() {
+		if (serverManager == null) {
+			serverManager = new ServerManager();
+		}
+		return serverManager;
+	}
 	public void connect(String address, int tcpPort, int udpPort) throws IOException {
 		client.connect(20000, address, tcpPort, udpPort);
 	}
@@ -98,5 +111,8 @@ public class ClientManager extends Listener {
 			state.username = username;
 			client.sendUDP(state);
 		}
+	}
+	public void serverLogout() {
+		client.sendTCP(new ClientLogoutRequest(username));
 	}
 }
