@@ -18,6 +18,7 @@ import com.emptyPockets.gui.StageScreen;
 import com.emptyPockets.logging.ConsoleScreen;
 import com.emptyPockets.utils.OrthoCamController;
 import com.emptypockets.networking.client.ClientManager;
+import com.emptypockets.networking.server.ServerManager;
 import com.emptypockets.networking.transfer.ClientStateTransferObject;
 
 public class ClientScreen extends StageScreen implements Runnable {
@@ -25,9 +26,11 @@ public class ClientScreen extends StageScreen implements Runnable {
 	ConsoleScreen console;
 	Touchpad touchPad;
 	ClientManager client;
+
 	ShapeRenderer shape;
 	OrthoCamController control;
 
+	
 	Thread thread;
 	boolean alive;
 
@@ -42,6 +45,8 @@ public class ClientScreen extends StageScreen implements Runnable {
 		alive = true;
 		thread.start();
 	}
+
+	
 
 	@Override
 	public void addInputMultiplexer(InputMultiplexer input) {
@@ -167,8 +172,8 @@ public class ClientScreen extends StageScreen implements Runnable {
 			try {
 				if (touchPad != null) {
 					float vel = 50;
-					state.velX = touchPad.getKnobPercentX()*vel;
-					state.velY = touchPad.getKnobPercentY()*vel;
+					state.velX = touchPad.getKnobPercentX() * vel;
+					state.velY = touchPad.getKnobPercentY() * vel;
 					client.send(state);
 				}
 				Thread.sleep(100);

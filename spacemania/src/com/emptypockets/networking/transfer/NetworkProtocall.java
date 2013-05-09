@@ -14,6 +14,7 @@ public class NetworkProtocall {
 		kryo.register(MovingEntity.class);
 		kryo.register(Vector2.class);
 		kryo.register(ClientLoginRequest.class);
+		kryo.register(ClientLogoutRequest.class);
 		kryo.register(ClientStateTransferObject.class);
 	}
 }
