@@ -1,5 +1,6 @@
 package com.emptypockets.client;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -7,11 +8,15 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.emptyPockets.graphics.GraphicsToolkit;
 import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.gui.StageScreen;
@@ -30,7 +35,7 @@ public class ClientScreen extends StageScreen implements Runnable {
 	ShapeRenderer shape;
 	OrthoCamController control;
 
-	
+	TextButton showConsole;
 	Thread thread;
 	boolean alive;
 
@@ -45,8 +50,6 @@ public class ClientScreen extends StageScreen implements Runnable {
 		alive = true;
 		thread.start();
 	}
-
-	
 
 	@Override
 	public void addInputMultiplexer(InputMultiplexer input) {
@@ -80,11 +83,12 @@ public class ClientScreen extends StageScreen implements Runnable {
 
 	@Override
 	public void createStage(Stage stage) {
-		int insetSize = ScreenSizeHelper.getcmtoPxlX(0.5f);
+		int insetSize = ScreenSizeHelper.getcmtoPxlX(0.7f);
 		int touchPadSize = ScreenSizeHelper.getcmtoPxlX(2);
 
+		showConsole = new TextButton("C", getSkin());
 		touchPad = new Touchpad(0, getSkin());
-
+		
 		Pixmap pix = new Pixmap(4, 4, Format.RGBA8888);
 		Color c = new Color(Color.LIGHT_GRAY);
 		c.a = 0.2f;
@@ -127,9 +131,21 @@ public class ClientScreen extends StageScreen implements Runnable {
 		inset.row();
 		inset.add();
 		inset.add().height(insetSize).expandX().fillX();
-		inset.add();
+		inset.add(showConsole).fill().width(insetSize).height(insetSize);
 		inset.setFillParent(true);
 		stage.addActor(inset);
+		stage.addActor(console);
+		console.setVisible(false);
+		console.setKeepWithinStage(false);
+		
+		showConsole.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				console.setVisible(!console.isVisible());
+				console.setSize(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
+				console.invalidate();
+			}
+		});
 	}
 
 	@Override

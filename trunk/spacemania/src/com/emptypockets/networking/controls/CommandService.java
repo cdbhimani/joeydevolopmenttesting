@@ -23,8 +23,8 @@ public class CommandService {
 		client.getCommand().addCommand(new ClientLoginCommand(client));
 		client.getCommand().addCommand(new ClientServerCommand(client));
 		
-		client.getCommand().getPanel().pushHistory("\\connect 54.217.240.178,8080,8081");
-		client.getCommand().getPanel().pushHistory("\\connect localhost,8080,8081");
+		client.getCommand().getPanel().pushHistory("connect 54.217.240.178,8080,8081");
+		client.getCommand().getPanel().pushHistory("connect localhost,8080,8081");
 	}
 }
 

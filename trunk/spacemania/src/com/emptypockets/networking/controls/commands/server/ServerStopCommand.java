@@ -13,4 +13,8 @@ public class ServerStopCommand extends ServerCommand {
 		server.stop();
 	}
 
+	@Override
+	public String getCommandHelp() {
+		return "Stops a currently running server : stop";
+	}
 }

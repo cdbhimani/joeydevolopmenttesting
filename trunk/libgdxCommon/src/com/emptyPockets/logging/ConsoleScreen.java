@@ -49,7 +49,7 @@ public class ConsoleScreen extends Window{
 	public void relayout(){
 		clear();
 		row();
-		add(scroll).width(Gdx.graphics.getWidth()/2).height(Gdx.graphics.getHeight()/2);
+		add(scroll).fill().expand();
 		row();
 		add(maximise).fillX();
 		pack();

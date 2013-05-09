@@ -19,4 +19,9 @@ public class ClientServerCommand extends ClientCommand {
 		}
 	}
 
+	@Override
+	public String getCommandHelp() {
+		return "";
+	}
+
 }

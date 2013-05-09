@@ -43,5 +43,10 @@ public class ServerStartCommand extends ServerCommand {
 			e.printStackTrace();
 		}
 	}
+	
+	@Override
+	public String getCommandHelp() {
+		return "";
+	}
 
 }
