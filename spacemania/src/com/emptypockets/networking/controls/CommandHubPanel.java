@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.emptyPockets.graphics.GraphicsToolkit;
 import com.emptyPockets.gui.Scene2DToolkit;
 import com.emptyPockets.gui.ScreenSizeHelper;
+import com.emptyPockets.logging.Console;
 import com.emptypockets.client.ClientScreen;
 import com.emptypockets.networking.log.ServerLogger;
 
@@ -119,8 +120,8 @@ public class CommandHubPanel extends Table {
 	public void sendCommand(){
 		String cmd = command.getText();
 		sendCommand(cmd);
-		command.setText("\\");
-		command.setCursorPosition(1);
+		command.setText("");
+		command.setCursorPosition(0);
 	}
 	
 	public void pushHistory(String cmd){
@@ -133,6 +134,7 @@ public class CommandHubPanel extends Table {
 	
 	public void sendCommand(String cmd){
 		pushHistory(cmd);
+		
 		commandHub.processCommand(cmd);
 	}
 	public Skin getSkin() {

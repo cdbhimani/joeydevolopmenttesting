@@ -13,4 +13,8 @@ public class ServerStatusCommand extends ServerCommand {
 		server.logStatus();
 	}
 
+	@Override
+	public String getCommandHelp() {
+		return "Logs the status of the current server : status";
+	}
 }

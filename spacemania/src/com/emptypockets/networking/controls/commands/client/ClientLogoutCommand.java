@@ -13,4 +13,9 @@ public class ClientLogoutCommand extends ClientCommand {
 		client.serverLogout();
 	}
 
+	@Override
+	public String getCommandHelp() {
+		return "Logs a user out of a server : logout";
+	}
+
 }

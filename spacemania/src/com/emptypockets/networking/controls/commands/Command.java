@@ -8,6 +8,7 @@ public abstract class Command {
 		this.name = name;
 	}
 
+	public abstract String getCommandHelp();
 	public abstract void proceeArg(String data);
 
 	public String getName() {
