@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.emptyPockets.graphics.GraphicsToolkit;
 import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.gui.StageScreen;
+import com.emptyPockets.logging.Console;
 import com.emptyPockets.logging.ConsoleScreen;
 import com.emptyPockets.utils.OrthoCamController;
 import com.emptypockets.networking.client.ClientManager;
@@ -83,7 +84,7 @@ public class ClientScreen extends StageScreen implements Runnable {
 
 	@Override
 	public void createStage(Stage stage) {
-		int insetSize = ScreenSizeHelper.getcmtoPxlX(0.7f);
+		final int insetSize = ScreenSizeHelper.getcmtoPxlX(0.7f);
 		int touchPadSize = ScreenSizeHelper.getcmtoPxlX(2);
 
 		showConsole = new TextButton("C", getSkin());
@@ -121,8 +122,10 @@ public class ClientScreen extends StageScreen implements Runnable {
 
 		Table inset = new Table();
 		inset.row();
-		inset.add(client.getCommand().getPanel()).fillX().expandX().colspan(3);
-
+		inset.add();
+		inset.add().height(insetSize).expandX().fillX();
+		inset.add(showConsole).fill().width(insetSize).height(insetSize);
+		
 		inset.row();
 		inset.add().width(insetSize).expandY().fillY();
 		inset.add(layout).fill().expand();
@@ -131,19 +134,21 @@ public class ClientScreen extends StageScreen implements Runnable {
 		inset.row();
 		inset.add();
 		inset.add().height(insetSize).expandX().fillX();
-		inset.add(showConsole).fill().width(insetSize).height(insetSize);
+		inset.add();
+		
 		inset.setFillParent(true);
 		stage.addActor(inset);
-		stage.addActor(console);
-		console.setVisible(false);
-		console.setKeepWithinStage(false);
+		stage.addActor(client.getCommand().getPanel());
+		client.getCommand().getPanel().setVisible(false);
+		
 		
 		showConsole.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				console.setVisible(!console.isVisible());
-				console.setSize(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
-				console.invalidate();
+				client.getCommand().getPanel().setVisible(!client.getCommand().getPanel().isVisible());
+				client.getCommand().getPanel().setPosition(0, 0);
+				client.getCommand().getPanel().setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()-insetSize);
+				Console.print("HELLO");
 			}
 		});
 	}
