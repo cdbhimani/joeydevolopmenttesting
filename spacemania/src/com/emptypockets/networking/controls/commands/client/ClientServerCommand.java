@@ -21,7 +21,7 @@ public class ClientServerCommand extends ClientCommand {
 
 	@Override
 	public String getCommandHelp() {
-		return "";
+		return "This issues commands to the clients local server (see server help) : server [arg] ";
 	}
 
 }

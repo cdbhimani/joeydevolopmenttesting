@@ -59,4 +59,18 @@ public class CommandHub extends Listener {
 		}
 		return panel;
 	}
+
+	public void logAllHelps() {
+		synchronized (commands) {
+			int maxLength = 0;
+			for(String name : commands.keySet()){
+				if(name.length() > maxLength){
+					maxLength = name.length();
+				}
+			}
+			for(String name : commands.keySet()){
+				Console.printf(" %"+maxLength+"s : %s\n", name, commands.get(name).getCommandHelp());
+			}
+		}
+	}
 }

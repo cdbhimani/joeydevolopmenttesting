@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-public class ConsoleScreen extends Window{
+public class ConsoleScreen extends Window implements ConsoleListener{
 	Label label;
 	ScrollPane scroll;
 	StringBuffer console;

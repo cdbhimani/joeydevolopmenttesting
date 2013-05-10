@@ -1,10 +1,13 @@
 package com.emptypockets.networking.client;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.List;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.emptyPockets.logging.Console;
 import com.emptypockets.engine.Engine;
 import com.emptypockets.engine.MovingEntity;
 import com.emptypockets.networking.controls.CommandHub;
@@ -51,7 +54,18 @@ public class ClientManager extends Listener {
 	public void connect(String address, int tcpPort, int udpPort) throws IOException {
 		client.connect(20000, address, tcpPort, udpPort);
 	}
-
+	
+	public void listStatus(){
+		Console.println("Connected : "+client.isConnected());
+	}
+	public void listNetworkServers(int udpPort, int timeoutSec){
+		Console.println("Searching for hosts");
+		List<InetAddress> hosts = client.discoverHosts(udpPort, timeoutSec*1000);
+		Console.println("Found : "+hosts.size());
+		for(InetAddress host : hosts){
+			Console.println("Host : "+host.getHostName());
+		}
+	}
 	public void stop() {
 		client.close();
 	}

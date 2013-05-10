@@ -19,7 +19,7 @@ public class CommandHubHelpCommand extends CommandHubCommand{
 	@Override
 	public void proceeArg(String data) {
 		if(data == null || data.length() == 0){
-			
+			commandHub.logAllHelps();
 		}else{
 			Command command = commandHub.getCommand(data);
 			if(command == null){

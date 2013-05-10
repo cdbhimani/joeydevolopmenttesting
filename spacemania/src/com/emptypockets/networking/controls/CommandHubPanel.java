@@ -7,25 +7,29 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.emptyPockets.graphics.GraphicsToolkit;
 import com.emptyPockets.gui.Scene2DToolkit;
 import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.logging.Console;
-import com.emptypockets.client.ClientScreen;
+import com.emptyPockets.logging.ConsoleListener;
 import com.emptypockets.networking.log.ServerLogger;
 
-public class CommandHubPanel extends Table {
+public class CommandHubPanel extends Table implements ConsoleListener{
+	int characterLimit = 3000;
 	Skin skin;
 	TextField command;
 	TextButton prevCommand;
 	TextButton nextCommand;
 	TextButton sendButton;
-	
+	Label consoleText;
+	StringBuffer console;
+	ScrollPane scroll;
 	CommandHub commandHub;
 
 
@@ -38,15 +42,22 @@ public class CommandHubPanel extends Table {
 		super(Scene2DToolkit.getToolkit().getSkin());
 		this.commandHub = commandHub;
 		createPanel();
+		console = new StringBuffer();
+		Console.register(this);
 	}
 
 	public void createPanel() {
+		
 		command = new TextField("", getSkin());
 		sendButton = new TextButton("Send", getSkin());
 		prevCommand = new TextButton("-", getSkin());
 		nextCommand = new TextButton("+", getSkin());
+		consoleText = new Label("", getSkin());
+		scroll = new ScrollPane(consoleText, getSkin());
 		
 		float size = ScreenSizeHelper.getcmtoPxlX(1);
+		row();
+		add(scroll).colspan(4).expand().fill();
 		row();
 		add(prevCommand).height(size).width(size/2);
 		add(nextCommand).height(size).width(size/2);
@@ -139,5 +150,26 @@ public class CommandHubPanel extends Table {
 	}
 	public Skin getSkin() {
 		return Scene2DToolkit.getToolkit().getSkin();
+	}
+
+	public void print(String message){
+		console.append(message);
+		if(console.length() > characterLimit){
+			int toRemove = console.length()-characterLimit;
+			console.delete(0, toRemove);
+			console.setLength(characterLimit);
+		}
+		consoleText.setText(console);
+		scroll.setScrollbarsOnTop(true);
+		scroll.validate();
+		scroll.setScrollPercentY(100);
+	}
+	
+	public void println(String message){
+		print(message+"\n");
+	}
+	
+	public void printf(String message, Object... values){
+		print(String.format(message, values));
 	}
 }
