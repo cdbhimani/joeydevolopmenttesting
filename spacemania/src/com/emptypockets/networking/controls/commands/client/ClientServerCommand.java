@@ -6,10 +6,11 @@ public class ClientServerCommand extends ClientCommand {
 
 	public ClientServerCommand(ClientManager client) {
 		super("server", client);
+		setDescription("This issues commands to the clients local server (see server help) : server [arg] ");
 	}
 
 	@Override
-	public void proceeArg(String data) {
+	public void exec(String data) {
 		if(data != null && data.startsWith("setup")){
 			String arg[] = data.split(" ");
 			int count = Integer.parseInt(arg[1]);
@@ -17,11 +18,6 @@ public class ClientServerCommand extends ClientCommand {
 		}else{
 			client.getServerManager().getCommand().processCommand(data);
 		}
-	}
-
-	@Override
-	public String getCommandHelp() {
-		return "This issues commands to the clients local server (see server help) : server [arg] ";
 	}
 
 }

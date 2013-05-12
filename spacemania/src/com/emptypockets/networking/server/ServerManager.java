@@ -2,20 +2,24 @@ package com.emptypockets.networking.server;
 
 import java.io.IOException;
 
+import com.emptyPockets.commandline.CommandLine;
+import com.emptyPockets.logging.Console;
 import com.emptypockets.engine.Engine;
-import com.emptypockets.networking.controls.CommandHub;
 import com.emptypockets.networking.controls.CommandService;
 import com.emptypockets.networking.log.ServerLogger;
 import com.emptypockets.networking.transfer.ClientLoginRequest;
 import com.emptypockets.networking.transfer.ClientLogoutRequest;
 import com.emptypockets.networking.transfer.ClientStateTransferObject;
+import com.emptypockets.networking.transfer.LoginFailedResponse;
+import com.emptypockets.networking.transfer.LoginSucessfulResponse;
 import com.emptypockets.networking.transfer.NetworkProtocall;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
 public class ServerManager extends Listener implements Runnable {
-	public static final int DEFAULT_SERVER_UPDATE = 30;
+	int clientCount= 0;
+	public static final int DEFAULT_SERVER_UPDATE = 10;
 	String name = "Server";
 	Server server;
 	long lastEngineUpdate = 0;
@@ -24,18 +28,19 @@ public class ServerManager extends Listener implements Runnable {
 	Thread thread;
 	int maxUpdateCount = 0;
 	boolean alive = false;
-	CommandHub command;
+	CommandLine command;
 	int udpPort = 8081;
 	int tcpPort = 8080;
 
-	public ServerManager(){
+	public ServerManager() {
 		this(DEFAULT_SERVER_UPDATE);
 	}
+
 	public ServerManager(int maxUpdateCount) {
 		setMaxUpdateCount(maxUpdateCount);
 		setupServer();
 		engine = new Engine();
-		command = new CommandHub();
+		command = new CommandLine();
 		CommandService.registerServer(this);
 		NetworkProtocall.register(server.getKryo());
 	}
@@ -44,6 +49,7 @@ public class ServerManager extends Listener implements Runnable {
 		server = new Server() {
 			@Override
 			protected Connection newConnection() {
+				Console.println("Connection Recieved");
 				return new ClientConnection();
 			}
 		};
@@ -52,6 +58,7 @@ public class ServerManager extends Listener implements Runnable {
 	}
 
 	public void start() throws IOException {
+		Console.printf("Starting Server [%d,%d]\n", tcpPort, udpPort);
 		server.bind(tcpPort, udpPort);
 		thread = new Thread(this);
 		alive = true;
@@ -60,28 +67,34 @@ public class ServerManager extends Listener implements Runnable {
 	}
 
 	public void stop() {
+		Console.println("Stopping Server");
 		server.stop();
 		alive = false;
 		thread = null;
 	}
 
 	public void clientExit(String name) {
-		ServerLogger.info(name, "Client Exit : "+name);
+		Console.println("Client Exit : "+name);
+		ServerLogger.info(name, "Client Exit : " + name);
 		synchronized (engine) {
 			engine.removeEntity(name);
 		}
 	}
 
-	public void clientJoin(String name) {
-		ServerLogger.info(name, "Client Join : "+name);
+	public int clientJoin(String name) {
+		Console.println("Client Join : "+name);
+		ServerLogger.info(name, "Client Join : " + name);
+		int id;
 		synchronized (engine) {
-			engine.addEntity(name);
+			id=clientCount++;
+			engine.addEntity(id,name);
 		}
+		return id;
 	}
 
 	private void clientStateRecieved(String name, ClientStateTransferObject object) {
 		synchronized (engine) {
-			engine.updateEntityVel(name, object.velX, object.velY);
+			engine.updateEntityVel(name, object.valueX, object.valueY);
 		}
 	}
 
@@ -108,20 +121,58 @@ public class ServerManager extends Listener implements Runnable {
 
 	public void broadcast() {
 		synchronized (engine) {
-			server.sendToAllTCP(engine);
+			Connection[] con = server.getConnections();
+			for (int i = 0; i < con.length; i++) {
+				if (con[i] instanceof ClientConnection) {
+					ClientConnection c = (ClientConnection) con[i];
+					if(c.username != null){
+						c.sendUDP(engine);
+					}
+				}
+			}
+//			server.sendToAllTCP(engine);
 		}
 	}
 
+	public ClientConnection isUserConnected(String userName) {
+		Connection[] con = server.getConnections();
+		for (int i = 0; i < con.length; i++) {
+			if (con[i] instanceof ClientConnection) {
+				ClientConnection c = (ClientConnection) con[i];
+				if (c.getUsername()!= null && userName != null && c.getUsername().equalsIgnoreCase(userName)) {
+					return c;
+				}
+			}
+		}
+		return null;
+	}
+
 	@Override
-	public void received(Connection connection, Object object) {
-		super.received(connection, object);
+	public void received(Connection newConnection, Object object) {
+		super.received(newConnection, object);
 		if (object instanceof ClientStateTransferObject) {
-			clientStateRecieved(((ClientConnection) connection).getUsername(), (ClientStateTransferObject) object);
+			clientStateRecieved(((ClientConnection) newConnection).getUsername(), (ClientStateTransferObject) object);
 		} else if (object instanceof ClientLoginRequest) {
-			((ClientConnection) connection).setUsername(((ClientLoginRequest)object).getUsername());
-			clientJoin(((ClientLoginRequest)object).getUsername());
-		}else if (object instanceof ClientLogoutRequest) {
-			clientExit(((ClientLogoutRequest)object).getUsername());
+			ClientLoginRequest req = ((ClientLoginRequest) object);
+			ClientConnection con = isUserConnected(req.getUsername());
+			if (con == null) {
+				//Login user
+				con = ((ClientConnection) newConnection);
+				con.setUsername(req.getUsername());
+				
+				clientJoin(req.getUsername());
+				
+				LoginSucessfulResponse resp = new LoginSucessfulResponse();
+				resp.setServerClientid(con.getID());
+				newConnection.sendTCP(resp);
+			}else{
+				Console.println("User ["+req.getUsername()+"] attempted to connect while already connected");
+				LoginFailedResponse resp = new LoginFailedResponse();
+				resp.setRejectionReason("User already logged in");
+				newConnection.sendTCP(resp);
+			}
+		} else if (object instanceof ClientLogoutRequest) {
+			clientExit(((ClientLogoutRequest) object).getUsername());
 		}
 	}
 
@@ -129,6 +180,7 @@ public class ServerManager extends Listener implements Runnable {
 	public void run() {
 		long diff;
 		float desired;
+		Console.println("Starting started");
 		while (alive) {
 			lastBroadcase = System.currentTimeMillis();
 			update();
@@ -144,18 +196,19 @@ public class ServerManager extends Listener implements Runnable {
 		}
 	}
 
-	public void logStatus(){
-		ServerLogger.info(name, "Server Running ["+alive+"] Connected ["+server.getConnections().length+"]");
+	public void logStatus() {
+		ServerLogger.info(name, "Server Running [" + alive + "] Connected [" + server.getConnections().length + "]");
 	}
+
 	public void setMaxUpdateCount(int maxUpdateCount) {
 		this.maxUpdateCount = maxUpdateCount;
 	}
 
-	public CommandHub getCommand() {
+	public CommandLine getCommand() {
 		return command;
 	}
 
-	public void setCommand(CommandHub command) {
+	public void setCommand(CommandLine command) {
 		this.command = command;
 	}
 
@@ -166,7 +219,7 @@ public class ServerManager extends Listener implements Runnable {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public int getTcpPort() {
 		return tcpPort;
 	}

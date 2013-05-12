@@ -16,5 +16,7 @@ public class NetworkProtocall {
 		kryo.register(ClientLoginRequest.class);
 		kryo.register(ClientLogoutRequest.class);
 		kryo.register(ClientStateTransferObject.class);
+		kryo.register(LoginFailedResponse.class);
+		kryo.register(LoginSucessfulResponse.class);
 	}
 }

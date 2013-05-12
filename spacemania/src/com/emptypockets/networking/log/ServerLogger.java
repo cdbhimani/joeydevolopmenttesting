@@ -282,7 +282,6 @@ public class ServerLogger {
 		 * implementation of {@link #log(int, String, String, Throwable)}.
 		 */
 		protected void print(String message) {
-			System.out.println(message);
 			Console.println(message);
 			synchronized (listeners) {
 				for (LogListener listener : listeners) {

@@ -6,16 +6,11 @@ public class ClientLogoutCommand extends ClientCommand {
 
 	public ClientLogoutCommand(ClientManager client) {
 		super("logout", client);
+		setDescription("Logs a user out of a server : logout");
 	}
 
 	@Override
-	public void proceeArg(String data) {
+	public void exec(String data) {
 		client.serverLogout();
 	}
-
-	@Override
-	public String getCommandHelp() {
-		return "Logs a user out of a server : logout";
-	}
-
 }

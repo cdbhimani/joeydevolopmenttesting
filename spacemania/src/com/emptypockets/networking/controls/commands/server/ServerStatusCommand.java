@@ -6,15 +6,11 @@ public class ServerStatusCommand extends ServerCommand {
 
 	public ServerStatusCommand(ServerManager nodes) {
 		super("status", nodes);
+		setDescription("Logs the status of the current server : status");
 	}
 
 	@Override
-	public void proceeArg(String data) {
+	public void exec(String data) {
 		server.logStatus();
-	}
-
-	@Override
-	public String getCommandHelp() {
-		return "Logs the status of the current server : status";
 	}
 }

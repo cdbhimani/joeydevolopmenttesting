@@ -8,6 +8,9 @@ import com.esotericsoftware.minlog.Log;
 
 public class SpaceManiaDesktop {
 	public static void main(String[] args) {
+		ServerLogger.INFO();
+		Log.INFO();
+		
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "spacemania";
 		cfg.useGL20 = false;

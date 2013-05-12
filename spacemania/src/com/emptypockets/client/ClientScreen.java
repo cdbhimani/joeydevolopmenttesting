@@ -23,11 +23,15 @@ import com.emptyPockets.gui.StageScreen;
 import com.emptyPockets.logging.Console;
 import com.emptyPockets.logging.ConsoleScreen;
 import com.emptyPockets.utils.OrthoCamController;
+import com.emptypockets.engine.MovingEntity;
 import com.emptypockets.networking.client.ClientManager;
 import com.emptypockets.networking.server.ServerManager;
 import com.emptypockets.networking.transfer.ClientStateTransferObject;
 
 public class ClientScreen extends StageScreen implements Runnable {
+	final int insetSize = ScreenSizeHelper.getcmtoPxlX(0.7f);
+	int touchPadSize = ScreenSizeHelper.getcmtoPxlX(2);
+	
 	ClientStateTransferObject state;
 	ConsoleScreen console;
 	Touchpad touchPad;
@@ -78,15 +82,12 @@ public class ClientScreen extends StageScreen implements Runnable {
 	}
 
 	public void updateState(ClientStateTransferObject state) {
-		state.velX = touchPad.getKnobPercentX();
-		state.velY = touchPad.getKnobPercentY();
+		state.valueX = touchPad.getKnobPercentX();
+		state.valueY = touchPad.getKnobPercentY();
 	}
 
 	@Override
 	public void createStage(Stage stage) {
-		final int insetSize = ScreenSizeHelper.getcmtoPxlX(0.7f);
-		int touchPadSize = ScreenSizeHelper.getcmtoPxlX(2);
-
 		showConsole = new TextButton("C", getSkin());
 		touchPad = new Touchpad(0, getSkin());
 		
@@ -141,21 +142,59 @@ public class ClientScreen extends StageScreen implements Runnable {
 		stage.addActor(client.getCommand().getPanel());
 		client.getCommand().getPanel().setVisible(false);
 		
-		
 		showConsole.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				client.getCommand().getPanel().setVisible(!client.getCommand().getPanel().isVisible());
-				client.getCommand().getPanel().setPosition(0, 0);
-				client.getCommand().getPanel().setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()-insetSize);
-				Console.print("HELLO");
+				updateCommandScreenSize();
 			}
 		});
 	}
 
+	public void updateCommandScreenSize(){
+		client.getCommand().getPanel().setPosition(0, 0);
+		client.getCommand().getPanel().setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()-insetSize);
+		client.getCommand().getPanel().invalidate();
+	}
+	@Override
+	public void resize(int width, int height) {
+		super.resize(width, height);
+		updateCommandScreenSize();
+	}
 	@Override
 	public void initializeRender() {
 		super.initializeRender();
+		MovingEntity me = client.getEntity(client.getUsername());
+		if(me != null){
+//			float insetX =getScreenCamera().viewportWidth/10;
+//			float insetY = getScreenCamera().viewportHeight/10;
+//			
+//			
+//			float minX = getScreenCamera().position.x-getScreenCamera().viewportWidth/2+insetX;
+//			float maxX = getScreenCamera().position.x+getScreenCamera().viewportWidth/2-insetX;
+//			float diffX = 0;
+//			if(me.posX() < minX){
+//				diffX = me.posX()-minX;
+//			}else if(me.posX() > maxX){
+//				diffX = me.posX()-maxX;
+//			}
+//			
+//			float diffY = 0;
+//			float minY = getScreenCamera().position.y-getScreenCamera().viewportHeight/2+insetY;
+//			float mayY = getScreenCamera().position.y+getScreenCamera().viewportHeight/2-insetY;
+//			if(me.posY() < minY){
+//				diffY = me.posY()-minY;
+//			}else if(me.posY() > mayY){
+//				diffY = me.posY()-mayY;
+//			}
+//			
+//			getScreenCamera().position.x += diffX;
+//			getScreenCamera().position.y += diffY;
+			
+			getScreenCamera().position.x = me.posX();
+			getScreenCamera().position.y = me.posY();
+			
+		}
 		shape.setProjectionMatrix(getScreenCamera().combined);
 	}
 
@@ -193,8 +232,8 @@ public class ClientScreen extends StageScreen implements Runnable {
 			try {
 				if (touchPad != null) {
 					float vel = 50;
-					state.velX = touchPad.getKnobPercentX() * vel;
-					state.velY = touchPad.getKnobPercentY() * vel;
+					state.valueX = touchPad.getKnobPercentX() * vel;
+					state.valueY = touchPad.getKnobPercentY() * vel;
 					client.send(state);
 				}
 				Thread.sleep(100);

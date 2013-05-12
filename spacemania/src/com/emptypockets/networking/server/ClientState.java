@@ -17,8 +17,8 @@ public class ClientState {
 	}
 	public void clientDataRecieved(ClientStateTransferObject data){
 		if(lastClientTime < data.time){
-			vel.x = data.velX;
-			vel.y = data.velY;
+			vel.x = data.valueX;
+			vel.y = data.valueY;
 			lastClientTime = data.time;
 		}
 	}

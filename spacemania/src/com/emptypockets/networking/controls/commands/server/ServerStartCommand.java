@@ -12,7 +12,7 @@ public class ServerStartCommand extends ServerCommand {
 	}
 
 	@Override
-	public void proceeArg(String data) {
+	public void exec(String data) {
 		try {
 			if (data != null) {
 				String args[] = data.split(",");
@@ -43,10 +43,4 @@ public class ServerStartCommand extends ServerCommand {
 			e.printStackTrace();
 		}
 	}
-	
-	@Override
-	public String getCommandHelp() {
-		return "";
-	}
-
 }
