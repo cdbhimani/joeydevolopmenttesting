@@ -1,5 +1,6 @@
 package com.emptypockets.networking;
 
-public class ServerState {
+import java.util.ArrayList;
 
+public class ServerState {
 }

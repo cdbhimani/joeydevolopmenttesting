@@ -9,10 +9,11 @@ public class ClientConnectCommand extends ClientCommand {
 
 	public ClientConnectCommand(ClientManager client) {
 		super("connect", client);
+		setDescription("Connects to a remote server : connect [tcpPort,udpPort]");
 	}
 
 	@Override
-	public void proceeArg(String data) {
+	public void exec(String data) {
 		try {
 			if (data != null) {
 				String arg[] = data.split(",");
@@ -31,9 +32,5 @@ public class ClientConnectCommand extends ClientCommand {
 		}
 	}
 
-	@Override
-	public String getCommandHelp() {
-		return "Connects to a remote server : connect [tcpPort,udpPort]";
-	}
 
 }

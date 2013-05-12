@@ -1,6 +1,6 @@
 package com.emptypockets.networking.controls.commands.server;
 
-import com.emptypockets.networking.controls.commands.Command;
+import com.emptyPockets.commandline.Command;
 import com.emptypockets.networking.server.ServerManager;
 
 public abstract class ServerCommand extends Command {

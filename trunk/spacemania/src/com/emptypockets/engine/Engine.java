@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Engine {
 	int tick = 0;
 	ArrayList<MovingEntity> entities = new ArrayList<MovingEntity>();
-
+	
 	public void update(float time) {
 		synchronized (entities) {
 			for (MovingEntity e : entities) {
@@ -22,7 +22,7 @@ public class Engine {
 		synchronized (entities) {
 			MovingEntity ent = getEntity(name);
 			if (ent != null) {
-				ent.setVel(velX, velY);
+				ent.setAcl(velX, velY);
 			}
 		}
 	}
@@ -38,8 +38,20 @@ public class Engine {
 			return ent;
 		}
 	}
+	
+	public MovingEntity getEntity(int id) {
+		synchronized (entities) {
+			MovingEntity ent = null;
+			for (MovingEntity e : entities) {
+				if (e.getId()==id) {
+					ent = e;
+				}
+			}
+			return ent;
+		}
+	}
 
-	public void addEntity(String name) {
+	public void addEntity(int id, String name) {
 		MovingEntity ent = new MovingEntity();
 		ent.setName(name);
 		addEntity(ent);
@@ -54,6 +66,14 @@ public class Engine {
 		}
 	}
 
+	public void removeEntity(int id) {
+		synchronized (entities) {
+			MovingEntity ent = getEntity(id);
+			if (ent != null) {
+				entities.remove(ent);
+			}
+		}
+	}
 	public void addEntity(MovingEntity ent) {
 		synchronized (entities) {
 			entities.add(ent);
