@@ -16,7 +16,7 @@ public class EventRecorder {
 	HashMap<String, Event> currentEvents = new HashMap<String, Event>();
 	HashMap<String, EventHistory> historicEvents = new HashMap<String, EventHistory>(); 
 	
-	EventTimerAccuracy accuracy = EventTimerAccuracy.MILLI_TIME;
+	EventTimerAccuracy accuracy = EventTimerAccuracy.NANO_TIME;
 	
 	public EventRecorder(){
 	}
@@ -62,8 +62,9 @@ public class EventRecorder {
 		return hist.getCount();
 	}
 	public synchronized void end(String key){
-		Event event = currentEvents.remove(key);
+		Event event = currentEvents.get(key);
 		event.end();
+		currentEvents.remove(key);
 		historicEvents.get(key).add(event);
 	}
 
