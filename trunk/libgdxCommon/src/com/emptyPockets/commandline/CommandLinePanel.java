@@ -20,6 +20,7 @@ import com.emptyPockets.logging.Console;
 import com.emptyPockets.logging.ConsoleListener;
 
 public class CommandLinePanel extends Table implements ConsoleListener{
+	static final float touchSize = ScreenSizeHelper.getcmtoPxlX(1);
 	int characterLimit = 3000;
 	Skin skin;
 	TextField command;
@@ -54,12 +55,11 @@ public class CommandLinePanel extends Table implements ConsoleListener{
 		consoleText = new Label("", getSkin());
 		scroll = new ScrollPane(consoleText, getSkin());
 		
-		float size = ScreenSizeHelper.getcmtoPxlX(1);
 		row();
-		add(prevCommand).height(size).width(size/2);
-		add(nextCommand).height(size).width(size/2);
-		add(command).expandX().fillX().height(size);
-		add(sendButton).height(size).width(size);
+		add(prevCommand).height(touchSize).width(touchSize/2);
+		add(nextCommand).height(touchSize).width(touchSize/2);
+		add(command).expandX().fillX().height(touchSize);
+		add(sendButton).height(touchSize).width(touchSize);
 		row();
 		add(scroll).colspan(4).expand().fill();
 		prevCommand.addListener(new ChangeListener() {
