@@ -1,4 +1,4 @@
-package com.emptyPockets.backgrounds.grid;
+package com.emptyPockets.backgrounds.grid2D;
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -8,34 +8,28 @@ public class DualNodeLink extends NodeLink{
 	float stiffness;
 	float damping;
 	float initialDist;
-
+	NodeLinkSettings cfg;
 	Vector2 temp = new Vector2();
 	float currentDist;
 
-	public DualNodeLink(Node nodeA, Node nodeB, float stiffness, float damping){
+	public DualNodeLink(Node nodeA, Node nodeB, NodeLinkSettings cfg){
 		this.nodeA = nodeA;
 		this.nodeB = nodeB;
 		this.initialDist = nodeB.pos.dst(nodeA.pos);
-		this.stiffness = stiffness;
-		this.damping = damping;
+		this.cfg = cfg;
 	}
 
 	public void solve(){
 		temp.x = nodeB.pos.x-nodeA.pos.x;
 		temp.y = nodeB.pos.y-nodeA.pos.y;
 		currentDist = temp.len();
-		if(currentDist <= initialDist){
+		
+		if(currentDist < 0.01f){
 			return;
 		}
-		if(currentDist < 1e-4f){
-			temp.x = 0;
-			temp.y = 0;
-		}else{
-			temp.mul((initialDist-currentDist)/currentDist);
-		}
-		
-		temp.x = temp.x*stiffness-(nodeA.vel.x-nodeB.vel.x)*damping;
-		temp.y = temp.y*stiffness-(nodeA.vel.y-nodeB.vel.y)*damping;
+		temp.mul((initialDist-currentDist)/currentDist);
+		temp.x = temp.x*cfg.stiffness-(nodeB.vel.x-nodeA.vel.x)*cfg.damping;
+		temp.y = temp.y*cfg.stiffness-(nodeB.vel.y-nodeA.vel.y)*cfg.damping;
 		
 		nodeB.applyForce(temp);
 		temp.mul(-1);

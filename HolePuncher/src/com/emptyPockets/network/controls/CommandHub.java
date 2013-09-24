@@ -1,13 +1,13 @@
-package com.emptypockets.network.controls;
+package com.emptyPockets.network.controls;
 
 import java.util.HashMap;
 
-import com.emptypockets.network.controls.commands.Command;
-import com.emptypockets.network.log.ServerLogger;
-import com.emptypockets.network.server.NetworkConnection;
-import com.emptypockets.network.server.NetworkNode;
-import com.emptypockets.network.server.NetworkNodeListenerAdapter;
-import com.emptypockets.network.transport.RemoteMessage;
+import com.emptyPockets.network.controls.commands.Command;
+import com.emptyPockets.network.log.ServerLogger;
+import com.emptyPockets.network.server.NetworkConnection;
+import com.emptyPockets.network.server.NetworkNode;
+import com.emptyPockets.network.server.NetworkNodeListenerAdapter;
+import com.emptyPockets.network.transport.RemoteMessage;
 
 public class CommandHub extends NetworkNodeListenerAdapter {
 	HashMap<String, Command> commands;

@@ -1,7 +1,7 @@
-package com.emptypockets.network.connection;
+package com.emptyPockets.network.connection;
 
-import com.emptypockets.network.log.ServerLogger;
-import com.emptypockets.network.transport.TransportObject;
+import com.emptyPockets.network.log.ServerLogger;
+import com.emptyPockets.network.transport.TransportObject;
 
 
 public class TransferObjectPrinter implements UDPConnectionListener {

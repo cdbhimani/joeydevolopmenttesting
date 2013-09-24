@@ -1,8 +1,8 @@
 package com.emptyPockets.utils.event;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -77,10 +77,12 @@ public class EventRecorder {
 	}
 
 	public void draw(SpriteBatch textBatch, BitmapFont font, float x, float y, float yOff) {
-		textBatch.begin();
-		Set<String> event = historicEvents.keySet();
+		
+		ArrayList<String> event = new ArrayList<String>(historicEvents.keySet());
+		Collections.sort(event, Collections.reverseOrder());
+		
 		font.setColor(Color.RED);
-		int count=0;
+		int count=1;
 		
 		int length = 0;
 		for(String key : event){
@@ -88,10 +90,10 @@ public class EventRecorder {
 				length = key.length();
 			}
 		}
+		length = 1;
 		for(String key : event){
-			font.draw(textBatch, String.format("%"+length+"s : %f", key,historicEvents.get(key).getAverageDurationMS()), x, y+(count++*yOff));
+			font.draw(textBatch, String.format("%"+length+"s : %1.2f", key,historicEvents.get(key).getAverageDurationMS()), x, y+(count++*yOff));
 		}
-		textBatch.end();
 	}
 	
 	

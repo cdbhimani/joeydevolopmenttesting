@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.emptyPockets.commandline.CommandLine;
 import com.emptyPockets.logging.Console;
 import com.emptypockets.engine.Engine;
+import com.emptypockets.networking.NetworkProperties;
 import com.emptypockets.networking.controls.CommandService;
 import com.emptypockets.networking.log.ServerLogger;
 import com.emptypockets.networking.transfer.ClientLoginRequest;
@@ -29,8 +30,8 @@ public class ServerManager extends Listener implements Runnable {
 	int maxUpdateCount = 0;
 	boolean alive = false;
 	CommandLine command;
-	int udpPort = 8081;
-	int tcpPort = 8080;
+	int udpPort = NetworkProperties.udpPort;
+	int tcpPort = NetworkProperties.tcpPort;
 
 	public ServerManager() {
 		this(DEFAULT_SERVER_UPDATE);

@@ -56,17 +56,17 @@ public abstract class StageScreen extends GameScreen {
 	@Override
 	public void renderScreen(float delta) {
 		super.renderScreen(delta);
-		eventLogger.begin("Stage Draw");
+		eventLogger.begin("RENDER-stage");
 		drawStage(delta);
-		eventLogger.end("Stage Draw");
+		eventLogger.end("RENDER-stage");
 	}
 	
 	@Override
 	public void updateLogic(float delta) {
 		super.updateLogic(delta);
-		eventLogger.begin("Stage Logic");
+		eventLogger.begin("LOGIC-Stage");
 		getStage().act(delta);
-		eventLogger.end("Stage Logic");
+		eventLogger.end("LOGIC-Stage");
 	}
 	
 	public void drawStage(float delta) {

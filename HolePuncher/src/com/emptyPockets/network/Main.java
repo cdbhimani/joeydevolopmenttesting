@@ -1,15 +1,15 @@
-package com.emptypockets.network;
+package com.emptyPockets.network;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Scanner;
 
-import com.emptypockets.network.log.LogListener;
-import com.emptypockets.network.log.ServerLogger;
-import com.emptypockets.network.server.NetworkConnection;
-import com.emptypockets.network.server.NetworkNode;
-import com.emptypockets.network.server.NetworkNodeListenerAdapter;
-import com.emptypockets.network.server.NodeNotFoundException;
+import com.emptyPockets.network.log.LogListener;
+import com.emptyPockets.network.log.ServerLogger;
+import com.emptyPockets.network.server.NetworkConnection;
+import com.emptyPockets.network.server.NetworkNode;
+import com.emptyPockets.network.server.NetworkNodeListenerAdapter;
+import com.emptyPockets.network.server.NodeNotFoundException;
 
 public class Main {
 

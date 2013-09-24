@@ -1,4 +1,4 @@
-package com.emptypockets.network.log;
+package com.emptyPockets.network.log;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

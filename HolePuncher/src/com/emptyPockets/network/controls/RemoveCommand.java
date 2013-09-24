@@ -1,4 +1,4 @@
-package com.emptypockets.network.controls;
+package com.emptyPockets.network.controls;
 
 public class RemoveCommand {
 	String command;

@@ -1,4 +1,4 @@
-package com.emptypockets.network.connection;
+package com.emptyPockets.network.connection;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -8,12 +8,12 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.emptypockets.network.PacketUtils;
-import com.emptypockets.network.log.ServerLogger;
-import com.emptypockets.network.server.NetworkConnection;
-import com.emptypockets.network.server.NetworkNode;
-import com.emptypockets.network.transport.NetworkTransferManager;
-import com.emptypockets.network.transport.TransportObject;
+import com.emptyPockets.network.PacketUtils;
+import com.emptyPockets.network.log.ServerLogger;
+import com.emptyPockets.network.server.NetworkConnection;
+import com.emptyPockets.network.server.NetworkNode;
+import com.emptyPockets.network.transport.NetworkTransferManager;
+import com.emptyPockets.network.transport.TransportObject;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;

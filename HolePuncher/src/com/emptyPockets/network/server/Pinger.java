@@ -1,8 +1,8 @@
-package com.emptypockets.network.server;
+package com.emptyPockets.network.server;
 
-import com.emptypockets.network.DataAverager;
-import com.emptypockets.network.log.ServerLogger;
-import com.emptypockets.network.transport.FrameworkMessages.Ping;
+import com.emptyPockets.network.DataAverager;
+import com.emptyPockets.network.log.ServerLogger;
+import com.emptyPockets.network.transport.FrameworkMessages.Ping;
 
 public class Pinger {
 	long maxTimeout;

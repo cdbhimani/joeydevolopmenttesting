@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.emptyPockets.logging.Console;
 import com.emptyPockets.logging.ConsoleScreen;
 import com.emptyPockets.network.Network;
-import com.emptyPockets.network.ServerDiscovery;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -92,7 +91,7 @@ public class NetworkScreen extends StageScreen{
 	
 	public void startClient(){
 		Console.println("Starting Client");
-		ServerDiscovery.findServer(getStage(), client, Network.getNetwork().tcpPort,Network.getNetwork().udpPort, Network.getNetwork().discoveryTimeout, Network.getNetwork().connectionTimeout);
+//		ServerDiscovery.findServer(getStage(), client, Network.getNetwork().tcpPort,Network.getNetwork().udpPort, Network.getNetwork().discoveryTimeout, Network.getNetwork().connectionTimeout);
 		Console.println("Finished Client");
 	}
 

@@ -1,6 +1,6 @@
-package com.emptypockets.network.controls.commands.networknode;
+package com.emptyPockets.network.controls.commands.networknode;
 
-import com.emptypockets.network.server.NetworkNode;
+import com.emptyPockets.network.server.NetworkNode;
 
 public class ServerListCommand extends NetworkNodeCommand {
 
