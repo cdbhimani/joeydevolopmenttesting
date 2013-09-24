@@ -3,22 +3,20 @@ package com.emptyPockets.backgrounds.grid2D;
 import com.badlogic.gdx.math.Vector2;
 
 public class DualNodeLink extends NodeLink{
-	Node nodeA;
-	Node nodeB;
-	float stiffness;
-	float damping;
+	GridNode nodeA;
+	GridNode nodeB;
 	float initialDist;
 	NodeLinkSettings cfg;
 	Vector2 temp = new Vector2();
 	float currentDist;
 
-	public DualNodeLink(Node nodeA, Node nodeB, NodeLinkSettings cfg){
+	public DualNodeLink(GridNode nodeA, GridNode nodeB, NodeLinkSettings cfg){
 		this.nodeA = nodeA;
 		this.nodeB = nodeB;
-		this.initialDist = nodeB.pos.dst(nodeA.pos);
 		this.cfg = cfg;
+		updateRestPos();
 	}
-
+	
 	public void solve(){
 		temp.x = nodeB.pos.x-nodeA.pos.x;
 		temp.y = nodeB.pos.y-nodeA.pos.y;
@@ -34,5 +32,10 @@ public class DualNodeLink extends NodeLink{
 		nodeB.applyForce(temp);
 		temp.mul(-1);
 		nodeA.applyForce(temp);
+	}
+
+	@Override
+	public void updateRestPos() {
+		this.initialDist = nodeB.pos.dst(nodeA.pos);
 	}
 }

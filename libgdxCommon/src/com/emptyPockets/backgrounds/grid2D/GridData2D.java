@@ -6,10 +6,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class GridData2D {
-	Node[][] nodes;
+	GridNode[][] nodes;
 	ArrayList<NodeLink> links = new ArrayList<NodeLink>();
 	public Grid2DSettings set;
 
@@ -20,24 +21,33 @@ public class GridData2D {
 	Vector2 tempSubSampleRec = new Vector2();
 	Object lock = new Object();
 
+	public void move(Rectangle region) {
+		float xP, yP;
+		set.bounds.set(region);
+		for (int x = 0; x < set.numX; x++) {
+			xP = set.bounds.x + set.bounds.width * (x / (set.numX - 1f));
+			for (int y = 0; y < set.numY; y++) {
+				yP = set.bounds.y + set.bounds.height * (y / (set.numY - 1f));
+				nodes[x][y].pos.set(xP, yP);
+				nodes[x][y].restPos.set(xP, yP);
+			}
+		}
+		for (NodeLink node : links) {
+			node.updateRestPos();
+		}
+	}
+
 	public void createGrid(Grid2DSettings set) {
 		dispose();
 		synchronized (lock) {
 			this.set = set;
 
 			// Create Nodes
-			nodes = new Node[set.numX][set.numY];
-			Vector2[][] posData = new Vector2[set.numX][set.numY];
+			nodes = new GridNode[set.numX][set.numY];
 			links = new ArrayList<NodeLink>(set.numX * set.numY * 2);
 			for (int x = 0; x < set.numX; x++) {
 				for (int y = 0; y < set.numY; y++) {
-					float xP = set.bounds.x + set.bounds.width * (x / (set.numX - 1f));
-					float yP = set.bounds.y + set.bounds.height * (y / (set.numY - 1f));
-					posData[x][y] = new Vector2(xP, yP);
-
-					nodes[x][y] = new Node();
-					nodes[x][y].pos.set(posData[x][y]);
-
+					nodes[x][y] = new GridNode();
 					if (x == 0 || y == 0 || x == set.numX - 1 || y == set.numY - 1) {
 						nodes[x][y].inverseMass = 0;
 					} else {
@@ -55,23 +65,20 @@ public class GridData2D {
 						cfg = set.norm;
 					}
 
-					// Back to origin
-					links.add(new FixedNodeLink(nodes[x][y], posData[x][y], cfg));
-
-					// Left
+					links.add(new FixedNodeLink(nodes[x][y], cfg));
 					if (x > 0) {
 						links.add(new DualNodeLink(nodes[x][y], nodes[x - 1][y], cfg));
 					}
-					// Up
 					if (y > 0) {
 						links.add(new DualNodeLink(nodes[x][y], nodes[x][y - 1], cfg));
 					}
 				}
 			}
+			move(set.bounds);
 		}
 	}
 
-	public void dispose(){
+	public void dispose() {
 		synchronized (lock) {
 			nodes = null;
 			set = null;
@@ -79,6 +86,7 @@ public class GridData2D {
 			links.trimToSize();
 		}
 	}
+
 	public void resetNodes() {
 		synchronized (lock) {
 			for (NodeLink link : links) {
@@ -135,8 +143,8 @@ public class GridData2D {
 
 	public void update(float delta) {
 		synchronized (lock) {
-			for (Node[] nodeData : nodes) {
-				for (Node node : nodeData) {
+			for (GridNode[] nodeData : nodes) {
+				for (GridNode node : nodeData) {
 					node.update(delta);
 				}
 			}

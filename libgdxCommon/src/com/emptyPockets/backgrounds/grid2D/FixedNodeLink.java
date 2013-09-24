@@ -3,24 +3,22 @@ package com.emptyPockets.backgrounds.grid2D;
 import com.badlogic.gdx.math.Vector2;
 
 public class FixedNodeLink extends NodeLink {
-	Node node;
-	Vector2 pos;
+	GridNode node;
 	NodeLinkSettings cfg;
 	float initialDist;
 
 	Vector2 temp = new Vector2();
 	float currentDist;
 
-	public FixedNodeLink(Node node, Vector2 fixPoint, NodeLinkSettings settings) {
+	public FixedNodeLink(GridNode node, NodeLinkSettings settings) {
 		this.node = node;
-		this.pos = fixPoint;
-		this.initialDist = node.pos.dst(this.pos);
 		this.cfg = settings;
+		updateRestPos();
 	}
 
 	public void solve() {
-		temp.x = node.pos.x - pos.x;
-		temp.y = node.pos.y - pos.y;
+		temp.x = node.pos.x - node.restPos.x;
+		temp.y = node.pos.y - node.restPos.y;
 		currentDist = temp.len();
 		if (currentDist * currentDist < 0.001f) {
 			return;
@@ -34,8 +32,13 @@ public class FixedNodeLink extends NodeLink {
 	}
 
 	public void reset() {
-		node.pos.set(pos);
+		node.pos.set(node.restPos);
 		node.vel.set(0,0);
 		node.acl.set(0,0);
+	}
+
+	@Override
+	public void updateRestPos() {
+		this.initialDist = node.pos.dst(this.node.restPos);
 	}
 }
