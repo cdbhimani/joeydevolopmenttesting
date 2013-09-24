@@ -1,4 +1,4 @@
-package com.emptypockets.network.transport;
+package com.emptyPockets.network.transport;
 
 import java.net.InetAddress;
 

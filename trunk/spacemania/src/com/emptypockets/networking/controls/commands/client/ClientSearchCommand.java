@@ -26,7 +26,7 @@ public class ClientSearchCommand extends ClientCommand {
 			udpPort = Integer.parseInt(arg[1]);
 			timeoutSec = Integer.parseInt(arg[2]);
 		}
-		client.listNetworkServers(tcpPort, timeoutSec, new PushHostsToConsoleCallback(this, tcpPort, udpPort));
+		client.listNetworkServers(udpPort, timeoutSec, new PushHostsToConsoleCallback(this, tcpPort, udpPort));
 	}
 }
 

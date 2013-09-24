@@ -1,7 +1,7 @@
-package com.emptypockets.network.controls.commands.networknode;
+package com.emptyPockets.network.controls.commands.networknode;
 
-import com.emptypockets.network.log.ServerLogger;
-import com.emptypockets.network.server.NetworkNode;
+import com.emptyPockets.network.log.ServerLogger;
+import com.emptyPockets.network.server.NetworkNode;
 
 public class ServerLogCommand extends NetworkNodeCommand {
 

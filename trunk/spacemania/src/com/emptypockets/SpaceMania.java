@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.emptypockets.client.ClientScreen;
+import com.emptypockets.grid.GridScreen;
 
 public class SpaceMania extends Game {
 	InputMultiplexer input;
@@ -13,7 +14,8 @@ public class SpaceMania extends Game {
 	public void create() {
 		input = new InputMultiplexer();
 		Gdx.input.setInputProcessor(input);
-		Screen screen = new ClientScreen(input);
+		//Screen screen = new ClientScreen(input);
+		GridScreen screen = new GridScreen(input);
 		setScreen(screen);
 	}
 }

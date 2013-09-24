@@ -76,7 +76,7 @@ public class BeamTesting extends Box2DScreen{
 		
 	}
 	
-	int laserCount = 10;
+	int laserCount = 1000;
 	int sizeX = 1000;
 	int sizeY = 1000;
 	Color color[];
@@ -125,12 +125,12 @@ public class BeamTesting extends Box2DScreen{
 		float wide = vertex.getSizeY();
 		for(int i = 0;i < laserCount; i++){
 			float x= pos[i].x+high*MathUtils.cosDeg(angle[i]);
-			float y= pos[i].x+high*MathUtils.sinDeg(angle[i]);
+			float y= pos[i].y+high*MathUtils.sinDeg(angle[i]);
 			
 			for(int j = 0;j < 3;j++){
 			color[i].a = MathUtils.random(0.1f,1f);
 			shapeRender.setColor(color[i]);
-			Tree.drawLightning(shapeRender, pos[i].x, pos[i].y, x, y, wide/4, wide/100);
+//			Tree.drawLightning(shapeRender, pos[i].x, pos[i].y, x, y, wide/4, wide/100);
 			}
 		}
 		shapeRender.end();

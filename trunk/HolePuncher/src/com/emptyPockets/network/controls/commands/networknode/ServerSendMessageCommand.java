@@ -1,9 +1,9 @@
-package com.emptypockets.network.controls.commands.networknode;
+package com.emptyPockets.network.controls.commands.networknode;
 
-import com.emptypockets.network.log.ServerLogger;
-import com.emptypockets.network.server.NetworkNode;
-import com.emptypockets.network.server.NodeNotFoundException;
-import com.emptypockets.network.transport.RemoteMessage;
+import com.emptyPockets.network.log.ServerLogger;
+import com.emptyPockets.network.server.NetworkNode;
+import com.emptyPockets.network.server.NodeNotFoundException;
+import com.emptyPockets.network.transport.RemoteMessage;
 
 public class ServerSendMessageCommand extends NetworkNodeCommand {
 

@@ -46,7 +46,7 @@ public class EventHistory {
 	}
 	
 	public float getAverageDurationMS() {
-		return avgDuration*1e6f;
+		return avgDuration*1e3f;
 	}
 	
 	public synchronized int getCount() {

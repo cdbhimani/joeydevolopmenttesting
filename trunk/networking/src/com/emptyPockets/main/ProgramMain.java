@@ -3,8 +3,9 @@ package com.emptyPockets.main;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.emptyPockets.gui.BasicCarTestScreen;
 import com.emptyPockets.gui.Scene2DToolkit;
-import com.emptyPockets.test.holepuncher.HolePuncher;
+import com.emptyPockets.test.multitouch.MultitouchScreen;
 import com.emptyPockets.utils.file.FileSelector;
 
 public class ProgramMain extends Game{
@@ -26,7 +27,8 @@ public class ProgramMain extends Game{
 //		WorldRenderScreen screen = new WorldRenderScreen(input); //Fist touch tests for menus on entities
 //		TouchableEntitiesScreen screen = new TouchableEntitiesScreen(input);
 //		ClientScreen screen = new ClientScreen(input);
-		HolePuncher screen = new HolePuncher(input);
+//		HolePuncher screen = new HolePuncher(input);
+		MultitouchScreen screen = new MultitouchScreen(input);
 		setScreen(screen);
 	}
 	

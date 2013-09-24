@@ -25,10 +25,8 @@ public class Scene2DToolkit {
 	}
 
 	public void reloadSkin() {
-		if (skin != null) {
-			// atlas.dispose();
-			// skin.addRegions(atlas);
-		}
+		disposeSkin();
+		getSkin();
 	}
 
 	public void disposeSkin() {

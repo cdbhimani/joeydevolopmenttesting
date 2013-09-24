@@ -1,4 +1,4 @@
-package com.emptyPockets.backgrounds.grid;
+package com.emptyPockets.backgrounds.grid2D;
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -29,7 +29,7 @@ public class Node {
 		vel.x += acl.x * delta;
 		vel.y += acl.y * delta;
 
-		if (vel.len2() < 0.0001f) {
+		if (vel.len2() < 1e-9f) {
 			vel.x = 0;
 			vel.y = 0;
 		} else {

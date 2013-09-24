@@ -1,6 +1,6 @@
-package com.emptypockets.network.controls.commands;
+package com.emptyPockets.network.controls.commands;
 
-import com.emptypockets.network.server.NetworkNode;
+import com.emptyPockets.network.server.NetworkNode;
 
 public abstract class Command {
 	String name;

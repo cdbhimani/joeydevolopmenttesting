@@ -1,9 +1,9 @@
-package com.emptypockets.network.controls.commands.networknode;
+package com.emptyPockets.network.controls.commands.networknode;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import com.emptypockets.network.server.NetworkNode;
+import com.emptyPockets.network.server.NetworkNode;
 
 public class ServerConnectCommand extends NetworkNodeCommand {
 

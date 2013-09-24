@@ -1,4 +1,4 @@
-package com.emptypockets.network.server;
+package com.emptyPockets.network.server;
 
 public class NetworkNodeListenerAdapter implements NetworkNodeListener{
 

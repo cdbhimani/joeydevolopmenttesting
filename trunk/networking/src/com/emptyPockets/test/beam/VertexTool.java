@@ -26,7 +26,7 @@ public class VertexTool implements Disposable{
 	AtlasRegion  endOverlayRegion;
 	
 	float middleScaleX = 1;
-	float middleScaleY = 10;
+	float middleScaleY = 3;
 	float startScaleX = 1;
 	float startScaleY = 1;
 	float endScaleX = 1;

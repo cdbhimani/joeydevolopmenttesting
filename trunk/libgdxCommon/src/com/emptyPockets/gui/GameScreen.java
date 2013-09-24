@@ -7,6 +7,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
@@ -16,12 +18,18 @@ import com.emptyPockets.utils.event.EventRecorder;
 public abstract class GameScreen implements Screen, GestureListener, InputProcessor {
 
 	protected OrthographicCamera screenCamera = new OrthographicCamera();
+	
 	GestureDetector gesture;
 	protected Color clearColor = new Color(1, 1, 1, 1);
 	protected Skin skin;
 	protected EventRecorder eventLogger;
+	SpriteBatch eventBatch;
+	protected OrthographicCamera eventCamera = new OrthographicCamera();
+	
 	InputMultiplexer parentInputMultiplexer;
 
+	boolean drawEvents = true;
+	
 	public GameScreen(InputMultiplexer inputProcessor) {
 		this.parentInputMultiplexer = inputProcessor;
 		this.gesture = new GestureDetector(this);
@@ -33,6 +41,10 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 		if (Gdx.gl10 != null)
 			screenCamera.apply(Gdx.gl10);
 
+		eventCamera.update();
+		if (Gdx.gl10 != null)
+			eventCamera.apply(Gdx.gl10);
+		
 		Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT); // #14
 	}
@@ -61,30 +73,53 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 	@Override
 	public final void render(float delta) {
-		eventLogger.begin("Logic");
+		eventLogger.begin("LOGIC");
 		updateLogic(delta);
-		eventLogger.end("Logic");
+		eventLogger.end("LOGIC");
 
-		eventLogger.begin("Render");
+		eventLogger.begin("RENDER");
 		initializeRender();
 		renderScreen(delta);
-		eventLogger.end("Render");
+		eventLogger.end("RENDER");
 	}
 
 	public void renderScreen(float delta) {
-		eventLogger.begin("Background");
+		eventLogger.begin("RENDER-Background");
 		drawBackground(delta);
-		eventLogger.end("Background");
+		eventLogger.end("RENDER-Background");
 
-		eventLogger.begin("Screen");
+		eventLogger.begin("RENDER-Screen");
 		drawScreen(delta);
-		eventLogger.end("Screen");
+		eventLogger.end("RENDER-Screen");
 
-		eventLogger.begin("Overlay");
+		eventLogger.begin("RENDER-Overlay");
 		drawOverlay(delta);
-		eventLogger.end("Overlay");
+		eventLogger.end("RENDER-Overlay");
+		
+		
+		if(drawEvents){
+			eventLogger.begin("RENDER-Event Overlay");
+			drawEventOverlay(delta);
+			eventLogger.end("RENDER-Event Overlay");
+			
+			
+		}
+		
 	}
 
+	public void drawEventOverlay(float delta){
+		if(eventBatch == null){
+			eventBatch = new SpriteBatch();
+		}
+		eventBatch.setProjectionMatrix(eventCamera.combined);
+		BitmapFont font = getSkin().getFont("default-font");
+		
+		eventBatch.begin();
+		eventLogger.draw(eventBatch, font, -Gdx.graphics.getWidth()/2, -Gdx.graphics.getHeight()/2, 20);
+		font.draw(eventBatch, "FPS : "+Gdx.graphics.getFramesPerSecond(), 0,-Gdx.graphics.getHeight()/2+50 );
+		eventBatch.end();
+		
+	}
 	public void updateLogic(float delta) {
 	}
 
@@ -105,17 +140,26 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	public void resize(int width, int height) {
 		screenCamera.viewportWidth = width;
 		screenCamera.viewportHeight = height;
+		
+		eventCamera.viewportWidth = width;
+		eventCamera.viewportHeight = height;
 	}
 
 	@Override
 	public void show() {
 		Scene2DToolkit.getToolkit().reloadSkin();
 		addInputMultiplexer(parentInputMultiplexer);
+		
 	}
 
 	@Override
 	public void hide() {
 		removeInputMultiplexer(parentInputMultiplexer);
+		Scene2DToolkit.getToolkit().disposeSkin();
+		if(eventBatch != null){
+			eventBatch.dispose();
+			eventBatch = null;
+		}
 	}
 
 	@Override
