@@ -2,14 +2,16 @@ package com.emptyPockets.backgrounds.grid2D;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class Node {
+public class GridNode {
 	public float inverseMass;
+	public Vector2 restPos;
 	public Vector2 pos;
 	public Vector2 vel;
 	Vector2 acl;
 
-	public Node() {
+	public GridNode() {
 		pos = new Vector2();
+		restPos = new Vector2();
 		vel = new Vector2();
 		acl = new Vector2();
 		inverseMass = 0;
