@@ -18,6 +18,8 @@ public class EventRecorder {
 	
 	EventTimerAccuracy accuracy = EventTimerAccuracy.NANO_TIME;
 	
+	boolean enabled = false;
+	
 	public EventRecorder(){
 	}
 	
@@ -48,6 +50,9 @@ public class EventRecorder {
 	}
 	
 	public synchronized void begin(String key){
+		if(!enabled){
+			return;
+		}
 		ensureKey(key);
 		
 		Event event= currentEvents.get(key);
@@ -62,6 +67,9 @@ public class EventRecorder {
 		return hist.getCount();
 	}
 	public synchronized void end(String key){
+		if(!enabled){
+			return;
+		}
 		Event event = currentEvents.get(key);
 		event.end();
 		currentEvents.remove(key);
@@ -94,6 +102,14 @@ public class EventRecorder {
 		for(String key : event){
 			font.draw(textBatch, String.format("%"+length+"s : %1.2f", key,historicEvents.get(key).getAverageDurationMS()), x, y+(count++*yOff));
 		}
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 	
 	

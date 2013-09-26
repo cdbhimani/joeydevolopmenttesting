@@ -30,7 +30,8 @@ public class DualNodeLink extends NodeLink{
 		temp.y = temp.y*cfg.stiffness-(nodeB.vel.y-nodeA.vel.y)*cfg.damping;
 		
 		nodeB.applyForce(temp);
-		temp.mul(-1);
+		temp.x*=-1;
+		temp.y*=-1;
 		nodeA.applyForce(temp);
 	}
 

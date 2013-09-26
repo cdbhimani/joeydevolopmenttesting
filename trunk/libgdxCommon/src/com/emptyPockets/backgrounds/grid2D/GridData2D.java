@@ -21,6 +21,10 @@ public class GridData2D {
 	Vector2 tempSubSampleRec = new Vector2();
 	Object lock = new Object();
 
+
+	Color majorColor = new Color(.1f, .1f, 1f, .3f);
+	Color gridColor = new Color(.3f, .3f, 1f, .3f);
+	
 	public void move(Rectangle region) {
 		float xP, yP;
 		set.bounds.set(region);
@@ -174,8 +178,6 @@ public class GridData2D {
 				yMax = set.numY;
 			}
 
-			Color majorColor = new Color(.1f, .1f, 1f, .3f);
-			Color gridColor = new Color(.3f, .3f, 1f, .3f);
 
 			float majorSize = 3f;
 			float gridSize = 1;
