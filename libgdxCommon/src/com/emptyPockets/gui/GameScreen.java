@@ -28,12 +28,13 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 	
 	InputMultiplexer parentInputMultiplexer;
 
-	boolean drawEvents = true;
+	boolean drawEvents = false;
 	
 	public GameScreen(InputMultiplexer inputProcessor) {
 		this.parentInputMultiplexer = inputProcessor;
 		this.gesture = new GestureDetector(this);
-		eventLogger = new EventRecorder(50);
+		eventLogger = new EventRecorder(500);
+		setDrawEvents(true);
 	}
 
 	public void initializeRender() {
@@ -266,6 +267,11 @@ public abstract class GameScreen implements Screen, GestureListener, InputProces
 
 	public OrthographicCamera getScreenCamera() {
 		return screenCamera;
+	}
+
+	public void setDrawEvents(boolean drawEvents) {
+		this.drawEvents = drawEvents;
+		eventLogger.setEnabled(drawEvents);
 	}
 
 }
