@@ -103,6 +103,10 @@ public class Grid2DPanel extends Window {
 		});
 	}
 
+	public void setGridSize(float width, float height){
+		sizeX.setText(width+"");
+		sizeY.setText(height+"");
+	}
 	public void applyToGrid() {
 		Grid2DSettings settings = new Grid2DSettings();
 		settings.bounds.width = Float.parseFloat(sizeX.getText());
