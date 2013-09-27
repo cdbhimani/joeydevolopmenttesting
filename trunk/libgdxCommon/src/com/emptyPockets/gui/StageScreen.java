@@ -19,15 +19,14 @@ public abstract class StageScreen extends GameScreen {
 	
 	@Override
 	public void addInputMultiplexer(InputMultiplexer input) {
-		super.addInputMultiplexer(input);
 		input.addProcessor(getStage());
+		super.addInputMultiplexer(input);
 	}
 	
 	@Override
 	public void removeInputMultiplexer(InputMultiplexer input) {
-		super.removeInputMultiplexer(input);
 		input.removeProcessor(getStage());
-		
+		super.removeInputMultiplexer(input);
 	}
 	public void show() {
 		setStage(new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getWidth(), false));
