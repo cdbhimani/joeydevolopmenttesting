@@ -16,8 +16,8 @@ public class SpaceMania extends Game {
 		input = new InputMultiplexer();
 		Gdx.input.setInputProcessor(input);
 		//Screen screen = new ClientScreen(input);
-		GridScreen screen = new GridScreen(input);
-//		AudioMessageScreen screen = new AudioMessageScreen(input);
+//		GridScreen screen = new GridScreen(input);
+		AudioMessageScreen screen = new AudioMessageScreen(input);
 		setScreen(screen);
 	}
 }

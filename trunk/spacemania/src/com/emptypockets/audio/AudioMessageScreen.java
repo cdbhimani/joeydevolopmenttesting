@@ -81,7 +81,7 @@ public class AudioMessageScreen extends StageScreen {
 				executor.submit(new Runnable() {
 					@Override
 					public void run() {
-						System.out.println("Play : Start");
+						System.out.println("Play : Start"+player.getLatency());
 						player.writeSamples(data, samples, data.length);
 						System.out.println("Play : End");
 					}

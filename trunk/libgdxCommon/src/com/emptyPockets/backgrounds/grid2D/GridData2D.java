@@ -21,16 +21,21 @@ public class GridData2D {
 	Vector2 tempSubSampleRec = new Vector2();
 	Object lock = new Object();
 
-
 	Color majorColor = new Color(.1f, .1f, 1f, .3f);
 	Color gridColor = new Color(.3f, .3f, 1f, .3f);
-	
+
 	public void move(Rectangle region) {
 		float xP, yP;
+		float xV;
 		set.bounds.set(region);
 		for (int x = 0; x < set.numX; x++) {
-			xP = set.bounds.x + set.bounds.width * (x / (set.numX - 1f));
 			for (int y = 0; y < set.numY; y++) {
+				if (y % 2 == 0) {
+					xV = x + .5f;
+				} else {
+					xV = x;
+				}
+				xP = set.bounds.x + set.bounds.width * (xV / (set.numX - 1f));
 				yP = set.bounds.y + set.bounds.height * (y / (set.numY - 1f));
 				nodes[x][y].pos.set(xP, yP);
 				nodes[x][y].restPos.set(xP, yP);
@@ -178,7 +183,6 @@ public class GridData2D {
 				yMax = set.numY;
 			}
 
-
 			float majorSize = 3f;
 			float gridSize = 1;
 
@@ -219,7 +223,7 @@ public class GridData2D {
 			if (subSample) {
 				Gdx.gl.glLineWidth(gridSize * zoom);
 				shape.begin(ShapeType.Line);
-				shape.setColor(1f, 0f, 0f, .1f);
+				shape.setColor(gridColor);
 				for (int x = xMin; x < xMax; x++) {
 					for (int y = yMin; y < yMax; y++) {
 						pD = (nodes[x][y].pos);
