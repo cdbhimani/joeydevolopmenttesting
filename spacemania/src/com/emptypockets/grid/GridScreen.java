@@ -217,7 +217,7 @@ public class GridScreen extends StageScreen {
 			p.update(delta);
 			float force = 1 / p.inverseMass;
 			// if (force > 0) {
-			background.applyExplosion(1f, p.pos, force, 100);
+			background.applyExplosion(1f, p.pos, force, 50);
 			// } else {
 			// background.applyImplosiveForce(-force*peroid, p.pos, expRange);
 			// }
