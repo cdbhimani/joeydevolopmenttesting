@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
+import com.esotericsoftware.minlog.Log.Logger;
 
 public class KryonetServer {
 	int tcpPort;
@@ -37,6 +38,11 @@ public class KryonetServer {
 	}
 	
 	public static void main(String input[]) throws IOException{
+		Log.setLogger(new Logger(){@Override
+		protected void print(String arg0) {
+			System.out.println("Printing Shit");
+				super.print(arg0);
+		}});
 		Log.TRACE();
 		
 		KryonetServer server = new KryonetServer();

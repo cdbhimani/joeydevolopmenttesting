@@ -13,7 +13,6 @@ public class KryonetClient {
 	int udpPort;
 	String host;
 	KryonetListener listener;
-	boolean allowUDP = false;
 
 	public KryonetClient() {
 		init();
@@ -26,11 +25,11 @@ public class KryonetClient {
 		client.addListener(listener);
 	}
 
-	public void setHost(String host){
+	public void setHost(String host) {
 		this.host = host;
-		
+
 	}
-	
+
 	public void setPorts(int tcpPort, int udpPort) {
 		this.tcpPort = tcpPort;
 		this.udpPort = udpPort;
@@ -38,32 +37,31 @@ public class KryonetClient {
 
 	public void start() throws IOException {
 		client.start();
-		if (allowUDP) {
-			client.connect(connectTimeout, host, tcpPort, udpPort);
-		} else {
-			client.connect(connectTimeout, host, tcpPort);
-		}
+		client.connect(connectTimeout, host, tcpPort, udpPort);
+		client.updateReturnTripTime();
+		client.setKeepAliveTCP(1000);
+		client.setKeepAliveUDP(1000);
 	}
-	
-	public void send(Object object){
+
+	public void send(Object object) {
 		client.sendTCP(object);
 	}
-	
+
 	public void stop() {
 		client.stop();
 	}
 
 	public static void main(String input[]) throws IOException, InterruptedException {
 		Log.TRACE();
-		
+
 		KryonetClient client = new KryonetClient();
 		client.setHost("localhost");
 		client.setPorts(54555, 54777);
 		client.start();
-		
 		Thread.sleep(3000);
 		client.send(new Integer(2));
-		while(true);
+		while (true)
+			;
 	}
 
 	public int getConnectTimeout() {
