@@ -27,12 +27,6 @@ public class KryonetListener extends Listener{
 	}
 
 	@Override
-	public void idle(Connection connection) {
-		System.out.println(name+" Idle");
-		super.idle(connection);
-	}
-
-	@Override
 	public void received(Connection connection, Object object) {
 		System.out.println(name+" recieved object");
 		super.received(connection, object);
