@@ -4,6 +4,12 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="libs/gdx.jar" sourcepath="libs/gdx-sources.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/LibCommon"/>
-	<classpathentry kind="lib" path="/LibCommon/libs/kryonet-debug-2.18-all.jar" sourcepath="/LibCommon/libs/kryonet-2.18-src.zip"/>
+	<classpathentry kind="lib" path="/LibCommon/libs/kryonet-2.20/jars/debug/asm-4.0.jar"/>
+	<classpathentry kind="lib" path="/LibCommon/libs/kryonet-2.20/jars/debug/jsonbeans-0.2.jar"/>
+	<classpathentry kind="lib" path="/LibCommon/libs/kryonet-2.20/jars/debug/kryonet-debug-2.18.jar"/>
+	<classpathentry kind="lib" path="/LibCommon/libs/kryonet-2.20/jars/debug/minlog-1.2.jar"/>
+	<classpathentry kind="lib" path="/LibCommon/libs/kryonet-2.20/jars/debug/objenesis-1.2.jar"/>
+	<classpathentry kind="lib" path="/LibCommon/libs/kryonet-2.20/jars/debug/reflectasm-1.07.jar"/>
+	<classpathentry kind="lib" path="/LibCommon/libs/kryo-2.22/kryo-2.22/jars/debug/kryo-debug-2.22.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
