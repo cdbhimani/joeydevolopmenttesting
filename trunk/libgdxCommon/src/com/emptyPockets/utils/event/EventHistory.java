@@ -2,8 +2,6 @@ package com.emptyPockets.utils.event;
 
 import java.util.ArrayList;
 
-import com.emptyPockets.utils.event.Event.EventTimerAccuracy;
-
 public class EventHistory {
 	ArrayList<Event> history;
 	int maxHistory=0;
