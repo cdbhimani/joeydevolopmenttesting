@@ -10,7 +10,6 @@ import com.emptyPockets.graphics.GraphicsToolkit;
 import com.emptyPockets.gui.GameScreen;
 import com.emptyPockets.gui.OrthographicsCameraConvertor;
 import com.emptyPockets.test.building.menus.BuildingNodeMenu;
-import com.emptyPockets.test.building.menus.BuildingNodeMenuAction;
 import com.emptyPockets.test.building.menus.BuildingNodeMenuAdapter;
 import com.emptyPockets.test.building.menus.BuildingNodeMenuItem;
 import com.emptyPockets.test.building.model.BuildingNode;

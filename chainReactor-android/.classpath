@@ -1,12 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="src" path="src"/>
-    <classpathentry kind="src" path="gen"/>
-    <classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-    <classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-    <classpathentry combineaccessrules="false" exported="true" kind="src" path="/chainReactor"/>
-    <classpathentry kind="output" path="bin/classes"/>
-    <classpathentry exported="true" kind="lib" path="libs/gdx-backend-android.jar" sourcepath="libs/gdx-backend-android-sources.jar"/>
-    <classpathentry exported="true" kind="lib" path="/chainReactor/libs/gdx.jar" sourcepath="/chainReactor/libs/gdx-sources.jar"/>
-    <classpathentry exported="true" kind="lib" path="/chainReactor/libs/kryonet-2.18-all.jar"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/chainReactor"/>
+	<classpathentry exported="true" kind="lib" path="libs/gdx-backend-android.jar" sourcepath="libs/gdx-backend-android-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="/chainReactor/libs/gdx.jar" sourcepath="/chainReactor/libs/gdx-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="/chainReactor/libs/kryonet-2.18-all.jar"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
+	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

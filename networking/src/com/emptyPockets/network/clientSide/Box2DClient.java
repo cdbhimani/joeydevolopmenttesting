@@ -1,13 +1,9 @@
 package com.emptyPockets.network.clientSide;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.util.List;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.emptyPockets.gui.Scene2DToolkit;
 import com.emptyPockets.network.Network;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;

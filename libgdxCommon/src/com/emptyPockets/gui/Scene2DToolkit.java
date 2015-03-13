@@ -19,7 +19,11 @@ public class Scene2DToolkit {
 
 	public static Scene2DToolkit getToolkit() {
 		if (toolkit == null) {
-			toolkit = new Scene2DToolkit();
+			synchronized (Scene2DToolkit.class) {
+				if (toolkit == null) {
+					toolkit = new Scene2DToolkit();
+				}
+			}
 		}
 		return toolkit;
 	}
@@ -38,16 +42,20 @@ public class Scene2DToolkit {
 
 	public Skin getSkin() {
 		if (skin == null) {
-			jsonFile = Gdx.files.internal("ui/uiskin.json");
-			atlasFile = Gdx.files.internal("ui/uiskin.atlas");
-			atlas = new TextureAtlas(atlasFile);
-			skin = new Skin(jsonFile) {
-				@Override
-				public void dispose() {
-					super.dispose();
-					atlas.dispose();
+			synchronized (getClass()) {
+				if (skin == null) {
+					jsonFile = Gdx.files.internal("ui/uiskin.json");
+					atlasFile = Gdx.files.internal("ui/uiskin.atlas");
+					atlas = new TextureAtlas(atlasFile);
+					skin = new Skin(jsonFile) {
+						@Override
+						public void dispose() {
+							super.dispose();
+							atlas.dispose();
+						}
+					};
 				}
-			};
+			}
 		}
 		return skin;
 	}

@@ -1,7 +1,5 @@
 package com.emptyPockets.test.soccer.entity.bounds;
 
-import java.awt.geom.Rectangle2D;
-
 import com.badlogic.gdx.math.Rectangle;
 import com.emptyPockets.test.controls.entities.BaseEntity;
 

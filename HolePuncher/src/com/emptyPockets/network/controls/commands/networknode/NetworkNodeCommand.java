@@ -7,7 +7,7 @@ public abstract class NetworkNodeCommand extends Command {
 
 	NetworkNode node;
 
-	public NetworkNodeCommand(String name, NetworkNode nodes) {
+	public NetworkNodeCommand(String name,NetworkNode nodes) {
 		super(name);
 		this.node = nodes;
 	}

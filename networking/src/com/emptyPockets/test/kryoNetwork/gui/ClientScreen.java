@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.emptyPockets.graphics.GraphicsToolkit;
 import com.emptyPockets.gui.OrthographicsCameraConvertor;
 import com.emptyPockets.gui.StageScreen;
-import com.emptyPockets.gui.scene2d.ExceptionHandeling;
 import com.emptyPockets.logging.ConsoleScreen;
 import com.emptyPockets.test.kryoNetwork.MainTesting;
 import com.emptyPockets.test.kryoNetwork.client.ClientConnection;

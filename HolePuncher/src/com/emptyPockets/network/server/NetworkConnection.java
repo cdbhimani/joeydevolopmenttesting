@@ -2,9 +2,6 @@ package com.emptyPockets.network.server;
 
 import java.net.InetAddress;
 
-import com.emptyPockets.network.transport.FrameworkMessages.ConnectionRequest;
-import com.emptyPockets.network.transport.FrameworkMessages.Ping;
-
 /**
  * This represents a client seen on a server
  * @author jenfield

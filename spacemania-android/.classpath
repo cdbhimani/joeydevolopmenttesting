@@ -4,7 +4,7 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/spacemania"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="lib" path="/spacemania/libs/gdx.jar" sourcepath="/spacemania/libs/gdx-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gdx-backend-android.jar" sourcepath="libs/gdx-backend-android-sources.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/LibCommon"/>
@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="/LibCommon/libs/kryonet-2.20/jars/debug/objenesis-1.2.jar"/>
 	<classpathentry kind="lib" path="/LibCommon/libs/kryonet-2.20/jars/debug/reflectasm-1.07.jar"/>
 	<classpathentry kind="lib" path="/LibCommon/libs/kryo-2.22/kryo-2.22/jars/debug/kryo-debug-2.22.jar"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

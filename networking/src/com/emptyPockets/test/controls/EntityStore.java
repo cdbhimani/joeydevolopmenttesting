@@ -12,7 +12,6 @@ import com.emptyPockets.test.controls.inputs.handlers.EntityInputAdapter;
 import com.emptyPockets.test.controls.inputs.handlers.MoveEntityInputHandler;
 import com.emptyPockets.test.controls.menus.EntityMenu;
 import com.emptyPockets.test.controls.menus.EntityMenuItem;
-import com.emptyPockets.test.controls.render.EntityDebugRender;
 import com.emptyPockets.test.controls.render.EntityRender;
 
 public class EntityStore {
