@@ -3,7 +3,6 @@ package com.emptyPockets.test.controls.menus;
 import java.util.ArrayList;
 
 import com.emptyPockets.test.controls.entities.BaseEntity;
-import com.emptyPockets.test.controls.inputs.EntityInputManager;
 import com.emptyPockets.test.controls.inputs.handlers.EntityInputHandler;
 
 public class EntityMenu implements EntityInputHandler {

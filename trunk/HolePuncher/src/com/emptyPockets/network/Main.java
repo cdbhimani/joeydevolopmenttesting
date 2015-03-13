@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Scanner;
 
-import com.emptyPockets.network.log.LogListener;
 import com.emptyPockets.network.log.ServerLogger;
 import com.emptyPockets.network.server.NetworkConnection;
 import com.emptyPockets.network.server.NetworkNode;
@@ -32,10 +31,10 @@ public class Main {
 
 		final NetworkNode host = new NetworkNode(port, maxPacketSize);
 		host.setNodeName("server");
-//		host.start();
 		host.addListener(echo);
+		
+		
 		final NetworkNode client;
-
 		ServerLogger.info("Startup");
 //		int i = 1;
 //		client = new NetworkNode(port + i, maxPacketSize);
@@ -43,7 +42,6 @@ public class Main {
 //		client.start();
 //		client.addListener(echo);
 //		Thread.sleep(1000);
-//
 //		client.connect(address, port);
 
 		Scanner in = new Scanner(System.in);

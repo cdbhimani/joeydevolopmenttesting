@@ -4,7 +4,6 @@ import java.net.InetAddress;
 
 import com.emptyPockets.test.datagrams.client.UdpTestClient;
 import com.emptyPockets.test.datagrams.server.UdpTestServer;
-import com.esotericsoftware.kryo.Kryo;
 
 
 public class UdpTestConnectionMain {

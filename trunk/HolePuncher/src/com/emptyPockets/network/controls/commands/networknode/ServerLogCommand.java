@@ -7,6 +7,8 @@ public class ServerLogCommand extends NetworkNodeCommand {
 
 	public ServerLogCommand(NetworkNode node) {
 		super("log", node);
+		setDescription("Adjust log level of the node. log [0-5] (0 = None, 5 = TRACE)");
+		
 	}
 
 	@Override

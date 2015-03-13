@@ -18,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.emptyPockets.backgrounds.grid2D.Grid2DPanel;
@@ -38,26 +37,27 @@ public class GridScreen extends StageScreen {
 
 	Touchpad movePad;
 	Touchpad shootPad;
-	public Slider strength;
-
+	public Slider force;
+	public Slider radius;
+	
 	ShapeRenderer shape;
 	OrthoCamController control;
 	OrthographicsCameraConvertor conv;
 
 	Ship ship = new Ship(this, new Vector2());
-	ArrayList<PointMass> points = new ArrayList<PointMass>();
+	ArrayList<GridDistortion> distortion = new ArrayList<GridDistortion>();
 	Vector2 screenStart = new Vector2(0, 0);
 	Vector2 screenEnd = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 	Grid2DPanel gridSettings;
 	
-	public static float stiff = 15f;
-	public static float damp = .9f;
-
+//	public static float stiff = 0.28f;
+//	public static float damp = 0.06f;
+//
 	public static float sizeX = 2000;
 	public static float sizeY = 2000;
-	public static int numX = 50;
-	public static int numY = 50;
+	public static int numX = 200;
+	public static int numY = 200;
 
 	public GridScreen(InputMultiplexer inputMultiplexer) {
 		super(inputMultiplexer);
@@ -93,12 +93,18 @@ public class GridScreen extends StageScreen {
 		set.numY = numY;
 
 		set.inverseMass = 1f;
-		set.norm.damping = damp;
-		set.norm.stiffness = stiff;
+		set.links.damping = 0.06f;
+		set.links.stiffness = 0.28f;
 
-		set.edge.damping = damp;
-		set.edge.stiffness = stiff;
+		set.edge.damping = 0.1f;
+		set.edge.stiffness = 0.1f;
 
+		set.ankor.damping = .1f;
+		set.ankor.stiffness = .1f;
+		
+		set.ankorAlt.damping = 0.02f;
+		set.ankorAlt.stiffness = 0.002f;
+		
 		background = new GridData2D();
 		background.createGrid(set);
 		shape = new ShapeRenderer();
@@ -126,8 +132,9 @@ public class GridScreen extends StageScreen {
 
 		movePad = new Touchpad(0, getSkin());
 		shootPad = new Touchpad(0, getSkin());
-		strength = new Slider(10, 8000, 10, false, getSkin());
-
+		force = new Slider(1, 100, 1, false, getSkin());
+		radius = new Slider(1, 1000, 1, false, getSkin());
+		
 		Pixmap pix = new Pixmap(4, 4, Format.RGBA8888);
 		Color c = new Color(Color.LIGHT_GRAY);
 		c.a = 0.2f;
@@ -145,7 +152,9 @@ public class GridScreen extends StageScreen {
 		// layout.debug();
 		// top
 		layout.row();
-		layout.add(strength).colspan(3).height(insetSize).fillX().expandX();
+		layout.add(force).colspan(3).height(insetSize).fillX().expandX();
+		layout.row();
+		layout.add(radius).colspan(3).height(insetSize).fillX().expandX();
 		// middle
 		layout.row();
 		layout.add().width(touchPadSize).fillY().expandY();
@@ -211,13 +220,13 @@ public class GridScreen extends StageScreen {
 
 		ship.update(delta);
 		eventLogger.begin("LOGIC-Explosions");
-		Iterator<PointMass> point = points.iterator();
+		Iterator<GridDistortion> point = distortion.iterator();
 		while (point.hasNext()) {
-			PointMass p = point.next();
+			GridDistortion p = point.next();
 			p.update(delta);
-			float force = 1 / p.inverseMass;
+			
 			// if (force > 0) {
-			background.applyExplosion(1f, p.pos, force, 50);
+			background.applyExplosion(p.pos, p.force, p.radius);
 			// } else {
 			// background.applyImplosiveForce(-force*peroid, p.pos, expRange);
 			// }
@@ -265,7 +274,7 @@ public class GridScreen extends StageScreen {
 
 		shape.begin(ShapeType.FilledCircle);
 		shape.setColor(1, 0, 0, 0.5f);
-		for (PointMass p : points) {
+		for (GridDistortion p : distortion) {
 			shape.filledCircle(p.pos.x, p.pos.y, 3);
 		}
 		shape.end();
@@ -277,28 +286,28 @@ public class GridScreen extends StageScreen {
 
 }
 
-class Ship extends PointMass {
+class Ship extends GridDistortion {
 	GridScreen grid;
 	float maxVel = 500;
 
 	long lastShoot = 0;
-	long shootInterval = 200;
+	long shootInterval = 100;
 
 	public Ship(GridScreen grid, Vector2 position) {
-		super(position, 0);
+		super(position, 0, 0, 0);
 		this.grid = grid;
 	}
 
 	public void shoot(float x, float y) {
 		if (Math.abs(x) > 0.1 || Math.abs(y) > 0.1) {
 			if (lastShoot + shootInterval < System.currentTimeMillis()) {
-				float massVal = grid.strength.getValue();
-				PointMass mass = new PointMass(pos.cpy(), 1 / massVal);
+				GridDistortion mass = new GridDistortion(pos.cpy(), 1, grid.force.getValue(), grid.radius.getValue());
 				mass.vel.x = x;
 				mass.vel.y = y;
 				mass.vel.nor().mul(maxVel * 1.8f);
 				mass.time = 10;
-				grid.points.add(mass);
+				mass.dampingFactor = 1f;
+				grid.distortion.add(mass);
 				lastShoot = System.currentTimeMillis();
 			}
 		}

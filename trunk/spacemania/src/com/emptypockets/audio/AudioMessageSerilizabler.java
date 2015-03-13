@@ -1,7 +1,5 @@
 package com.emptypockets.audio;
 
-import java.util.ArrayList;
-
 import com.emptyPockets.utils.ObjectPool;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;

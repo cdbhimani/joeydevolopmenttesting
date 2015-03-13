@@ -66,6 +66,30 @@ public class ServerLogger {
 	static public void remove(LogListener log) {
 		logger.remove(log);
 	}
+	
+	static public boolean isNONE() {
+		return level == (LEVEL_NONE);
+	}
+
+	static public boolean isERROR() {
+		return level==(LEVEL_ERROR);
+	}
+
+	static public boolean isWARN() {
+		return level==(LEVEL_WARN);
+	}
+
+	static public boolean isINFO() {
+		return level==(LEVEL_INFO);
+	}
+
+	static public boolean isDEBUG() {
+		return level==(LEVEL_DEBUG);
+	}
+
+	static public boolean isTRACE() {
+		return level==(LEVEL_TRACE);
+	}
 
 	static public void NONE() {
 		set(LEVEL_NONE);

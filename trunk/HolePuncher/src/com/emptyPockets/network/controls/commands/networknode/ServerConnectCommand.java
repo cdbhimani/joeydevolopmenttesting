@@ -9,6 +9,7 @@ public class ServerConnectCommand extends NetworkNodeCommand {
 
 	public ServerConnectCommand(NetworkNode nodes) {
 		super("connect", nodes);
+		setDescription("Connects to a remote box. connect [host]:[port]");
 	}
 
 	@Override

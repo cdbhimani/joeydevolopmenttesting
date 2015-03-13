@@ -8,7 +8,9 @@ public class GridNode {
 	public Vector2 pos;
 	public Vector2 vel;
 	Vector2 acl;
-
+	float damping = 0.98f;
+	float defaultDamping = 0.98f;
+	
 	public GridNode() {
 		pos = new Vector2();
 		restPos = new Vector2();
@@ -27,19 +29,41 @@ public class GridNode {
 		acl.y+=force.y*inverseMass;
 	}
 
-	public void update(float delta) {
-		vel.x += acl.x * delta;
-		vel.y += acl.y * delta;
-
-		if (vel.len2() < 1e-9f) {
+	public String format(Vector2 v){
+		return String.format("[%5.0f,%5.0f]", v.x, v.y);
+	}
+	public void update() {
+		vel.x += acl.x;
+		vel.y += acl.y;
+		
+		pos.x += vel.x;
+		pos.y += vel.y;
+		
+		vel.x*=damping;
+		vel.y*=damping;
+        damping = defaultDamping;
+        
+		if (vel.len2() < 1e-5f) {
 			vel.x = 0;
 			vel.y = 0;
-		} else {
-			pos.x += vel.x * delta;
-			pos.y += vel.y * delta;
 		}
 		acl.x = 0;
 		acl.y = 0;
+		
+		if(Float.isNaN(pos.x)){
+			pos.x = restPos.x;
+			vel.x = 0;
+		}
+		
+		if(Float.isNaN(pos.y)){
+			pos.y = restPos.y;
+			vel.y = 0;
+		}
+		
+	}
+
+	public void increaseDamping(float factor) {
+		this.damping*=factor;
 	}
 
 }

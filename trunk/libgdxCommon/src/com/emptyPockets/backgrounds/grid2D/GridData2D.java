@@ -30,11 +30,11 @@ public class GridData2D {
 		set.bounds.set(region);
 		for (int x = 0; x < set.numX; x++) {
 			for (int y = 0; y < set.numY; y++) {
-				if (y % 2 == 0) {
-					xV = x + .5f;
-				} else {
-					xV = x;
-				}
+				// if (y % 2 == 0) {
+				// xV = x + .5f;
+				// } else {
+				xV = x;
+				// }D
 				xP = set.bounds.x + set.bounds.width * (xV / (set.numX - 1f));
 				yP = set.bounds.y + set.bounds.height * (y / (set.numY - 1f));
 				nodes[x][y].pos.set(xP, yP);
@@ -46,7 +46,12 @@ public class GridData2D {
 		}
 	}
 
+	public Grid2DSettings getSettings() {
+		return set;
+	}
+
 	public void createGrid(Grid2DSettings set) {
+		this.set = set;
 		dispose();
 		synchronized (lock) {
 			this.set = set;
@@ -70,11 +75,15 @@ public class GridData2D {
 					NodeLinkSettings cfg;
 					if (x == 0 || y == 0 || x == set.numX - 1 || y == set.numY - 1) {
 						cfg = set.edge;
+					} else if (x % 3 == 0 && y % 3 == 0) {
+						cfg = set.ankorAlt;
 					} else {
-						cfg = set.norm;
+						cfg = set.ankor;
 					}
 
 					links.add(new FixedNodeLink(nodes[x][y], cfg));
+
+					cfg = set.links;
 					if (x > 0) {
 						links.add(new DualNodeLink(nodes[x][y], nodes[x - 1][y], cfg));
 					}
@@ -115,7 +124,7 @@ public class GridData2D {
 		}
 	}
 
-	public void applyExplosion(float delta, Vector2 pos, float force, float radius) {
+	public void applyExplosion(Vector2 pos, float force, float radius) {
 		synchronized (lock) {
 			int xMin = (int) (set.numX * ((pos.x - radius - set.bounds.x) / set.bounds.width));
 			int xMax = (int) (set.numX * ((pos.x + radius - set.bounds.x) / set.bounds.width)) + 1;
@@ -142,8 +151,9 @@ public class GridData2D {
 					dir.y = nodes[x][y].pos.y - pos.y;
 					lenght = dir.len2();
 					if (lenght < radius * radius) {
-						dir.mul(force * delta / (.1f + lenght));
+						dir.mul(100 * force / (10000f + lenght));
 						nodes[x][y].applyImpulse(dir);
+						nodes[x][y].increaseDamping(0.6f);
 					}
 				}
 			}
@@ -154,14 +164,13 @@ public class GridData2D {
 		synchronized (lock) {
 			for (GridNode[] nodeData : nodes) {
 				for (GridNode node : nodeData) {
-					node.update(delta);
+					node.update();
 				}
 			}
 		}
 	}
 
 	public void render(ShapeRenderer shape, Vector2 screenStart, Vector2 screenEnd, float zoom) {
-
 		if (!renderGrid) {
 			return;
 		}
@@ -200,19 +209,90 @@ public class GridData2D {
 			Gdx.gl.glLineWidth(majorSize * zoom);
 			shape.setColor(majorColor);
 			shape.begin(ShapeType.Line);
+
+			CatmullRomSpline spline = new CatmullRomSpline();
+
+			Vector2 linearM = new Vector2();
+			Vector2 posAE;
+			Vector2 posA;
+			Vector2 posM = new Vector2();
+			Vector2 posB;
+			Vector2 posBE;
 			for (int x = xMin; x < xMax; x++) {
 				for (int y = yMin; y < yMax; y++) {
+
+					// Draw Horizontal Line
+					if (x - 1 >= 0) {
+						posA = nodes[x - 1][y].pos;
+						posB = nodes[x][y].pos;
+						linearM.x = (posB.x + posA.x) / 2;
+						linearM.y = (posB.y + posA.y) / 2;
+
+						// Check Interpolation
+						if (x - 2 >= 0 && x + 1 < set.numX) {
+							// Get Extended Points
+							posAE = nodes[x - 2][y].pos;
+							posBE = nodes[x + 1][y].pos;
+							spline.set(new Vector2[] { posAE, posA, posB, posBE }, false);
+							spline.valueAt(posM, 0.5f);
+							// Draw Interpolation - if needed
+							// System.out.println(linearM.toString()+" : "+posM+" : "+linearM.dst2(posM));
+							if (linearM.dst2(posM) > 1) {
+								// Two lines
+								shape.line(posA.x, posA.y, posM.x, posM.y);
+								shape.line(posM.x, posM.y, posB.x, posB.y);
+							} else {
+								// One line
+								shape.line(posA.x, posA.y, posB.x, posB.y);
+							}
+						} else {
+							// Sinigle Line
+							shape.line(posA.x, posA.y, posB.x, posB.y);
+						}
+					}
+
+					// Draw Vertical Line
+					if (y - 1 >= 0) {
+						posA = nodes[x][y - 1].pos;
+						posB = nodes[x][y].pos;
+						linearM.x = (posB.x + posA.x) / 2;
+						linearM.y = (posB.y + posA.y) / 2;
+
+						// Check Interpolation
+						if (y - 2 >= 0 && y + 1 < set.numY) {
+							// Get Extended Points
+							posAE = nodes[x][y - 2].pos;
+							posBE = nodes[x][y + 1].pos;
+							spline.set(new Vector2[] { posAE, posA, posB, posBE }, false);
+							spline.valueAt(posM, 0.5f);
+							// Draw Interpolation - if needed
+							// System.out.println(linearM.toString()+" : "+posM+" : "+linearM.dst2(posM));
+							if (linearM.dst2(posM) > 1) {
+								// Two lines
+								shape.line(posA.x, posA.y, posM.x, posM.y);
+								shape.line(posM.x, posM.y, posB.x, posB.y);
+							} else {
+								// One line
+								shape.line(posA.x, posA.y, posB.x, posB.y);
+							}
+						} else {
+							// Sinigle Line
+							shape.line(posA.x, posA.y, posB.x, posB.y);
+						}
+					}
+
 					// if ( x == 0 || y == 0 || x == nodes.length - 1 || y ==
-					// nodes[x].length - 1) {
-					pD = (nodes[x][y].pos);
-					if (x > 0 && (y == 0 || y % minY == 0)) {
-						pC = nodes[x - 1][y].pos;
-						shape.line(pD.x, pD.y, pC.x, pC.y);
-					}
-					if (y > 0 && (x == 0 || x % minX == 0)) {
-						pB = nodes[x][y - 1].pos;
-						shape.line(pD.x, pD.y, pB.x, pB.y);
-					}
+//					// nodes[x].length - 1) {
+//					pD = (nodes[x][y].pos);
+//					shape.setColor(majorColor);
+					// if (x > 0 && (y == 0 || y % minY == 0)) {
+					// pC = nodes[x - 1][y].pos;
+					// shape.line(pD.x, pD.y, pC.x, pC.y);
+					// }
+					// if (y > 0 && (x == 0 || x % minX == 0)) {
+					// pB = nodes[x][y - 1].pos;
+					// shape.line(pD.x, pD.y, pB.x, pB.y);
+					// }
 				}
 			}
 			shape.end();
@@ -293,4 +373,30 @@ public class GridData2D {
 		}
 	}
 
+	public static void main(String input[]) {
+
+		CatmullRomSpline spline = new CatmullRomSpline();
+
+		Vector2 linearM = new Vector2();
+		Vector2 posM = new Vector2();
+
+		Vector2 posAE = new Vector2(0, 0);
+		;
+		Vector2 posA = new Vector2(1, 0);
+		;
+		Vector2 posB = new Vector2(2, 0);
+		;
+		Vector2 posBE = new Vector2(3, 0);
+		;
+
+		linearM.x = (posB.x + posA.x) / 2;
+		linearM.y = (posB.y + posA.y) / 2;
+
+		spline.set(new Vector2[] { posAE, posA, posB, posBE }, false);
+		spline.valueAt(posM, 0.5f);
+
+		System.out.println(linearM);
+		System.out.println(posM);
+
+	}
 }

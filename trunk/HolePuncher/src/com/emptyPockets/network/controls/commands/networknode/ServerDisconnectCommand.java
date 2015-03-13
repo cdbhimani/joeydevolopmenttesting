@@ -7,6 +7,7 @@ public class ServerDisconnectCommand extends NetworkNodeCommand {
 
 	public ServerDisconnectCommand(NetworkNode node) {
 		super("disconnect", node);
+		setDescription("Disconnects from a remote node. If no name is provided, all connections will be closed. :  disconnect {name}");
 	}
 
 	@Override

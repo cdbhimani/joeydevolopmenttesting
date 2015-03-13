@@ -23,6 +23,7 @@ public class CommandService {
 		node.getCommandHub().addCommand(new ServerSendMessageCommand(node));
 		node.getCommandHub().addCommand(new ServerDisconnectCommand(node));
 		node.getCommandHub().addCommand(new ServerLogCommand(node));
+		node.getCommandHub().addCommand(new ServerLogCommand(node));
 	}
 	
 	public static void registerClient(CommandHub hub){

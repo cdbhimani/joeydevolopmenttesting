@@ -12,11 +12,11 @@ import com.emptyPockets.network.controls.CommandHub;
 import com.emptyPockets.network.controls.CommandService;
 import com.emptyPockets.network.log.ServerLogger;
 import com.emptyPockets.network.transport.FrameworkMessages;
-import com.emptyPockets.network.transport.TransportObject;
 import com.emptyPockets.network.transport.FrameworkMessages.ConnectionRequest;
 import com.emptyPockets.network.transport.FrameworkMessages.ConnectionResponse;
 import com.emptyPockets.network.transport.FrameworkMessages.DisconnectNotification;
 import com.emptyPockets.network.transport.FrameworkMessages.Ping;
+import com.emptyPockets.network.transport.TransportObject;
 
 public class NetworkNode implements UDPConnectionListener, Runnable {
 	static int nodeCount = 0;
@@ -40,13 +40,10 @@ public class NetworkNode implements UDPConnectionListener, Runnable {
 	public NetworkNode(int localPort, int maxPacketSize) {
 		this.localPort = localPort;
 		this.maxPacketSize = maxPacketSize;
-		listeners = new ArrayList<NetworkNodeListener>();
 		commandHub = new CommandHub();
-		init();
-	}
-
-	public void init() {
+		listeners = new ArrayList<NetworkNodeListener>();
 		timeoutNodess = new ArrayList<NetworkConnection>();
+
 		clients = new ArrayList<NetworkConnection>();
 		clientsById = new HashMap<Integer, NetworkConnection>();
 		clientsByNodeName = new HashMap<String, NetworkConnection>();

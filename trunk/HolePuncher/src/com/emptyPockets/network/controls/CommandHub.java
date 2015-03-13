@@ -22,9 +22,17 @@ public class CommandHub extends NetworkNodeListenerAdapter {
 		}
 	}
 
+	public void displayHelp(String commandName){
+		ServerLogger.info("The following commands are supported");
+		synchronized (commands) {
+			for(Command command : commands.values()){
+				ServerLogger.info(command.getName()+"\t : \t"+command.getDescription());
+			}
+		}
+	}
 	public void processCommand(String data) {
 		ServerLogger.debug("Command Called - processCommand : " + data);
-		if (data!=null && data.startsWith("\\")) {
+		if (data != null && data.startsWith("\\")) {
 			String cmd[] = data.split(" ", 2);
 
 			String commandName = cmd[0].substring(1);
@@ -32,16 +40,24 @@ public class CommandHub extends NetworkNodeListenerAdapter {
 			if (cmd.length > 1) {
 				args = cmd[1];
 			}
-			try {
-				synchronized (commands) {
-					Command command = commands.get(commandName);
-					if (command != null) {
-						command.proceeArg(args);
+			if (commandName.toLowerCase().startsWith("help")) {
+				displayHelp(commandName);
+			} else {
+				try {
+					synchronized (commands) {
+						Command command = commands.get(commandName);
+						if (command != null) {
+							command.proceeArg(args);
+						}else{
+							ServerLogger.info("Unknown command, type help for available commands");
+						}
 					}
+				} catch (Throwable e) {
+					ServerLogger.error("Error processing command", e);
 				}
-			} catch (Throwable e) {
-				ServerLogger.error("Error processing command", e);
 			}
+		}else{
+			ServerLogger.info("Unknown command, type \\help for available commands");
 		}
 
 	}

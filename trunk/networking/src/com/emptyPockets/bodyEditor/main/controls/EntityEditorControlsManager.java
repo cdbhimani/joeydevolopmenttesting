@@ -13,10 +13,10 @@ import com.emptyPockets.bodyEditor.entity.CircleEntity;
 import com.emptyPockets.bodyEditor.entity.PolygonEntity;
 import com.emptyPockets.bodyEditor.entity.RectangleEntity;
 import com.emptyPockets.bodyEditor.main.EntityEditorScreen;
+import com.emptyPockets.bodyEditor.main.controls.shape.BaseShapeControler.ControlState;
 import com.emptyPockets.bodyEditor.main.controls.shape.CircleControler;
 import com.emptyPockets.bodyEditor.main.controls.shape.PolygonControler;
 import com.emptyPockets.bodyEditor.main.controls.shape.RectangleControler;
-import com.emptyPockets.bodyEditor.main.controls.shape.BaseShapeControler.ControlState;
 import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.utils.OrthoCamController;
 

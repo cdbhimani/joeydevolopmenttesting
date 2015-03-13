@@ -10,7 +10,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.emptyPockets.bodyEditor.entity.BaseEntity;
-import com.emptyPockets.bodyEditor.entity.PolygonEntity;
 import com.emptyPockets.bodyEditor.main.controls.EntityEditorControlsManager;
 import com.emptyPockets.graphics.GraphicsToolkit;
 import com.emptyPockets.gui.StageScreen;

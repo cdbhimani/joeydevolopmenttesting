@@ -16,16 +16,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.emptyPockets.graphics.GraphicsToolkit;
 import com.emptyPockets.gui.ScreenSizeHelper;
 import com.emptyPockets.gui.StageScreen;
-import com.emptyPockets.logging.Console;
 import com.emptyPockets.logging.ConsoleScreen;
 import com.emptyPockets.utils.OrthoCamController;
 import com.emptypockets.engine.MovingEntity;
 import com.emptypockets.networking.client.ClientManager;
-import com.emptypockets.networking.server.ServerManager;
 import com.emptypockets.networking.transfer.ClientStateTransferObject;
 
 public class ClientScreen extends StageScreen implements Runnable {
